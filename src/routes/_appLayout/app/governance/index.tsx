@@ -5,7 +5,10 @@ import { useQuery } from 'convex/react'
 import { B11FinesPenaltiesForm } from '@/components/forms/governance/B11FinesPenaltiesForm'
 import { C8SectorInvolvementForm } from '@/components/forms/governance/C8SectorInvolvementForm'
 import { C9BoardCompositionForm } from '@/components/forms/governance/C9BoardCompositionForm'
-import { FormCard } from '@/components/ui/expandable-card-simple'
+import {
+	FormCard,
+	type FormStatus,
+} from '@/components/ui/expandable-card-simple'
 import { useOrgGuard } from '@/hooks/use-org-guard'
 import { yearStore } from '@/lib/year-store'
 
@@ -61,8 +64,7 @@ function GovernancePage() {
 				title="Fines and Penalties"
 				updatedDate={formatDate(finesPenalties?.lastModifiedAt)}
 				toolTip="Report fines or penalties related to violations of anti-corruption or anti-bribery laws."
-				// TODO: Fix this linting error by ensuring that status is always returned from the API
-				status={finesPenalties?.status ?? 'not_started'}
+				status={(finesPenalties?.status ?? 'not_started') as FormStatus}
 				contributor={finesPenalties?.contributor || { name: 'Unknown' }}
 				code="B11"
 				module="Basic Module"
@@ -80,7 +82,7 @@ function GovernancePage() {
 				title="Sector Involvement"
 				updatedDate={formatDate(sectorInvolvement?.lastModifiedAt)}
 				toolTip="Report revenue from specific sectors like controversial weapons, fossil fuels, and agricultural chemicals."
-				status={sectorInvolvement?.status ?? 'not_started'}
+				status={(sectorInvolvement?.status ?? 'not_started') as FormStatus}
 				contributor={sectorInvolvement?.contributor || { name: 'Unknown' }}
 				code="C8"
 				module="Comprehensive Module"
@@ -98,7 +100,7 @@ function GovernancePage() {
 				title="Board Composition"
 				updatedDate={formatDate(boardComposition?.lastModifiedAt)}
 				toolTip="Report the gender balance and total composition of the board."
-				status={boardComposition?.status ?? 'not_started'}
+				status={(boardComposition?.status ?? 'not_started') as FormStatus}
 				contributor={boardComposition?.contributor || { name: 'Unknown' }}
 				code="C9"
 				module="Comprehensive Module"

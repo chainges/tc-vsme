@@ -1,14 +1,11 @@
 "use node";
-import { action, query } from "./_generated/server";
+import { action } from "./_generated/server";
 import { v } from "convex/values";
 import { requireUserId } from "./_utils/auth";
 import { fetchCompanyEmissions } from "./mongodb/queries";
 import { getOrgId } from "./_utils/auth";
+import { api } from "./_generated/api";
 
-/**
- * Sanitize MongoDB data to be Convex-compatible.
- * Converts Date objects to ISO strings and handles nested objects.
- */
 function sanitizeMongoData(data: any): any {
   if (data === null || data === undefined) {
     return data;
@@ -32,24 +29,6 @@ function sanitizeMongoData(data: any): any {
 
   return data;
 }
-
-/**
- * Internal query: look up orgNumber by clerkOrgId from the organizations table.
- * Used by the getEmissionsByOrgId action as its first step.
- * Not exported → internal by convention.
- */
-const _getOrgNumberByClerkOrgId = query({
-  args: { clerkOrgId: v.string() },
-  returns: v.union(v.string(), v.null()),
-  handler: async (ctx, args) => {
-    const org = await ctx.db
-      .query("organizations")
-      .withIndex("by_clerkOrgId", (q) => q.eq("clerkOrgId", args.clerkOrgId))
-      .unique();
-
-    return org?.orgNumber ?? null;
-  },
-});
 
 /**
  * Get emissions data for a specific organization.
@@ -100,9 +79,7 @@ export const getEmissionsByOrgId = action({
       throw new Error("Unauthorized: Cannot access other organizations");
     }
 
-    // @ts-expect-error - runQuery accepts FunctionReference but internal-only queries
-    //   assigned to a const are typed as RegisteredQuery by the generated Convex types.
-    const orgNumber = await ctx.runQuery(_getOrgNumberByClerkOrgId, {
+    const orgNumber = await ctx.runQuery(api.emissionsQueries.getOrgNumberByClerkOrgId, {
       clerkOrgId: args.orgIdToUse,
     });
 

@@ -8,7 +8,10 @@ import { B2SustainabilityInitiativesForm } from '@/components/forms/b2-sustainab
 
 import { C1BusinessModelForm } from '@/components/forms/c1-business-model-form'
 import { HelpSheet } from '@/components/sheet'
-import { FormCard } from '@/components/ui/expandable-card-simple'
+import {
+	FormCard,
+	type FormStatus,
+} from '@/components/ui/expandable-card-simple'
 import { useOrgGuard } from '@/hooks/use-org-guard'
 import { yearStore } from '@/lib/year-store'
 import { GeneralHelp } from './-initiatives-help'
@@ -64,8 +67,7 @@ function GeneralPage() {
 			<FormCard
 				title="Company information"
 				updatedDate={formatDate(companyInfo?.lastModifiedAt)}
-				// TODO: Fix this linting error by ensuring that status is always returned from the API
-				status={companyInfo?.status ?? 'not_started'}
+				status={(companyInfo?.status ?? 'not_started') as FormStatus}
 				toolTip="Click to learn more"
 				contributor={companyInfo?.contributor || { name: 'Unknown' }}
 				code="B1"
@@ -82,7 +84,7 @@ function GeneralPage() {
 				title="Sustainability initiatives"
 				updatedDate={formatDate(sustainability?.lastModifiedAt)}
 				toolTip="Do you have existing sustainability practices/ policies/ future initiatives that address sustainability issues?"
-				status={sustainability?.status ?? 'not_started'}
+				status={(sustainability?.status ?? 'not_started') as FormStatus}
 				contributor={sustainability?.contributor || { name: 'Unknown' }}
 				code="B2"
 				buttonText="Hjelp"
@@ -111,7 +113,7 @@ function GeneralPage() {
 				title="Business model"
 				updatedDate={formatDate(businessModel?.lastModifiedAt)}
 				toolTip="Click to expand"
-				status={businessModel?.status ?? 'not_started'}
+				status={(businessModel?.status ?? 'not_started') as FormStatus}
 				contributor={businessModel?.contributor || { name: 'Unknown' }}
 				code="C1"
 				module="Comprehensive Module"

@@ -11,7 +11,10 @@ import { B7ResourceUseCircularEconomyForm } from '@/components/forms/b7-resource
 import { C2Scope3EmissionsForm } from '@/components/forms/c2-scope3-emissions-form'
 import { C4ClimateRiskForm } from '@/components/forms/c4-climate-risk-form'
 import { HelpSheet } from '@/components/sheet'
-import { FormCard } from '@/components/ui/expandable-card-simple'
+import {
+	FormCard,
+	type FormStatus,
+} from '@/components/ui/expandable-card-simple'
 import { useOrgGuard } from '@/hooks/use-org-guard'
 import { yearStore } from '@/lib/year-store'
 import { BiodiversityHelp } from './-biodiversity-help'
@@ -84,8 +87,7 @@ function EnvironmentalPage() {
 				title="Energy and climate emissions"
 				updatedDate={formatDate(energyEmissions?.lastModifiedAt)}
 				toolTip="Click to expand"
-				// TODO: Fix this linting error by ensuring that status is always returned from the API
-				status={energyEmissions?.status ?? 'not_started'}
+				status={(energyEmissions?.status ?? 'not_started') as FormStatus}
 				contributor={energyEmissions?.contributor || { name: 'Unknown' }}
 				code="B3"
 				buttonText="Hjelp"
@@ -104,7 +106,7 @@ function EnvironmentalPage() {
 				title="Air, Water and Soil Pollution"
 				updatedDate={formatDate(pollution?.lastModifiedAt)}
 				toolTip="Document your organization's emissions to air, water, and soil, including types and quantities of pollutants."
-				status={pollution?.status ?? 'not_started'}
+				status={(pollution?.status ?? 'not_started') as FormStatus}
 				contributor={pollution?.contributor || { name: 'Unknown' }}
 				code="B4"
 				buttonText="Hjelp"
@@ -122,7 +124,7 @@ function EnvironmentalPage() {
 				title="Biodiversity"
 				updatedDate={formatDate(biodiversity?.lastModifiedAt)}
 				toolTip="Click to expand"
-				status={biodiversity?.status ?? 'not_started'}
+				status={(biodiversity?.status ?? 'not_started') as FormStatus}
 				contributor={biodiversity?.contributor || { name: 'Unknown' }}
 				code="B5"
 				module="Basic Module"
@@ -141,7 +143,7 @@ function EnvironmentalPage() {
 				title="Water Management"
 				updatedDate={formatDate(waterManagement?.lastModifiedAt)}
 				toolTip="Click to expand"
-				status={waterManagement?.status ?? 'not_started'}
+				status={(waterManagement?.status ?? 'not_started') as FormStatus}
 				contributor={waterManagement?.contributor || { name: 'Unknown' }}
 				code="B6"
 				module="Basic Module"
@@ -161,7 +163,9 @@ function EnvironmentalPage() {
 				title="Resource Use and Circular Economy"
 				updatedDate={formatDate(resourceUseCircularEconomy?.lastModifiedAt)}
 				toolTip="Click to expand"
-				status={resourceUseCircularEconomy?.status ?? 'not_started'}
+				status={
+					(resourceUseCircularEconomy?.status ?? 'not_started') as FormStatus
+				}
 				contributor={
 					resourceUseCircularEconomy?.contributor || { name: 'Unknown' }
 				}
@@ -229,7 +233,7 @@ function EnvironmentalPage() {
 				title="Scope 3 Emissions"
 				updatedDate={formatDate(scope3Emissions?.lastModifiedAt)}
 				toolTip="Click to expand"
-				status={scope3Emissions?.status ?? 'not_started'}
+				status={(scope3Emissions?.status ?? 'not_started') as FormStatus}
 				contributor={scope3Emissions?.contributor || { name: 'Unknown' }}
 				code="C2"
 				module="Comprehensive Module"
@@ -262,7 +266,7 @@ function EnvironmentalPage() {
 				title="Climate Risk Analysis"
 				updatedDate={formatDate(climateRiskAnalysis?.lastModifiedAt)}
 				toolTip="Describe climate-related risks that may affect the business."
-				status={climateRiskAnalysis?.status ?? 'not_started'}
+				status={(climateRiskAnalysis?.status ?? 'not_started') as FormStatus}
 				contributor={climateRiskAnalysis?.contributor || { name: 'Unknown' }}
 				code="C4"
 				module="Comprehensive Module"
