@@ -61,6 +61,7 @@ function GovernancePage() {
 				title="Fines and Penalties"
 				updatedDate={formatDate(finesPenalties?.lastModifiedAt)}
 				toolTip="Report fines or penalties related to violations of anti-corruption or anti-bribery laws."
+				// TODO: Fix this linting error by ensuring that status is always returned from the API
 				status={finesPenalties?.status ?? 'not_started'}
 				contributor={finesPenalties?.contributor || { name: 'Unknown' }}
 				code="B11"

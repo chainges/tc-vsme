@@ -84,6 +84,7 @@ function SocialPage() {
 				title="Arbeidsstyrke"
 				updatedDate={formatDate(workforce?.lastModifiedAt)}
 				toolTip="Rapporter ansettelsesforhold, kjønnsfordeling og geografisk fordeling av arbeidsstyrken."
+				// TODO: Fix this linting error by ensuring that status is always returned from the API
 				status={workforce?.status ?? 'not_started'}
 				contributor={workforce?.contributor || { name: 'Unknown' }}
 				code="B8"

@@ -64,6 +64,7 @@ function GeneralPage() {
 			<FormCard
 				title="Company information"
 				updatedDate={formatDate(companyInfo?.lastModifiedAt)}
+				// TODO: Fix this linting error by ensuring that status is always returned from the API
 				status={companyInfo?.status ?? 'not_started'}
 				toolTip="Click to learn more"
 				contributor={companyInfo?.contributor || { name: 'Unknown' }}

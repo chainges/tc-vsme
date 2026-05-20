@@ -84,6 +84,7 @@ function EnvironmentalPage() {
 				title="Energy and climate emissions"
 				updatedDate={formatDate(energyEmissions?.lastModifiedAt)}
 				toolTip="Click to expand"
+				// TODO: Fix this linting error by ensuring that status is always returned from the API
 				status={energyEmissions?.status ?? 'not_started'}
 				contributor={energyEmissions?.contributor || { name: 'Unknown' }}
 				code="B3"
