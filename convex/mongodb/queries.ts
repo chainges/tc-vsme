@@ -30,7 +30,7 @@ export async function fetchCompanyEmissions(
   const collection = db.collection("companies");
 
   const company = await collection.findOne(
-    { orgNumber: orgNumber },
+    { RegistrationNumber: orgNumber },
     { projection: { Emissions: 1, CompanyName: 1 } }
   );
 

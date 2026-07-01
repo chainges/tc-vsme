@@ -3,10 +3,15 @@ import {
 	type HighchartsOptionsType,
 	Chart as HighchartsReact,
 } from '@highcharts/react'
-import { useQuery as useTanstackQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
-import { useAction, useConvexAuth, useQuery } from 'convex/react'
+import { Info } from 'lucide-react'
+import { useConvexAuth, useQuery } from 'convex/react'
+import {
+	Alert,
+	AlertDescription,
+	AlertTitle,
+} from '@/components/ui/alert'
 import {
 	Card,
 	CardContent,
@@ -16,9 +21,6 @@ import {
 } from '@/components/ui/card'
 import { yearStore } from '@/lib/year-store'
 import { api } from '../../../../convex/_generated/api'
-
-const HARDCODED_ORG_ID = 'org_2tWO47gV8vEOLN1lrpV57N02Dh2'
-const USE_HARDCODED_ORG = false
 
 export const Route = createFileRoute('/_appLayout/app/')({
 	component: RouteComponent,
@@ -34,36 +36,11 @@ function RouteComponent() {
 	const { organization, isLoaded: isOrgLoaded } = useOrganization()
 	const { isAuthenticated } = useConvexAuth()
 	const selectedYear = useStore(yearStore, (s) => s.selectedYear)
-	const { authContext } = Route.useRouteContext()
-	const { orgId } = authContext
 
-	const orgData = useQuery(
-		api.organizations.getByClerkOrgId,
-		isAuthenticated && organization?.id
-			? { clerkOrgId: organization.id }
-			: 'skip',
+	const allEmissions = useQuery(
+		api.emissionsQueries.getEmissionsDashboard,
+		isAuthenticated ? {} : 'skip',
 	)
-
-	const getEmissions = useAction(api.emissions.getEmissionsByOrgId)
-	const orgIdToUse = USE_HARDCODED_ORG
-		? HARDCODED_ORG_ID
-		: orgId || HARDCODED_ORG_ID
-
-	const { data: allEmissions } = useTanstackQuery({
-		queryKey: ['emissions', { orgId: orgIdToUse }],
-		enabled: isAuthenticated,
-		queryFn: async () => {
-			const result = await getEmissions({
-				orgIdToUse,
-				testingMode: USE_HARDCODED_ORG,
-			})
-			if (!result.success)
-				throw new Error(result.error || 'Failed to fetch data')
-			return result.data as Record<string, EmissionsData>
-		},
-		staleTime: 5 * 60 * 1000,
-		gcTime: 10 * 60 * 1000,
-	})
 
 	const years = ['2023', '2024', '2025']
 	const locationBasedData = years.map(
@@ -113,6 +90,16 @@ function RouteComponent() {
 		<div className="flex flex-col gap-4">
 			<div className="flex flex-col gap-4 overflow-x-auto">
 				<div className="text-3xl">Hello App!</div>
+
+				{allEmissions && Object.keys(allEmissions).length === 0 && (
+					<Alert variant="info">
+						<Info className="size-4" />
+						<AlertTitle>No data available</AlertTitle>
+						<AlertDescription>
+							Make sure data is submitted in the environmental form.
+						</AlertDescription>
+					</Alert>
+				)}
 
 				<div className="grid grid-cols-2 gap-4 md:grid-cols-4">
 					{stats.map(({ label, key }) => {
