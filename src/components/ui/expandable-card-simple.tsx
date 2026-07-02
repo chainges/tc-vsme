@@ -33,23 +33,24 @@ interface FormCardProps {
 	version?: number
 }
 
-const STATUS_CONFIG: Record<FormStatus, { label: string; className: string }> = {
-	not_started: {
-		label: 'Not Started',
-		className:
-			'bg-gray-100 border-gray-400 text-gray-500 dark:bg-gray-800 dark:text-gray-400',
-	},
-	draft: {
-		label: 'In Progress',
-		className:
-			'bg-amber-100 border-amber-600 text-amber-600 dark:bg-amber-800 dark:text-amber-300',
-	},
-	submitted: {
-		label: 'Completed',
-		className:
-			'bg-emerald-100 border-emerald-600 text-emerald-600 dark:bg-emerald-800 dark:text-emerald-300',
-	},
-}
+const STATUS_CONFIG: Record<FormStatus, { label: string; className: string }> =
+	{
+		not_started: {
+			label: 'Not Started',
+			className:
+				'bg-gray-100 border-gray-400 text-gray-500 dark:bg-gray-800 dark:text-gray-400',
+		},
+		draft: {
+			label: 'In Progress',
+			className:
+				'bg-amber-100 border-amber-600 text-amber-600 dark:bg-amber-800 dark:text-amber-300',
+		},
+		submitted: {
+			label: 'Completed',
+			className:
+				'bg-emerald-100 border-emerald-600 text-emerald-600 dark:bg-emerald-800 dark:text-emerald-300',
+		},
+	}
 
 export function FormCard({
 	title,
@@ -170,7 +171,10 @@ export function FormCard({
 
 						<div className="text-sm text-muted-foreground text-right min-h-10">
 							<div>
-								Status: <span className="font-medium">{STATUS_CONFIG[status].label}</span>
+								Status:{' '}
+								<span className="font-medium">
+									{STATUS_CONFIG[status].label}
+								</span>
 							</div>
 							{version !== undefined && <div>Version: {version}</div>}
 						</div>

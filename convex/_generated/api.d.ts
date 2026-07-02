@@ -10,6 +10,7 @@
 
 import type * as _utils_auth from "../_utils/auth.js";
 import type * as emissions from "../emissions.js";
+import type * as emissionsQueries from "../emissionsQueries.js";
 import type * as forms__utils from "../forms/_utils.js";
 import type * as forms_debug from "../forms/debug.js";
 import type * as forms_get from "../forms/get.js";
@@ -34,6 +35,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   "_utils/auth": typeof _utils_auth;
   emissions: typeof emissions;
+  emissionsQueries: typeof emissionsQueries;
   "forms/_utils": typeof forms__utils;
   "forms/debug": typeof forms_debug;
   "forms/get": typeof forms_get;
