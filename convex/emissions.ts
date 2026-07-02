@@ -84,7 +84,8 @@ export const getEmissionsByOrgId = action({
     });
 
     if (!orgNumber) {
-      return { success: false, error: "Organization not found or has no orgNumber" };
+      console.error(`[emissions] No organization found for clerkOrgId: ${args.orgIdToUse}`);
+      return { success: false, error: "Organization not found" };
     }
 
     // 5. Fetch from MongoDB using orgNumber
