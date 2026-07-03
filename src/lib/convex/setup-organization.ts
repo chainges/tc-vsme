@@ -176,3 +176,127 @@ export const setupOrganization = createServerFn({ method: 'POST' })
 			}
 		}
 	})
+
+/**
+ * Register the user's active Clerk organization in Convex.
+ *
+ * Use this when a user is already a member of an existing Clerk organization
+ * (e.g. an admin invited them and set `publicMetadata.hasVsme = true`) but the
+ * org has not yet been set up in the Convex database.
+ *
+ * Unlike `setupOrganization`, this does NOT create a new Clerk organization. It
+ * reads the active organization's trusted data — name, slug, and the registration
+ * number — directly from Clerk metadata. This guarantees that only the currently
+ * active organization is registered and that the registration number is
+ * authoritative rather than client-supplied.
+ *
+ * Prerequisite: the Clerk organization must have `publicMetadata.registrationNumber`
+ * set (the organisasjonsnummer). The admin adds this at the same time as `hasVsme`.
+ */
+export const registerActiveOrganization = createServerFn({
+	method: 'POST',
+}).handler(async (): Promise<SetupOrganizationResult> => {
+	try {
+		const { userId, orgId } = await auth()
+
+		if (!userId) {
+			return { success: false, error: 'Not authenticated' }
+		}
+
+		if (!orgId) {
+			return {
+				success: false,
+				error: 'No active organization. Please select your organization first.',
+			}
+		}
+
+		const client = await clerkClient()
+
+		// Read trusted organization data from Clerk metadata
+		const org = await client.organizations.getOrganization({
+			organizationId: orgId,
+		})
+
+		const registrationNumber = org.publicMetadata?.registrationNumber
+		if (typeof registrationNumber !== 'string' || !registrationNumber.trim()) {
+			return {
+				success: false,
+				error:
+					'Registration number is not set on the organization. An admin must add publicMetadata.registrationNumber before registering.',
+			}
+		}
+
+		// Read user data from Clerk so nothing trust-sensitive comes from the client
+		const user = await client.users.getUser(userId)
+
+		// Initialize Convex client (server-side)
+		const convex = new ConvexHttpClient(CONVEX_URL)
+
+		// Set auth token if available to act as the user
+		try {
+			// @ts-expect-error - auth() returns different types in different environments, but getToken exists
+			const { getToken } = await auth()
+			const token = await getToken({ template: 'convex' })
+			if (token) {
+				convex.setAuth(token)
+			}
+		} catch (err: any) {
+			if (
+				err?.name === 'ClerkOfflineError' ||
+				err?.message?.includes('clerk_runtime_not_browser')
+			) {
+				console.warn(
+					'Failed to set auth token for Convex:',
+					err.name || 'Runtime not browser',
+				)
+			} else {
+				console.warn('Failed to set auth token for Convex:', err)
+			}
+		}
+
+		// Step 1: Upsert organization in Convex with the trusted registration number
+		await convex.mutation(api.organizations.upsertOrganization, {
+			clerkOrgId: orgId,
+			name: org.name,
+			slug: org.slug || org.name,
+			orgNumber: registrationNumber,
+			hasVsme: true,
+		})
+
+		// Step 2: Upsert user in Convex (link to the active org)
+		await convex.mutation(api.users.upsertUser, {
+			clerkId: userId,
+			email: user.emailAddresses[0]?.emailAddress || '',
+			firstName: user.firstName || undefined,
+			lastName: user.lastName || undefined,
+			username: user.username || undefined,
+			organizationId: orgId,
+			hasVsme: false,
+		})
+
+		// Step 3: Mark the Clerk organization as set up in the database
+		await client.organizations.updateOrganizationMetadata(orgId, {
+			publicMetadata: {
+				hasVsme: true,
+				vsmeDb: true,
+			},
+		})
+
+		// Step 4: Disable further org creation for this user
+		await client.users.updateUserMetadata(userId, {
+			publicMetadata: {
+				hasVsme: false,
+			},
+		})
+
+		return { success: true }
+	} catch (error: unknown) {
+		console.error('Register active organization error:', error)
+		const message =
+			error instanceof Error ? error.message : 'Failed to register organization'
+		return {
+			success: false,
+			error: message,
+		}
+	}
+})
