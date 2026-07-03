@@ -29,11 +29,11 @@ export default {
     {
       // Clerk's OIDC issuer URL
       // Replaceed with the actual Clerk instance URL
-      domain: process.env.CLERK_ISSUER_URL || "https://clerk.gentle.cod-4.lcl.dev",
+      domain: process.env.CLERK_ISSUER_URL || "https://clerk.internal.bear-95.lcl.dev",
 
       // The audience configured in Clerk JWT template
       // This must match the "Audience" field in your Clerk JWT template
-      applicationID: process.env.CONVEX_JWT_AUDIENCE || "convex-tc-vsme",
+      applicationID: process.env.CONVEX_JWT_AUDIENCE || "convex",
     },
   ],
 } satisfies AuthConfig;

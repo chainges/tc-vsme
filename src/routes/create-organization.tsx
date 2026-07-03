@@ -50,42 +50,38 @@ export const Route = createFileRoute('/create-organization')({
 			throw redirect({ to: '/sign-in' })
 		}
 
+		// Check 2: Redirect if user already has full access
+		if (authContext.canAccessDashboard) {
+			throw redirect({ to: '/app' })
+		}
+
+		// Check 3: User can access setup flow when setup is needed
+		if (
+			authContext.needsOrgSetup ||
+			authContext.hasVsme ||
+			authContext.orgHasVsme
+		) {
+			return { authContext }
+		}
+
 		// Fallback check: if Convex doesn't know about user's hasVsme permission yet,
 		// directly check Clerk exactly once for this route to avoid rate limits elsewhere.
 		if (!authContext.hasVsme && !authContext.orgHasVsme) {
 			const clerkHasVsme = await checkClerkHasVsme()
 			if (clerkHasVsme) {
-				authContext.hasVsme = true
-				// We also flag needsOrgSetup because they have the permission but no DB
-				authContext.needsOrgSetup = true
+				return {
+					authContext: {
+						...authContext,
+						hasVsme: true,
+						// They have permission but still need org setup.
+						needsOrgSetup: true,
+					},
+				}
 			}
 		}
 
-		// Check 2: User hasVsme permission ->
-		if (authContext.hasVsme) {
-			console.log('User has VSME permission')
-
-			return { authContext }
-		}
-		// Check 3: User must have hasVsme permission
-		// if (authContext.orgHasVsme && !authContext.vsmeDb) {
-		if (authContext.needsOrgSetup) {
-			return { authContext }
-		}
-
-		// Check 4: User must have hasVsme permission
-		if (!authContext.hasVsme && !authContext.orgHasVsme) {
-			console.log('User does not have VSME permission')
-			throw redirect({ to: '/' })
-		}
-
-		// Check 5: Redirect if user already has full access
-		if (authContext.canAccessDashboard) {
-			throw redirect({ to: '/app' })
-		}
-
-		// Pass auth context to component
-		return { authContext }
+		console.log('User does not have VSME permission')
+		throw redirect({ to: '/' })
 	},
 })
 

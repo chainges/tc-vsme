@@ -1,96 +1,71 @@
 "use node";
 import { action } from "./_generated/server";
 import { v } from "convex/values";
-import { requireUserId } from "./_utils/auth";
-import { fetchCompanyEmissions } from "./mongodb/queries";
-import { getOrgId } from "./_utils/auth";
+import { requireUserId, getOrgId } from "./_utils/auth";
 
-/**
- * Sanitize MongoDB data to be Convex-compatible.
- * Converts Date objects to ISO strings and handles nested objects.
- */
-function sanitizeMongoData(data: any): any {
-  if (data === null || data === undefined) {
-    return data;
-  }
-
-  if (data instanceof Date) {
-    return data.toISOString();
-  }
-
-  if (Array.isArray(data)) {
-    return data.map(item => sanitizeMongoData(item));
-  }
-
-  if (typeof data === 'object') {
-    const sanitized: any = {};
-    for (const [key, value] of Object.entries(data)) {
-      sanitized[key] = sanitizeMongoData(value);
-    }
-    return sanitized;
-  }
-
-  return data;
-}
-
-/**
- * Get emissions data for a specific organization.
- *
- * Fetches CO2 emissions data from MongoDB for the specified organization.
- * Requires authentication and verifies that the user has access to the requested organization.
- * Prevents cross-organization data access by checking user's org context.
- *
- * @param {string} orgIdToUse - The organization ID to fetch emissions for
- * @param {number} [year] - Optional year to fetch specific year's data
- * @param {boolean} [testingMode] - Set to true to bypass org verification for testing
- * @returns {Promise<{success: boolean, data?: any, error?: string}>}
- *
- * @example
- * ```typescript
- * // Fetch all emissions for an org
- * const result = await ctx.runAction(api.emissions.getEmissionsByOrgId, {
- *   orgId: 'org_123'
- * });
- *
- * // Fetch specific year for an org
- * const result2024 = await ctx.runAction(api.emissions.getEmissionsByOrgId, {
- *   orgId: 'org_123',
- *   year: 2024
- * });
- * ```
- */
 export const getEmissionsByOrgId = action({
   args: {
-    orgIdToUse: v.string(),
+    //orgIdToUse: v.string(),
+    //clerkToken: v.optional(v.string()),
     year: v.optional(v.number()),
+    RegistrationNumber: v.optional(v.string()),
     testingMode: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
-    // 1. Verify authentication
     await requireUserId(ctx);
 
-    // 2. Get user's org context
     const userOrgId = await getOrgId(ctx);
 
-    // 3. Verify authorization - prevent cross-org access
-    // Allow access if user's org matches requested org, or if no org context (for testing/admin)
-    // Bypass check when testingMode is enabled
-    if (!args.testingMode && userOrgId && userOrgId !== args.orgIdToUse) {
-      throw new Error("Unauthorized: Cannot access other organizations");
+    // if (!args.testingMode && userOrgId && userOrgId !== args.orgIdToUse) {
+    //   throw new Error("Unauthorized: Cannot access other organizations");
+    // }
+
+    const configuredApiUrl = process.env.SCOPE321_API_URL?.trim();
+    if (!configuredApiUrl) {
+      throw new Error(
+        "SCOPE321_API_URL is not configured for Convex. Set it with `npx convex env set SCOPE321_API_URL https://dev-testapp-mcqi.encr.app`.",
+      );
     }
 
-    // 4. Fetch from MongoDB
+    let url: URL;
     try {
-      const data = await fetchCompanyEmissions(args.orgIdToUse, args.year);
+      const parsedApiUrl = new URL(configuredApiUrl);
+      const normalizedPath = parsedApiUrl.pathname.replace(/\/+$/, "");
 
-      // Convert any Date objects to ISO strings for Convex compatibility
-      const sanitizedData = data ? sanitizeMongoData(data) : null;
+      if (normalizedPath === "/getEmissions") {
+        url = parsedApiUrl;
+      } else {
+        const baseUrl = parsedApiUrl.toString().endsWith("/")
+          ? parsedApiUrl.toString()
+          : `${parsedApiUrl.toString()}/`;
+        url = new URL("getEmissions", baseUrl);
+      }
+    } catch {
+      throw new Error(`Invalid SCOPE321_API_URL: ${configuredApiUrl}`);
+    }
 
-      return { success: true, data: sanitizedData };
-    } catch (error) {
-      console.error("MongoDB fetch error:", error);
+    if (args.year) url.searchParams.set("year", String(args.year));
+    if (args.RegistrationNumber) url.searchParams.set("RegistrationNumber", args.RegistrationNumber);
+
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    const response = await fetch(url.toString(), {
+      headers,
+    });
+
+    console.log("scope321 API response status:", response)
+
+    if (!response.ok) {
+      console.error("scope321 API error:", url.toString(), response.status, response.statusText);
+      console.error("scope321 API error:", await response.text());
       return { success: false, error: "Failed to fetch emissions data" };
     }
+
+    const data = await response.json();
+
+    console.log("scope321 API response data:", data);
+    return data;
   },
 });
-

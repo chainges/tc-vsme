@@ -38,10 +38,12 @@ function SocialPage() {
 	// Fetch all form sections with contributor names resolved
 	const formSections = useQuery(
 		api.forms.get.getFormAllSectionsWithContributors,
-		skipQuery || {
+		skipQuery
+			? 'skip'
+			: {
 			table: 'formSocial',
 			reportingYear,
-		},
+			},
 	)
 
 	// Fetch general form company info to get total employees (shared by B10 & C5)
@@ -84,7 +86,7 @@ function SocialPage() {
 				title="Arbeidsstyrke"
 				updatedDate={formatDate(workforce?.lastModifiedAt)}
 				toolTip="Rapporter ansettelsesforhold, kjønnsfordeling og geografisk fordeling av arbeidsstyrken."
-				status={workforce?.status ?? 'not_started'}
+				status={workforce?.status as any ?? 'not_started'}
 				contributor={workforce?.contributor || { name: 'Unknown' }}
 				code="B8"
 				module="Basic Module"

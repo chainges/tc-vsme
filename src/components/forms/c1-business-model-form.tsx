@@ -17,7 +17,7 @@ export function C1BusinessModelForm() {
 	const { organization, skipQuery } = useOrgGuard()
 	const orgData = useQuery(
 		api.organizations.getByClerkOrgId,
-		skipQuery || { clerkOrgId: organization?.id ?? '' },
+		skipQuery ? 'skip' : { clerkOrgId: organization?.id ?? '' },
 	)
 
 	const {

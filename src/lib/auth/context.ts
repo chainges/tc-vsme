@@ -101,6 +101,10 @@ export const getAuthContext = createServerFn({ method: 'GET' }).handler(
 		const userId = authResult.userId
 		const orgId = authResult.orgId
 
+		console.log('\n\nAuth result from Clerk:', authResult, 'userId:', userId, 'orgId:', orgId)
+
+		//console.log(authResult, 'Auth result from Clerk')
+
 		// Return null if not authenticated
 		if (!userId) {
 			return null
@@ -121,6 +125,9 @@ export const getAuthContext = createServerFn({ method: 'GET' }).handler(
 		try {
 			// @ts-ignore - auth() returns different types in different environments, but getToken exists
 			const token = await authResult.getToken({ template: 'convex' })
+
+			//console.log('Auth token for Convex:', token)
+
 			if (token) {
 				convex.setAuth(token)
 			}
@@ -131,6 +138,8 @@ export const getAuthContext = createServerFn({ method: 'GET' }).handler(
 		// Fetch user permission flags from Convex
 		const userFlags = await convex.query(api.users.getPermissionFlags, {})
 		const hasVsme = userFlags.hasVsme
+
+		//console.log('User permission flags:', userFlags)
 
 		// Initialize org flags
 		let orgHasVsme = false
@@ -144,6 +153,9 @@ export const getAuthContext = createServerFn({ method: 'GET' }).handler(
 					clerkOrgId: orgId,
 				},
 			)
+
+			//console.log('\n\nOrganization permission flags:', orgFlags)
+
 			orgHasVsme = orgFlags.hasVsme
 			vsmeDb = orgFlags.exists
 		}

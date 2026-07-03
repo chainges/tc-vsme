@@ -1,12 +1,15 @@
 import { query } from "../_generated/server"
 import { v } from "convex/values"
-import { requireOrgId } from "../_utils/auth"
+import { getOrgId } from "../_utils/auth"
 import { formTableValidator, formSectionValidator, getFormRecordBySection } from "./_utils"
 
 export const getEnvironmentalReportingYears = query({
   args: {},
   handler: async (ctx) => {
-    const orgId = await requireOrgId(ctx)
+    const orgId = await getOrgId(ctx)
+    if (!orgId) {
+      return []
+    }
     
     const records = await ctx.db
       .query("formEnvironmental")
@@ -26,7 +29,10 @@ export const getForm = query({
     section: formSectionValidator,  // Required
   },
   handler: async (ctx, args) => {
-    const orgId = await requireOrgId(ctx)
+    const orgId = await getOrgId(ctx)
+    if (!orgId) {
+      return null
+    }
     
     return await getFormRecordBySection(ctx, args.table, orgId, args.reportingYear, args.section)
   }
@@ -37,7 +43,31 @@ export const getBaseYearEmissions = query({
     reportingYear: v.number(),
   },
   handler: async (ctx, args) => {
-    const orgId = await requireOrgId(ctx)
+    const orgId = await getOrgId(ctx)
+    if (!orgId) {
+      return {
+        scope1Emissions: null,
+        scope2EmissionsMarketBased: null,
+        totalScope3Emissions: null,
+        category1: null,
+        category2: null,
+        category3: null,
+        category4: null,
+        category5: null,
+        category6: null,
+        category7: null,
+        category8: null,
+        category9: null,
+        category10: null,
+        category11: null,
+        category12: null,
+        category13: null,
+        category14: null,
+        category15: null,
+        energyEmissionsStatus: null,
+        scope3EmissionsStatus: null,
+      }
+    }
     
     // Fetch both energyEmissions and scope3Emissions sections for the given year
     const [energyEmissionsRecord, scope3EmissionsRecord] = await Promise.all([
@@ -105,7 +135,12 @@ export const getFormAllSectionsWithContributors = query({
     reportingYear: v.number(),
   },
   handler: async (ctx, args) => {
-    const orgId = await requireOrgId(ctx)
+    // During org switching, JWT org claims can briefly lag behind Clerk state.
+    // Return empty sections instead of throwing to avoid noisy transient errors.
+    const orgId = await getOrgId(ctx)
+    if (!orgId) {
+      return {}
+    }
     
     const records = await ctx.db
       .query(args.table)

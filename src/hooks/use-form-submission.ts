@@ -30,11 +30,13 @@ export function useFormSubmission<TData>({
 	// Fetch existing data
 	const existingData = useQuery(
 		api.forms.get.getForm,
-		skipQuery || {
+		skipQuery
+			? 'skip'
+			: {
 			table,
 			reportingYear,
 			section, // NEW
-		},
+			},
 	)
 
 	const saveForm = useMutation(api.forms.save.saveForm)

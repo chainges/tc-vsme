@@ -1,4 +1,4 @@
-import { useOrganization } from "@clerk/react"
+import { useAuth, useOrganization } from '@clerk/react'
 import { useConvexAuth } from 'convex/react'
 
 /**
@@ -11,18 +11,38 @@ import { useConvexAuth } from 'convex/react'
  * Usage:
  * ```typescript
  * const { skipQuery } = useOrgGuard()
- * const data = useQuery(api.some.query, skipQuery || { args })
+ * const data = useQuery(api.some.query, skipQuery ? 'skip' : { args })
  * ```
  */
 export function useOrgGuard() {
 	const { organization, isLoaded: isOrgLoaded } = useOrganization()
-	const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth()
+	const {
+		isLoaded: isClerkAuthLoaded,
+		isSignedIn,
+		orgId: authOrgId,
+	} = useAuth()
+	const { isAuthenticated, isLoading: isConvexAuthLoading } = useConvexAuth()
 
-	// Ready when authenticated, org is loaded, and org exists
-	const isReady = isAuthenticated && isOrgLoaded && !!organization
+	const hasSelectedOrganization = !!organization
+	const isOrgClaimSynced =
+		!hasSelectedOrganization || organization.id === authOrgId
 
-	// Loading during initial auth or org loading
-	const isLoading = isAuthLoading || !isOrgLoaded
+	// Ready when Clerk + Convex auth are loaded, org is selected,
+	// and Clerk auth org claim is in sync with selected organization.
+	const isReady =
+		isClerkAuthLoaded &&
+		isSignedIn &&
+		isAuthenticated &&
+		isOrgLoaded &&
+		hasSelectedOrganization &&
+		isOrgClaimSynced
+
+	// Loading while auth is resolving or during org-switch token sync.
+	const isLoading =
+		isConvexAuthLoading ||
+		!isClerkAuthLoaded ||
+		!isOrgLoaded ||
+		(hasSelectedOrganization && !isOrgClaimSynced)
 
 	return {
 		/** True when safe to make queries requiring orgId */

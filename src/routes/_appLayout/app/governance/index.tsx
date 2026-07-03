@@ -34,10 +34,12 @@ function GovernancePage() {
 	// Fetch all form sections with contributor names resolved
 	const formSections = useQuery(
 		api.forms.get.getFormAllSectionsWithContributors,
-		skipQuery || {
+		skipQuery
+			? 'skip'
+			: {
 			table: 'formGovernance',
 			reportingYear,
-		},
+			},
 	)
 
 	// Extract section-specific data

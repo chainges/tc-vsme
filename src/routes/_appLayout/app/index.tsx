@@ -44,6 +44,8 @@ function RouteComponent() {
 			: 'skip',
 	)
 
+	//console.log('orgData', orgData, 'organization', organization, 'selectedYear', selectedYear)
+
 	const getEmissions = useAction(api.emissions.getEmissionsByOrgId)
 	const orgIdToUse = USE_HARDCODED_ORG
 		? HARDCODED_ORG_ID
@@ -54,8 +56,8 @@ function RouteComponent() {
 		enabled: isAuthenticated,
 		queryFn: async () => {
 			const result = await getEmissions({
-				orgIdToUse,
-				testingMode: USE_HARDCODED_ORG,
+				RegistrationNumber: "985224153",
+				year: selectedYear
 			})
 			if (!result.success)
 				throw new Error(result.error || 'Failed to fetch data')
@@ -69,6 +71,8 @@ function RouteComponent() {
 	const locationBasedData = years.map(
 		(y) => (allEmissions?.[y]?.locationBased as number) ?? null,
 	)
+
+	//console.log('allEmissions', allEmissions, 'locationBasedData', locationBasedData)
 
 	const labelStyle = { color: 'var(--foreground)' }
 
@@ -99,6 +103,8 @@ function RouteComponent() {
 	}
 
 	const latest = allEmissions?.[String(selectedYear)]
+
+	console.log('latest emissions data for selected year', selectedYear, latest)
 
 	const stats = [
 		{ label: 'Total CO₂', key: 'TotalCo2' },

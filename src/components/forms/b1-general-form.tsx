@@ -55,8 +55,10 @@ export function B1GeneralForm() {
 	const { organization, skipQuery } = useOrgGuard()
 	const orgData = useConvexQuery(
 		api.organizations.getByClerkOrgId,
-		skipQuery || { clerkOrgId: organization?.id ?? '' },
+		skipQuery ? 'skip' : { clerkOrgId: organization?.id ?? '' },
 	)
+
+	console.log('orgData', orgData, 'organization', organization, 'reportingYear', reportingYear)
 
 	// Fetch MongoDB emissions data with TanStack Query for caching
 	const getEmissions = useAction(api.emissions.getEmissionsByOrgId)
@@ -70,7 +72,7 @@ export function B1GeneralForm() {
 		queryKey: ['emissions', organization?.id, reportingYear],
 		queryFn: async () => {
 			const result = await getEmissions({
-				orgIdToUse: organization!.id,
+				RegistrationNumber: "985224153",
 				year: reportingYear,
 			})
 

@@ -1,6 +1,6 @@
 import { mutation, query } from './_generated/server'
 import { v } from 'convex/values'
-import { requireUserId, requireOrgId } from './_utils/auth'
+import { requireUserId, getOrgId } from './_utils/auth'
 
 /**
  * Create a new organization record in Convex.
@@ -170,9 +170,15 @@ export const getByClerkOrgId = query({
     v.null()
   ),
   handler: async (ctx, args) => {
-    // Require authentication and organization context
+    // Require authentication
     await requireUserId(ctx)
-    await requireOrgId(ctx)
+
+    // If an org is selected in identity, only allow reading that org's data.
+    // If no org is selected yet, allow lookup by explicit clerkOrgId.
+    const selectedOrgId = await getOrgId(ctx)
+    if (selectedOrgId && selectedOrgId !== args.clerkOrgId) {
+      throw new Error('Unauthorized: Cannot access other organizations')
+    }
 
     // Verify user has access to this organization
     // (Optional: Add additional authorization logic here)

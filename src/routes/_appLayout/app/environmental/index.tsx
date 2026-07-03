@@ -51,10 +51,12 @@ function EnvironmentalPage() {
 	// Fetch all form sections with contributor names resolved
 	const formSections = useQuery(
 		api.forms.get.getFormAllSectionsWithContributors,
-		skipQuery || {
+		skipQuery
+			? 'skip'
+			: {
 			table: 'formEnvironmental',
 			reportingYear,
-		},
+			},
 	)
 
 	// Fetch targets data for C3 card

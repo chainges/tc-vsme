@@ -39,10 +39,12 @@ function GeneralPage() {
 	// Fetch all form sections with contributor names resolved
 	const formSections = useQuery(
 		api.forms.get.getFormAllSectionsWithContributors,
-		skipQuery || {
+		skipQuery
+			? 'skip'
+			: {
 			table: 'formGeneral',
 			reportingYear,
-		},
+			},
 	)
 
 	// Extract section-specific data
