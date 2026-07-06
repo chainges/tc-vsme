@@ -217,6 +217,15 @@ export const registerActiveOrganization = createServerFn({
 			organizationId: orgId,
 		})
 
+		// Verify admin has explicitly granted VSME for this org
+		if (!org.publicMetadata?.hasVsme) {
+			return {
+				success: false,
+				error:
+					'Organization is not authorized for VSME. An admin must set hasVsme in the organization metadata.',
+			}
+		}
+
 		const registrationNumber = org.publicMetadata?.registrationNumber
 		if (typeof registrationNumber !== 'string' || !registrationNumber.trim()) {
 			return {
@@ -255,10 +264,16 @@ export const registerActiveOrganization = createServerFn({
 		}
 
 		// Step 1: Upsert organization in Convex with the trusted registration number
+		const orgSlug =
+			org.slug ||
+			org.name
+				.toLowerCase()
+				.replace(/[^a-z0-9]+/g, '-')
+				.replace(/^-|-$/g, '')
 		await convex.mutation(api.organizations.upsertOrganization, {
 			clerkOrgId: orgId,
 			name: org.name,
-			slug: org.slug || org.name,
+			slug: orgSlug,
 			orgNumber: registrationNumber,
 			hasVsme: true,
 		})

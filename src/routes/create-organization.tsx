@@ -127,7 +127,7 @@ function CreateOrganizationPage() {
 		isLoaded: isOrgListLoaded,
 	} = useOrganizationList()
 	const { user, isLoaded: isUserLoaded } = useUser()
-	const { organization } = useOrganization()
+	const { organization, isLoaded: isOrgLoaded } = useOrganization()
 	const navigate = useNavigate()
 
 	const [selectedOrg, setSelectedOrg] = useState<BrregUnit | null>(null)
@@ -138,9 +138,9 @@ function CreateOrganizationPage() {
 	// Detect "register existing active org" mode: the user is a member of a Clerk org
 	// that has hasVsme set but has not been set up in the Convex database yet.
 	const activeOrgName = organization?.name ?? null
+	const registrationNumberRaw = organization?.publicMetadata?.registrationNumber
 	const registrationNumber =
-		(organization?.publicMetadata?.registrationNumber as string | undefined) ??
-		null
+		typeof registrationNumberRaw === 'string' ? registrationNumberRaw : null
 	const clerkOrgHasVsme = Boolean(organization?.publicMetadata?.hasVsme)
 	const clerkVsmeDb = Boolean(organization?.publicMetadata?.vsmeDb)
 	const isRegisterExisting = Boolean(
@@ -255,7 +255,7 @@ function CreateOrganizationPage() {
 		}
 	}
 
-	if (!isOrgListLoaded || !isUserLoaded) {
+	if (!isOrgListLoaded || !isUserLoaded || !isOrgLoaded) {
 		return (
 			<div className="min-h-screen flex items-center justify-center">
 				<Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
