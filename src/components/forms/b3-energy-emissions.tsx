@@ -65,7 +65,6 @@ export function B3EnergyEmissionsForm() {
 			setIsFetchingMongo(true)
 			try {
 				const result = await getEmissions({
-					orgIdToUse: organization.id,
 					year: reportingYear,
 				})
 

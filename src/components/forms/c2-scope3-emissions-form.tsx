@@ -103,7 +103,6 @@ export function C2Scope3EmissionsForm() {
 		queryKey: ['emissions', organization?.id, reportingYear],
 		queryFn: async () => {
 			const result = await getEmissions({
-				orgIdToUse: organization!.id,
 				year: reportingYear,
 			})
 

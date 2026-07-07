@@ -1,10 +1,9 @@
 "use node";
 import { action } from "./_generated/server";
 import { v } from "convex/values";
-import { requireUserId } from "./_utils/auth";
+import { requireUserId, requireOrgId } from "./_utils/auth";
 import { fetchCompanyEmissions } from "./mongodb/queries";
-import { getOrgId } from "./_utils/auth";
-import { api } from "./_generated/api";
+import { internal } from "./_generated/api";
 
 function sanitizeMongoData(data: any): any {
   if (data === null || data === undefined) {
@@ -31,64 +30,46 @@ function sanitizeMongoData(data: any): any {
 }
 
 /**
- * Get emissions data for a specific organization.
+ * Get emissions data for the authenticated user's organization.
  *
  * Looks up the organization's `orgNumber` from the Convex organizations table
- * using the Clerk org ID, then fetches CO2 emissions data from MongoDB using
- * that `orgNumber`. Requires authentication and verifies that the user has
- * access to the requested organization. Prevents cross-organization data access
- * by checking user's org context.
+ * using the Clerk org ID derived from the caller's JWT, then fetches CO2
+ * emissions data from MongoDB using that `orgNumber`.
  *
- * @param {string} orgIdToUse - The Clerk organization ID (looked up to find orgNumber)
  * @param {number} [year] - Optional year to fetch specific year's data
- * @param {boolean} [testingMode] - Set to true to bypass org verification for testing
  * @returns {Promise<{success: boolean, data?: any, error?: string}>}
  *
  * @example
  * ```typescript
- * // Fetch all emissions for an org
- * const result = await ctx.runAction(api.emissions.getEmissionsByOrgId, {
- *   orgIdToUse: 'org_abc123'
- * });
+ * const result = await ctx.runAction(api.emissions.getEmissionsByOrgId, {});
  *
- * // Fetch specific year for an org
+ * // Fetch specific year
  * const result2024 = await ctx.runAction(api.emissions.getEmissionsByOrgId, {
- *   orgIdToUse: 'org_abc123',
  *   year: 2024
  * });
  * ```
  */
 export const getEmissionsByOrgId = action({
   args: {
-    orgIdToUse: v.string(),
     year: v.optional(v.number()),
-    testingMode: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     // 1. Verify authentication
     await requireUserId(ctx);
 
-    // 2. Get user's org context
-    const userOrgId = await getOrgId(ctx);
+    // 2. Org is derived from the JWT, never from a client-supplied arg
+    const orgId = await requireOrgId(ctx);
 
-    // 3. Verify authorization - prevent cross-org access
-    // Allow access if user's org matches requested org, or if no org context
-    //   (for testing/admin)
-    // Bypass check when testingMode is enabled
-    if (!args.testingMode && userOrgId && userOrgId !== args.orgIdToUse) {
-      throw new Error("Unauthorized: Cannot access other organizations");
-    }
-
-    const orgNumber = await ctx.runQuery(api.emissionsQueries.getOrgNumberByClerkOrgId, {
-      clerkOrgId: args.orgIdToUse,
+    const orgNumber = await ctx.runQuery(internal.emissionsQueries.getOrgNumberByClerkOrgId, {
+      clerkOrgId: orgId,
     });
 
     if (!orgNumber) {
-      console.error(`[emissions] No organization found for clerkOrgId: ${args.orgIdToUse}`);
+      console.error(`[emissions] No organization found for clerkOrgId: ${orgId}`);
       return { success: false, error: "Organization not found" };
     }
 
-    // 5. Fetch from MongoDB using orgNumber
+    // 3. Fetch from MongoDB using orgNumber
     try {
       const data = await fetchCompanyEmissions(orgNumber, args.year);
 

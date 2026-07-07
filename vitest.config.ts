@@ -10,12 +10,17 @@ const tsconfigPaths = viteTsConfigPaths({
 	projects: ['./tsconfig.json'],
 })
 
+// Vitest sub-projects don't inherit the root `test.exclude` - each project
+// must list its own, or globs like `**/*.test.ts` will match test files
+// shipped inside node_modules and other nested worktrees.
+const commonExclude = ['**/node_modules/**', '**/.output/**', '**/dist/**', '**/.kilo/**', '**/.kilocode/**']
+
 export default defineConfig({
 	plugins: [tsconfigPaths],
 	test: {
 		globals: true,
 		setupFiles: [],
-		exclude: ['node_modules', '.output', 'dist', '.kilo', '.kilocode'],
+		exclude: commonExclude,
 		projects: [
 			{
 				name: 'edge-runtime',
@@ -24,6 +29,7 @@ export default defineConfig({
 				test: {
 					environment: 'edge-runtime',
 					include: ['convex/**/*.test.{ts,tsx}'],
+					exclude: commonExclude,
 				},
 			},
 			{
@@ -31,9 +37,10 @@ export default defineConfig({
 				plugins: [tsconfigPaths],
 				resolve: { alias },
 				test: {
+					globals: true,
 					environment: 'jsdom',
 					include: ['**/__tests__/**/*.test.{ts,tsx}', '**/*.test.{ts,tsx}'],
-					exclude: ['convex/**'],
+					exclude: [...commonExclude, 'convex/**'],
 				},
 			},
 		],

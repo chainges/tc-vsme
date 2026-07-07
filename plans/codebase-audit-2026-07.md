@@ -18,19 +18,19 @@ This is a full-codebase audit across four dimensions: security & multi-tenancy, 
 
 ## Phase 0 — Deploy-blocking security (do first, ~1 day, items parallelizable)
 
-### 0.1 Remove secret-leaking response headers — S
+### 0.1 Remove secret-leaking response headers — DONE
 - **File:** [src/server.ts:16-40](../src/server.ts#L16-L40)
 - **Why:** Every response from the production worker (`wrangler.toml` `main`) emits `x-env-openai-api-key: starts:<first-5>`, `x-env-mongodb-uri: len:<n>`, and Google Maps key prefix. Key prefixes/lengths materially aid identification and brute-forcing. This is debug scaffolding in the prod entrypoint. **Confirmed by direct read.**
 - **Fix:** Delete lines 16–40; `return res` from `paraglideMiddleware` directly. Drop now-unused `Env` fields if nothing else reads them.
 - **Verify:** `curl -sI <url> | grep -i x-env` returns nothing.
 
-### 0.2 Remove `testingMode` bypass; fail closed on org check — S
+### 0.2 Remove `testingMode` bypass; fail closed on org check — Done
 - **File:** [convex/emissions.ts:61-104](../convex/emissions.ts#L61-L104)
 - **Why:** `testingMode: v.optional(v.boolean())` is a **client-supplied** arg that skips the cross-org check (line 78); additionally the check short-circuits open when `userOrgId` is null. Any authenticated user can read any company's MongoDB emissions. **Confirmed by direct read.**
 - **Fix:** Delete the `orgIdToUse` and `testingMode` args. Use `const orgId = await requireOrgId(ctx)` — the JWT org claim *is* the authorization. Keep `year` as the only arg.
 - **Verify:** convex-test: org A identity succeeds for its data; no-org identity throws; no arg reaches org B's data. `grep testingMode` → zero.
 
-### 0.3 Make `getOrgNumberByClerkOrgId` internal — S (pairs with 0.2)
+### 0.3 Make `getOrgNumberByClerkOrgId` internal — DONE
 - **File:** [convex/emissionsQueries.ts:5-16](../convex/emissionsQueries.ts#L5-L16), caller at [convex/emissions.ts:82](../convex/emissions.ts#L82)
 - **Why:** Public query with **zero auth** mapping any `clerkOrgId` → Norwegian org number (an enumerable tenant directory).
 - **Fix:** `query` → `internalQuery`; caller uses `internal.emissionsQueries...`.
