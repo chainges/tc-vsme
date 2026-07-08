@@ -6,43 +6,54 @@
  *
  * Test Scenarios:
  * 1. Signed Out: Sign Up and Sign In buttons
- * 2. Signed In, no VSME: Get Access link and UserButton
- * 3. Has VSME, no org/db: Create Organization link and UserButton
- * 4. Full Access: Dashboard button, OrganizationSwitcher, and UserButton
+ * 2. Signed In, no VSME: Get started link and UserButton
+ * 3. Has VSME, no org/db: Setup Organization link and UserButton
+ * 4. Full Access: Dashboard button and UserButton
  */
 
 import { render, screen } from '@testing-library/react'
+import '@testing-library/jest-dom/vitest'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { HeaderButtons } from '../HeaderButtons'
 
-// Mock Clerk hooks
-vi.mock('@clerk/react', () => ({
-        useUser: vi.fn(),
-        useOrganization: vi.fn(),
-        SignUpButton: ({ children }: { children: React.ReactNode }) => (
-                <button type="button" data-testid="sign-up-button">
-                        {children}
-                </button>
-        ),
-        SignInButton: ({ children }: { children: React.ReactNode }) => (
-                <button type="button" data-testid="sign-in-button">
-                        {children}
-                </button>
-        ),
-        UserButton: () => <div data-testid="user-button">UserButton</div>,
-        OrganizationSwitcher: () => (
-                <div data-testid="org-switcher">OrganizationSwitcher</div>
-        ),
+const { useUser, useOrganization, useAuth } = vi.hoisted(() => ({
+	useUser: vi.fn(),
+	useOrganization: vi.fn(),
+	useAuth: vi.fn(),
 }))
 
+// Mock Clerk - HeaderButtons imports everything from @clerk/tanstack-react-start
 vi.mock('@clerk/tanstack-react-start', () => ({
-        useAuth: vi.fn(),
-        Show: ({ when, children }: { when: string | { [key: string]: string }; children: React.ReactNode }) => {
-                if (typeof when === 'string') {
-                        return <div data-testid={when}>{children}</div>
-                }
-                return <div>{children}</div>
-        }
+	useUser,
+	useOrganization,
+	useAuth,
+	SignUpButton: ({ children }: { children: React.ReactNode }) => (
+		<span data-testid="sign-up-button">{children}</span>
+	),
+	SignInButton: ({ children }: { children: React.ReactNode }) => (
+		<span data-testid="sign-in-button">{children}</span>
+	),
+	UserButton: () => <div data-testid="user-button">UserButton</div>,
+	// Mirrors the real <Show/>: renders children when `when` matches the
+	// mocked auth state, renders nothing while auth is loading.
+	Show: ({
+		when,
+		children,
+	}: {
+		when: string
+		children: React.ReactNode
+	}) => {
+		const { isLoaded, isSignedIn } = useAuth()
+		if (!isLoaded) return null
+		if (when === 'signed-in' && isSignedIn) {
+			return <div data-testid="signed-in">{children}</div>
+		}
+		if (when === 'signed-out' && !isSignedIn) {
+			return <div data-testid="signed-out">{children}</div>
+		}
+		return null
+	},
+}))
 
 // Mock TanStack Router
 vi.mock('@tanstack/react-router', () => ({
@@ -51,9 +62,14 @@ vi.mock('@tanstack/react-router', () => ({
 	),
 }))
 
-// Mock lucide-react
-vi.mock('lucide-react', () => ({
-	ArrowRight: () => <span data-testid="arrow-icon">→</span>,
+// Mock LanguageSwitcher and ThemeSwitcher - irrelevant to HeaderButtons'
+// own conditional rendering logic, and ThemeSwitcher needs window.matchMedia
+// which jsdom doesn't implement.
+vi.mock('../LanguageSwitcher', () => ({
+	LanguageSwitcher: () => <div data-testid="language-switcher" />,
+}))
+vi.mock('../ThemeSwitcher', () => ({
+	ThemeSwitcher: () => <div data-testid="theme-switcher" />,
 }))
 
 // Mock Button component
@@ -72,14 +88,10 @@ vi.mock('../ui/button', () => ({
 	),
 }))
 
-const { useUser, useOrganization } = vi.hoisted(() => ({
-	useUser: vi.fn(),
-	useOrganization: vi.fn(),
-}))
-
 describe('HeaderButtons Component', () => {
 	describe('Signed Out Users', () => {
 		beforeEach(() => {
+			useAuth.mockReturnValue({ isLoaded: true, isSignedIn: false })
 			useUser.mockReturnValue({
 				isLoaded: true,
 				isSignedIn: false,
@@ -108,6 +120,7 @@ describe('HeaderButtons Component', () => {
 
 	describe('Signed In, No VSME Access', () => {
 		beforeEach(() => {
+			useAuth.mockReturnValue({ isLoaded: true, isSignedIn: true })
 			useUser.mockReturnValue({
 				isLoaded: true,
 				isSignedIn: true,
@@ -122,24 +135,25 @@ describe('HeaderButtons Component', () => {
 			})
 		})
 
-		it('renders Get Access link and UserButton', () => {
+		it('renders "Get started!" link and UserButton', () => {
 			render(<HeaderButtons />)
 
 			expect(screen.getByTestId('signed-in')).toBeInTheDocument()
-			expect(screen.getByText('Get access')).toBeInTheDocument()
+			expect(screen.getByText(/Get started!/)).toBeInTheDocument()
 			expect(screen.getByTestId('user-button')).toBeInTheDocument()
 		})
 
-		it('does not render Create Organization or Dashboard buttons', () => {
+		it('does not render Setup Organization or Dashboard buttons', () => {
 			render(<HeaderButtons />)
 
-			expect(screen.queryByText('Create Organization')).not.toBeInTheDocument()
+			expect(screen.queryByText('Setup Organization')).not.toBeInTheDocument()
 			expect(screen.queryByText('Dashboard')).not.toBeInTheDocument()
 		})
 	})
 
 	describe('Has VSME, No Org/DB', () => {
 		beforeEach(() => {
+			useAuth.mockReturnValue({ isLoaded: true, isSignedIn: true })
 			useUser.mockReturnValue({
 				isLoaded: true,
 				isSignedIn: true,
@@ -154,24 +168,25 @@ describe('HeaderButtons Component', () => {
 			})
 		})
 
-		it('renders Create Organization link and UserButton', () => {
+		it('renders Setup Organization link and UserButton', () => {
 			render(<HeaderButtons />)
 
 			expect(screen.getByTestId('signed-in')).toBeInTheDocument()
-			expect(screen.getByText('Create Organization')).toBeInTheDocument()
+			expect(screen.getByText('Setup Organization')).toBeInTheDocument()
 			expect(screen.getByTestId('user-button')).toBeInTheDocument()
 		})
 
-		it('does not render Get Access or Dashboard buttons', () => {
+		it('does not render "Get started!" or Dashboard buttons', () => {
 			render(<HeaderButtons />)
 
-			expect(screen.queryByText('Get access')).not.toBeInTheDocument()
+			expect(screen.queryByText(/Get started!/)).not.toBeInTheDocument()
 			expect(screen.queryByText('Dashboard')).not.toBeInTheDocument()
 		})
 	})
 
 	describe('Full Access (orgHasVsme + vsmeDb)', () => {
 		beforeEach(() => {
+			useAuth.mockReturnValue({ isLoaded: true, isSignedIn: true })
 			useUser.mockReturnValue({
 				isLoaded: true,
 				isSignedIn: true,
@@ -189,25 +204,25 @@ describe('HeaderButtons Component', () => {
 			})
 		})
 
-		it('renders Dashboard button, OrganizationSwitcher, and UserButton', () => {
+		it('renders Dashboard button and UserButton', () => {
 			render(<HeaderButtons />)
 
 			expect(screen.getByTestId('signed-in')).toBeInTheDocument()
 			expect(screen.getByText('Dashboard')).toBeInTheDocument()
-			expect(screen.getByTestId('org-switcher')).toBeInTheDocument()
 			expect(screen.getByTestId('user-button')).toBeInTheDocument()
 		})
 
-		it('does not render Get Access or Create Organization', () => {
+		it('does not render "Get started!" or Setup Organization', () => {
 			render(<HeaderButtons />)
 
-			expect(screen.queryByText('Get access')).not.toBeInTheDocument()
-			expect(screen.queryByText('Create Organization')).not.toBeInTheDocument()
+			expect(screen.queryByText(/Get started!/)).not.toBeInTheDocument()
+			expect(screen.queryByText('Setup Organization')).not.toBeInTheDocument()
 		})
 	})
 
 	describe('Loading States', () => {
-		it('returns null while user data is loading', () => {
+		it('renders neither signed-in nor signed-out content while auth is loading', () => {
+			useAuth.mockReturnValue({ isLoaded: false, isSignedIn: false })
 			useUser.mockReturnValue({
 				isLoaded: false,
 				isSignedIn: false,
@@ -218,23 +233,10 @@ describe('HeaderButtons Component', () => {
 				organization: null,
 			})
 
-			const { container } = render(<HeaderButtons />)
-			expect(container.firstChild).toBeNull()
-		})
+			render(<HeaderButtons />)
 
-		it('returns null while org data is loading', () => {
-			useUser.mockReturnValue({
-				isLoaded: true,
-				isSignedIn: true,
-				user: { id: 'user_123', publicMetadata: {} },
-			})
-			useOrganization.mockReturnValue({
-				isLoaded: false,
-				organization: null,
-			})
-
-			const { container } = render(<HeaderButtons />)
-			expect(container.firstChild).toBeNull()
+			expect(screen.queryByTestId('signed-out')).not.toBeInTheDocument()
+			expect(screen.queryByTestId('signed-in')).not.toBeInTheDocument()
 		})
 	})
 })

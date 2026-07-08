@@ -59,10 +59,7 @@ function EmissionsPage() {
 		queryKey: ['emissions', { orgId: orgIdToUse }],
 		enabled: isAuthenticated,
 		queryFn: async () => {
-			const result = await getEmissions({
-				orgIdToUse: orgIdToUse,
-				testingMode: USE_HARDCODED_ORG,
-			})
+			const result = await getEmissions({})
 			if (!result.success) {
 				throw new Error(result.error || 'Failed to fetch data')
 			}

@@ -5,13 +5,9 @@ import {
 } from '@highcharts/react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
-import { Info } from 'lucide-react'
 import { useConvexAuth, useQuery } from 'convex/react'
-import {
-	Alert,
-	AlertDescription,
-	AlertTitle,
-} from '@/components/ui/alert'
+import { Info } from 'lucide-react'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
 	Card,
 	CardContent,
@@ -89,7 +85,7 @@ function RouteComponent() {
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex flex-col gap-4 overflow-x-auto">
-				<div className="text-3xl">Hello App!</div>
+				<div className="text-3xl mt-2">Dashboard! </div>
 
 				{allEmissions && Object.keys(allEmissions).length === 0 && (
 					<Alert variant="info">

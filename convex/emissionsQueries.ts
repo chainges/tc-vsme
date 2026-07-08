@@ -1,8 +1,8 @@
-import { query } from "./_generated/server";
+import { query, internalQuery } from "./_generated/server";
 import { v } from "convex/values";
 import { requireOrgId } from "./_utils/auth";
 
-export const getOrgNumberByClerkOrgId = query({
+export const getOrgNumberByClerkOrgId = internalQuery({
   args: { clerkOrgId: v.string() },
   returns: v.union(v.string(), v.null()),
   handler: async (ctx, args) => {

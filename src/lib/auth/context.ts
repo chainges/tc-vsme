@@ -28,7 +28,7 @@ if (!CONVEX_URL) {
  * Key format: `${userId}:${orgId || 'no-org'}`
  * Cache is cleared on page refresh (in-memory only)
  */
-const authContextCache = new Map<string, AuthContext | null>()
+export const authContextCache = new Map<string, AuthContext | null>()
 
 /**
  * Generates a cache key for the auth context

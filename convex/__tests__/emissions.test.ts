@@ -2,7 +2,10 @@
  * Emissions Action Test
  *
  * Tests for the getEmissionsByOrgId action that fetches emissions data
- * from MongoDB with authentication and authorization.
+ * from MongoDB with authentication and authorization. The org is derived
+ * solely from the caller's JWT (`org_id` claim) - it is never accepted as
+ * an argument, so there is no client-controllable way to read another
+ * organization's data.
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
@@ -13,7 +16,7 @@ import { modules } from '../test.setup'
 
 describe('Emissions Action', () => {
   let t: ReturnType<typeof convexTest>
-  const HARDCODED_ORG_ID = 'org_2tWO47gV8vEOLN1lrpV57N02Dh2'
+  const ORG_A = 'org_a_123'
 
   beforeEach(() => {
     t = convexTest(schema, modules)
@@ -34,60 +37,66 @@ describe('Emissions Action', () => {
   })
 
   it('should require authentication', async () => {
-    // Without auth, should throw error
     await expect(
-      t.action(api.emissions.getEmissionsByOrgId, {
-        orgIdToUse: HARDCODED_ORG_ID
-      })
+      t.action(api.emissions.getEmissionsByOrgId, {})
     ).rejects.toThrow('Unauthorized')
   })
 
-  it('should prevent cross-org access', async () => {
-    // Since orgId is hardcoded in the backend, trying to access a different org should fail
+  it('should require an organization to be selected', async () => {
+    // Authenticated but no org_id claim on the identity
     await expect(
-      t.withIdentity({ subject: 'user_123', org_id: HARDCODED_ORG_ID })
-        .action(api.emissions.getEmissionsByOrgId, {
-          orgIdToUse: 'org_different_org'
-        })
-    ).rejects.toThrow('Cannot access other organizations')
+      t.withIdentity({ subject: 'user_123' }).action(
+        api.emissions.getEmissionsByOrgId,
+        {}
+      )
+    ).rejects.toThrow('Organization must be selected')
   })
 
-  it('should fetch data for authenticated user org', async () => {
-    // Mock authenticated user with the hardcoded org
-    const result = await t
-      .withIdentity({ subject: 'user_123', org_id: HARDCODED_ORG_ID })
-      .action(api.emissions.getEmissionsByOrgId, {
-        orgIdToUse: HARDCODED_ORG_ID
-      })
+  it('should reject a client-supplied org id argument', async () => {
+    // orgIdToUse is not part of the args validator anymore - passing it
+    // must fail rather than silently being accepted.
+    await expect(
+      t.withIdentity({ subject: 'user_123', org_id: ORG_A }).action(
+        api.emissions.getEmissionsByOrgId,
+        // @ts-expect-error orgIdToUse was removed from the args validator
+        { orgIdToUse: 'org_b_456' }
+      )
+    ).rejects.toThrow()
+  })
 
-    // Result should be an object with success field
+  it("should resolve the org number from the caller's own JWT org", async () => {
+    await t.run(async (ctx) => {
+      await ctx.db.insert('organizations', {
+        clerkOrgId: ORG_A,
+        name: 'Org A',
+        slug: 'org-a',
+        orgNumber: '999999999',
+      })
+    })
+
+    const result = await t
+      .withIdentity({ subject: 'user_123', org_id: ORG_A })
+      .action(api.emissions.getEmissionsByOrgId, {})
+
+    // orgNumber for ORG_A was found via the JWT's org_id, so the action
+    // should proceed past the "Organization not found" short-circuit.
     expect(result).toBeDefined()
-    expect(typeof result).toBe('object')
+    expect(result.error).not.toBe('Organization not found')
+  })
+
+  it('should not find an org number for an org that has no matching record', async () => {
+    const result = await t
+      .withIdentity({ subject: 'user_123', org_id: 'org_with_no_record' })
+      .action(api.emissions.getEmissionsByOrgId, {})
+
+    expect(result).toEqual({ success: false, error: 'Organization not found' })
   })
 
   it('should support optional year parameter', async () => {
-    // Access with year parameter
     const result = await t
-      .withIdentity({ subject: 'user_123', org_id: HARDCODED_ORG_ID })
-      .action(api.emissions.getEmissionsByOrgId, {
-        orgIdToUse: HARDCODED_ORG_ID,
-        year: 2024,
-      })
+      .withIdentity({ subject: 'user_123', org_id: ORG_A })
+      .action(api.emissions.getEmissionsByOrgId, { year: 2024 })
 
     expect(result).toBeDefined()
-  })
-
-  it('should allow access to hardcoded org when user has no org context', async () => {
-    // User authenticated but no org context - should still work with hardcoded org
-    const result = await t
-      .withIdentity({ subject: 'user_123' })
-      .action(api.emissions.getEmissionsByOrgId, {
-        orgIdToUse: HARDCODED_ORG_ID
-      })
-
-    // Should not throw error
-    expect(result).toBeDefined()
-    expect(typeof result).toBe('object')
   })
 })
-

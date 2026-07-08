@@ -70,7 +70,6 @@ export function B1GeneralForm() {
 		queryKey: ['emissions', organization?.id, reportingYear],
 		queryFn: async () => {
 			const result = await getEmissions({
-				orgIdToUse: organization!.id,
 				year: reportingYear,
 			})
 
