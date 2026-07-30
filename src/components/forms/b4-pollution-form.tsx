@@ -12,6 +12,7 @@ import {
 	pollutionSchema,
 } from '@/lib/forms/schemas/b4-pollution-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 
 export function B4PollutionForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
@@ -52,7 +53,7 @@ export function B4PollutionForm() {
 					<form.AppField name="reportingYear">
 						{(field) => (
 							<field.TextField
-								label="Reporting Year"
+								label={m["environmental.B4.reportingYear"]()}
 								placeholder="YYYY"
 								hidden
 							/>
@@ -63,7 +64,7 @@ export function B4PollutionForm() {
 						<CardContent className="space-y-6">
 							<form.AppField name="reportingPollution">
 								{(field) => (
-									<field.SwitchField label="Is the undertaking already required by law or other national regulations to report to competent authorities its emissions of pollutants or does it already voluntarily report on them according to an Environmental Management System?" />
+									<field.SwitchField label={m["environmental.B4.reportingPollutionLabel"]()} />
 								)}
 							</form.AppField>
 
@@ -75,7 +76,7 @@ export function B4PollutionForm() {
 										<div className="space-y-6">
 											<form.AppField name="publiclyAvailableDisclosure">
 												{(field) => (
-													<field.SwitchField label="The information is publicly available?" />
+													<field.SwitchField label={m["environmental.B4.publiclyAvailableDisclosure"]()} />
 												)}
 											</form.AppField>
 
@@ -90,7 +91,7 @@ export function B4PollutionForm() {
 															<form.AppField name="urlOrLinkToPubliclyAvailableDisclosure">
 																{(field) => (
 																	<field.TextField
-																		label="URL or link to the publicly available disclosure"
+																		label={m["environmental.B4.urlOrLinkToPubliclyAvailableDisclosure"]()}
 																		placeholder="https://..."
 																	/>
 																)}
@@ -107,13 +108,10 @@ export function B4PollutionForm() {
 																						💨
 																					</div>
 																					<h3 className="font-medium mb-2">
-																						No pollutions added yet
+																						{m["environmental.B4.pollutantsHeading"]()}
 																					</h3>
 																					<p className="text-sm text-muted-foreground mb-4">
-																						It&apos;s okay if you don&apos;t
-																						have any pollutions to report. You
-																						can submit this form empty or add
-																						pollutions below.
+																						{m["environmental.B4.pollutantsDescription"]()}
 																					</p>
 																				</CardContent>
 																			</Card>
@@ -123,7 +121,7 @@ export function B4PollutionForm() {
 																			<Card key={item.id} className="relative">
 																				<CardHeader className="pb-3 sr-only">
 																					<CardTitle className="text-base">
-																						Pollution {i + 1}
+																						{m["environmental.B4.pollution"]()} {i + 1}
 																					</CardTitle>
 																				</CardHeader>
 																				<CardContent className="space-y-6">
@@ -133,10 +131,10 @@ export function B4PollutionForm() {
 																						>
 																							{(f) => (
 																								<f.ComboboxField
-																									label="Pollution Type"
+																									label={m["environmental.B4.pollutionLabel"]()}
 																									options={[...POLLUTANTS]}
-																									placeholder="Select or type a pollutant..."
-																									helperText="💡 Tip: You can type a custom pollutant if none match"
+																									placeholder={m["environmental.B4.pollutionPlaceholder"]()}
+																									helperText={m["environmental.B4.pollutionHelperText"]()}
 																								/>
 																							)}
 																						</form.AppField>
@@ -146,8 +144,8 @@ export function B4PollutionForm() {
 																						>
 																							{(f) => (
 																								<f.SelectField
-																									label="Emission Type"
-																									placeholder="Velg utslippstype"
+																									label={m["environmental.B4.emissionTypeLabel"]()}
+																									placeholder={m["environmental.B4.emissionTypePlaceholder"]()}
 																									options={EMISSION_TYPES.map(
 																										(t) => ({
 																											label: t,
@@ -165,9 +163,9 @@ export function B4PollutionForm() {
 																						>
 																							{(f) => (
 																								<f.NumberField
-																									label="Amount"
+																									label={m["environmental.B4.Amount"]()}
 																									placeholder="0"
-																									description="Quantity of pollutant emitted"
+																									description={m["environmental.B4.AmountDescription"]()}
 																								/>
 																							)}
 																						</form.AppField>
@@ -177,8 +175,8 @@ export function B4PollutionForm() {
 																						>
 																							{(f) => (
 																								<f.SelectField
-																									label="Unit"
-																									placeholder="Select unit"
+																									label={m["environmental.B4.unit"]()}
+																									placeholder={m["environmental.B4.unitPlaceholder"]()}
 																									options={POLLUTANT_UNITS.map(
 																										(u) => ({
 																											label: u,
@@ -202,7 +200,7 @@ export function B4PollutionForm() {
 																							disabled={status === 'submitted'}
 																						>
 																							<Trash2 className="h-4 w-4" />
-																							Remove
+																							{m["environmental.B4.Remove"]()}
 																						</Button>
 																					</div>
 																				</CardContent>
@@ -225,7 +223,7 @@ export function B4PollutionForm() {
 																			disabled={status === 'submitted'}
 																		>
 																			<Plus className="h-4 w-4 mr-2" />
-																			Add Pollution
+																			{m["environmental.B4.addPollution"]()}
 																		</Button>
 																	</div>
 																)}

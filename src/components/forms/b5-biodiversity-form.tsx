@@ -7,6 +7,7 @@ import {
 	b5BiodiversitySchema,
 } from '@/lib/forms/schemas/b5-biodiversity-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 
 export function B5BiodiversityForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
@@ -49,7 +50,7 @@ export function B5BiodiversityForm() {
 					<form.AppField name="reportingYear">
 						{(field) => (
 							<field.TextField
-								label="Rapporteringsår"
+								label={m["environmental.B5.reportingYearLabel"]()}
 								placeholder="YYYY"
 								hidden
 							/>
@@ -80,7 +81,7 @@ export function B5BiodiversityForm() {
 								}}
 							>
 								{(field) => (
-									<field.SwitchField label="Har virksomheten aktiviteter i eller nær områder med sensitivt biologisk mangfold?" />
+									<field.SwitchField label={m["environmental.B5.label"]()} />
 								)}
 							</form.AppField>
 
@@ -93,8 +94,8 @@ export function B5BiodiversityForm() {
 											<form.AppField name="totalAreaHectares">
 												{(field) => (
 													<field.NumberField
-														label="Totalt areal"
-														unit="hektar"
+														label={m["environmental.B5.totalAreaHectaresLabel"]()}
+														unit={m["environmental.B5.unit"]()}
 													/>
 												)}
 											</form.AppField>
@@ -102,8 +103,8 @@ export function B5BiodiversityForm() {
 											<form.AppField name="protectedAreaHectares">
 												{(field) => (
 													<field.NumberField
-														label="Forseglet areal"
-														unit="hektar"
+														label={m["environmental.B5.protectedAreaHectares"]()}
+														unit={m["environmental.B5.unit"]()}
 													/>
 												)}
 											</form.AppField>
@@ -111,8 +112,8 @@ export function B5BiodiversityForm() {
 											<form.AppField name="nonProtectedAreaHectares">
 												{(field) => (
 													<field.NumberField
-														label="Ikke-forseglet areal"
-														unit="hektar"
+														label={m["environmental.B5.nonProtectedAreaHectares"]()}
+														unit={m["environmental.B5.unit"]()}
 													/>
 												)}
 											</form.AppField>
@@ -125,8 +126,8 @@ export function B5BiodiversityForm() {
 								<form.AppField name="protectedSpeciesCount">
 									{(field) => (
 										<field.TextField
-											label="Beskyttede arter"
-											description="Antall beskyttede arter i driftsområder"
+											label={m["environmental.B5.protectedSpeciesCountLabel"]()}
+											description={m["environmental.B5.protectedSpeciesCountDescription"]()}
 										/>
 									)}
 								</form.AppField>
@@ -134,8 +135,8 @@ export function B5BiodiversityForm() {
 								<form.AppField name="redListedSpeciesCount">
 									{(field) => (
 										<field.TextField
-											label="Rødlistarter"
-											description="Antall rødlistarter påvirket av drift"
+											label={m["environmental.B5.redListedSpeciesCountLabel"]()}
+											description={m["environmental.B5.redListedSpeciesCountDescription"]()}
 										/>
 									)}
 								</form.AppField>

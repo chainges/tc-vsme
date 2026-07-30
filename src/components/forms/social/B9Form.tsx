@@ -7,6 +7,7 @@ import {
 	b9HealthSafetySchema,
 } from '@/lib/forms/schemas/b9-health-safety-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 
 export function B9HealthSafetyForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
@@ -26,7 +27,7 @@ export function B9HealthSafetyForm() {
 	if (isLoading) {
 		return (
 			<div className="flex items-center justify-center p-8 text-muted-foreground">
-				Loading...
+				{m["social.B9.loading"]()}
 			</div>
 		)
 	}
@@ -47,7 +48,7 @@ export function B9HealthSafetyForm() {
 							<form.AppField name="reportingYear">
 								{(field) => (
 									<field.TextField
-										label="Rapporteringsår"
+										label={m["social.B9.reportingYearLabel"]()}
 										placeholder="YYYY"
 										hidden
 									/>
@@ -59,8 +60,8 @@ export function B9HealthSafetyForm() {
 								<form.AppField name="arbeidsulykker">
 									{(field) => (
 										<field.NumberField
-											label="Arbeidsulykker"
-											description="Antall rapporterte arbeidsulykker i perioden"
+											label={m["social.B9.workAccidentsLabel"]()}
+											description={m["social.B9.workAccidentsDescription"]()}
 										/>
 									)}
 								</form.AppField>
@@ -68,8 +69,8 @@ export function B9HealthSafetyForm() {
 								<form.AppField name="sykefravarProsent">
 									{(field) => (
 										<field.NumberField
-											label="Sykefravær"
-											description="Sykefravær i prosent"
+											label={m["social.B9.sickLeaveLabel"]()}
+											description={m["social.B9.sickLeaveDescription"]()}
 											unit="%"
 											step="0.1"
 											min="0"
@@ -84,8 +85,8 @@ export function B9HealthSafetyForm() {
 								<form.AppField name="hmsOpplaering">
 									{(field) => (
 										<field.NumberField
-											label="HMS-opplæring"
-											description="Totalt antall timer med HMS-opplæring"
+											label={m["social.B9.hseTrainingLabel"]()}
+											description={m["social.B9.hseTrainingDescription"]()}
 										/>
 									)}
 								</form.AppField>
@@ -93,8 +94,8 @@ export function B9HealthSafetyForm() {
 								<form.AppField name="omkomne">
 									{(field) => (
 										<field.NumberField
-											label="Omkomne"
-											description="Antall omkomne som følge av arbeidsskader eller arbeidsrelatert helse"
+											label={m["social.B9.fatalitiesLabel"]()}
+											description={m["social.B9.fatalitiesDescription"]()}
 										/>
 									)}
 								</form.AppField>
@@ -104,9 +105,9 @@ export function B9HealthSafetyForm() {
 							<form.AppField name="eventuellUtfyllendeInfo">
 								{(field) => (
 									<field.TextareaField
-										label="Eventuell utfyllende info"
-										placeholder="Beskriv eventuelle ekstraordinære hendelser, forbedringstiltak, eller annen relevant kontekst..."
-										description="Oppgi eventuell tilleggsinformasjon eller forklaringer til helse- og sikkerhetsdata"
+										label={m["social.B9.additionalInfoLabel"]()}
+										placeholder={m["social.B9.additionalInfoPlaceholder"]()}
+										description={m["social.B9.additionalInfoDescription"]()}
 									/>
 								)}
 							</form.AppField>

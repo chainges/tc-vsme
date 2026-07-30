@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/expandable-card-simple'
 import { useOrgGuard } from '@/hooks/use-org-guard'
 import { yearStore } from '@/lib/year-store'
+import { m } from "@/paraglide/messages"
 import { GeneralHelp } from './-initiatives-help'
 
 export const Route = createFileRoute('/_appLayout/app/general/')({
@@ -59,41 +60,36 @@ function GeneralPage() {
 	}
 
 	return (
-		<div className="flex flex-col gap-4 md:grid-cols-1 mt-4 max-w-6xl w-full mx-auto">
-			<h1 className="text-2xl font-bold">General information</h1>
-			<h3 className="text-lg text-muted-foreground">
-				Grunnleggende informasjon om din organisasjon
-			</h3>
+		<div className='flex flex-col gap-4 md:grid-cols-1 mt-4 max-w-6xl w-full mx-auto'>
+			<h1 className='text-2xl font-bold'>{m["general.generalInformation"]()}</h1>
+			<h3 className='text-lg text-muted-foreground'>{m["general.generalInformationDescription"]()}</h3>
 			<FormCard
-				title="Company information"
+				title={m["general.B1.title"]()}
 				updatedDate={formatDate(companyInfo?.lastModifiedAt)}
-				status={(companyInfo?.status ?? 'not_started') as FormStatus}
-				toolTip="Click to learn more"
-				contributor={companyInfo?.contributor || { name: 'Unknown' }}
-				code="B1"
-				module="Basic Module"
+				status={(companyInfo?.status ?? "not_started") as FormStatus}
+				toolTip={m["general.B1.tooltip"]()}
+				contributor={companyInfo?.contributor || { name: "Unknown" }}
+				code='B1'
+				module='Basic Module'
 				version={
-					companyInfo?.versions?.length
-						? companyInfo.versions[companyInfo.versions.length - 1].version
-						: undefined
+					companyInfo?.versions?.length ? companyInfo.versions[companyInfo.versions.length - 1].version : undefined
 				}
 			>
 				<B1GeneralForm />
 			</FormCard>
 			<FormCard
-				title="Sustainability initiatives"
+				title={m["general.B2.title"]()}
 				updatedDate={formatDate(sustainability?.lastModifiedAt)}
-				toolTip="Do you have existing sustainability practices/ policies/ future initiatives that address sustainability issues?"
-				status={(sustainability?.status ?? 'not_started') as FormStatus}
-				contributor={sustainability?.contributor || { name: 'Unknown' }}
-				code="B2"
-				buttonText="Hjelp"
+				toolTip={m["general.B2.tooltip"]()}
+				status={(sustainability?.status ?? "not_started") as FormStatus}
+				contributor={sustainability?.contributor || { name: "Unknown" }}
+				code='B2'
+				buttonText={m["general.B2.buttonText"]()}
 				onClick={() => setInitiativesHelpOpen(true)}
-				module="Basic Module"
+				module='Basic Module'
 				version={
 					sustainability?.versions?.length
-						? sustainability.versions[sustainability.versions.length - 1]
-								.version
+						? sustainability.versions[sustainability.versions.length - 1].version
 						: undefined
 				}
 			>
@@ -102,21 +98,21 @@ function GeneralPage() {
 			<HelpSheet
 				open={isInitiativesHelpOpen}
 				onOpenChange={setInitiativesHelpOpen}
-				title="Overgang til en mer bærekraftig økonomi."
-				description="Retningslinjer og fremtidige initiativer inkluderer hva foretaket gjør for å redusere sine negative påvirkninger og for å forbedre sine positive påvirkninger på mennesker og miljø, for å bidra til en mer bærekraftig økonomi. "
+				title={m["general.help.title"]()}
+				description={m["general.help.description"]()}
 			>
 				<GeneralHelp />
 			</HelpSheet>
 
 			<hr />
 			<FormCard
-				title="Business model"
+				title={m["general.C1.title"]()}
 				updatedDate={formatDate(businessModel?.lastModifiedAt)}
-				toolTip="Click to expand"
-				status={(businessModel?.status ?? 'not_started') as FormStatus}
-				contributor={businessModel?.contributor || { name: 'Unknown' }}
-				code="C1"
-				module="Comprehensive Module"
+				toolTip={m["general.C1.tooltip"]()}
+				status={(businessModel?.status ?? "not_started") as FormStatus}
+				contributor={businessModel?.contributor || { name: "Unknown" }}
+				code='C1'
+				module='Comprehensive Module'
 				version={
 					businessModel?.versions?.length
 						? businessModel.versions[businessModel.versions.length - 1].version

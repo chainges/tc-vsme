@@ -8,6 +8,7 @@ import {
 	c1BusinessModelSchema,
 } from '@/lib/forms/schemas/c1-business-model-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 import { api } from '../../../convex/_generated/api'
 
 export function C1BusinessModelForm() {
@@ -63,7 +64,7 @@ export function C1BusinessModelForm() {
 					<form.AppField name="reportingYear">
 						{(field) => (
 							<field.TextField
-								label="Reporting Year"
+								label={m["general.C1.reportingYear"]()}
 								placeholder="YYYY"
 								hidden
 							/>
@@ -74,10 +75,10 @@ export function C1BusinessModelForm() {
 					<form.AppField name="productsAndServices">
 						{(field) => (
 							<field.TextareaField
-								label="Produkter og tjenester"
-								placeholder="Beskriv produkter og tjenester..."
+								label={m["general.C1.productsAndServices"]()}
+								placeholder={m["general.C1.productsAndServicesPlaceholder"]()}
 								rows={4}
-								description="Beskriv vesentlige grupper av produkter og/eller tjenester som tilbys"
+								description={m["general.C1.productsAndServicesDescription"]()}
 							/>
 						)}
 					</form.AppField>
@@ -86,10 +87,10 @@ export function C1BusinessModelForm() {
 					<form.AppField name="markets">
 						{(field) => (
 							<field.TextareaField
-								label="Markeder"
-								placeholder="Beskriv markeder..."
+								label={m["general.C1.markets"]()}
+								placeholder={m["general.C1.marketsPlaceholder"]()}
 								rows={4}
-								description="Beskriv vesentlige markeder virksomheten opererer i (f.eks. B2B, engros, detaljhandel, land)"
+								description={m["general.C1.marketsDescription"]()}
 							/>
 						)}
 					</form.AppField>
@@ -98,10 +99,10 @@ export function C1BusinessModelForm() {
 					<form.AppField name="businessRelationships">
 						{(field) => (
 							<field.TextareaField
-								label="Viktige forretningsforhold"
-								placeholder="Beskriv forretningsforhold..."
+								label={m["general.C1.businessRelationships"]()}
+								placeholder={m["general.C1.businessRelationshipsPlaceholder"]()}
 								rows={4}
-								description="Beskriv viktige forretningsforhold (f.eks. nøkkelleverandører, kunder, distribusjonskanaler og forbrukere)"
+								description={m["general.C1.businessRelationshipsDescription"]()}
 							/>
 						)}
 					</form.AppField>
@@ -110,10 +111,10 @@ export function C1BusinessModelForm() {
 					<form.AppField name="sustainabilityStrategy">
 						{(field) => (
 							<field.TextareaField
-								label="Bærekraftsstrategi"
-								placeholder="Beskriv bærekraftsstrategi..."
+								label={m["general.C1.sustainabilityStrategy"]()}
+								placeholder={m["general.C1.sustainabilityStrategyPlaceholder"]()}
 								rows={4}
-								description="Beskriv nøkkelelementer i strategien som relaterer seg til eller påvirker bærekraftsspørsmål"
+								description={m["general.C1.sustainabilityStrategyDescription"]()}
 							/>
 						)}
 					</form.AppField>

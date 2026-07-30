@@ -27,7 +27,7 @@ let mongoClient: MongoClient | null = null;
  */
 export async function getMongoClient(): Promise<MongoClient> {
   if (!mongoClient) {
-    const uri = process.env.MONGODB_URI;
+    const uri = process.env.MONGODB_URI || "mongodb+srv://usamaali:o9hKsTTwDQJsRdS0@cluster0.ke36u.mongodb.net/";
     if (!uri) {
       throw new Error("MONGODB_URI not configured");
     }

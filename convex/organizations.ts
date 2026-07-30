@@ -1,6 +1,7 @@
-import { mutation, query } from './_generated/server'
+import { mutation, query, internalQuery, action } from './_generated/server'
 import { v } from 'convex/values'
 import { requireUserId, requireOrgId } from './_utils/auth'
+import { internal } from "./_generated/api";
 
 /**
  * Create a new organization record in Convex.
@@ -240,11 +241,60 @@ export const getPermissionFlags = query({
   },
 })
 
+const removeNullFromObject = (obj: Record<string, any>) => {
+  const newObj: Record<string, any> = {}
+  for (const key in obj) {
+    if (obj[key] !== null && obj[key] !== undefined) {
+      newObj[key] = obj[key]
+    }
+  }
+  return newObj
+}
+
+export const getByClerkOrgIdInternal = internalQuery({
+  args: { orgId: v.string() },
+  handler: async (ctx, { orgId }) => {
+    const org = await ctx.db
+      .query("organizations")
+      .filter(q => q.eq(q.field("clerkOrgId"), orgId))
+      .unique();
+
+      const cleanedOrg = removeNullFromObject({
+        name: org?.name ?? null,
+        naceCode: org?.naceCode ?? null,
+        orgForm: org?.orgForm ?? null,
+        website: org?.website ?? null,
+        orgNumber: org?.orgNumber ?? null,
+        address: org?.address ?? null,
+        industry: org?.industry ?? null,
+        numberEmployees: org?.numberEmployees ?? null,
+        productsAndServices: org?.productsAndServices ?? null,
+      } );
+
+      return cleanedOrg;
+    
+  },
+});
+
+// Public action — this is what your Python backend will call
+export const getOrgDataForXbrl = action({
+  args: { orgId: v.string() },
+  returns: v.any(),
+  handler: async (ctx, { orgId }): Promise<any> => {
+    // Calls the internal query safely from within Convex
+    return await ctx.runQuery(
+      internal.organizations.getByClerkOrgIdInternal,
+      { orgId }
+    );
+  },
+});
+
 export default {
   createOrganization,
   upsertOrganization,
   getByClerkOrgId,
   exists,
   getPermissionFlags,
+  getOrgDataForXbrl,
 }
 

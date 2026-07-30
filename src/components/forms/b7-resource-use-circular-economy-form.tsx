@@ -10,6 +10,7 @@ import {
 	RECYCLED_MATERIAL_UNITS,
 } from '@/lib/forms/schemas/b7-resource-use-circular-economy-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 
 export function B7ResourceUseCircularEconomyForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
@@ -56,7 +57,7 @@ export function B7ResourceUseCircularEconomyForm() {
 					<form.AppField name="reportingYear">
 						{(field) => (
 							<field.TextField
-								label="Rapporteringsår"
+								label={m["environmental.B7.reportingYearLabel"]()}
 								placeholder="YYYY"
 								hidden
 							/>
@@ -67,7 +68,7 @@ export function B7ResourceUseCircularEconomyForm() {
 						<CardContent className="space-y-6">
 							<form.AppField name="applyCircularEconomyPrinciples">
 								{(field) => (
-									<field.SwitchField label="Anvender virksomheten prinsippene for sirkulær økonomi?" />
+									<field.SwitchField label={m["environmental.B7.applyCircularEconomyPrinciples"]()} />
 								)}
 							</form.AppField>
 
@@ -80,7 +81,7 @@ export function B7ResourceUseCircularEconomyForm() {
 									apply && (
 										<form.AppField name="circularEconomyDescription">
 											{(field) => (
-												<field.TextareaField label="Beskriv hvordan virksomheten anvender prinsippene for sirkulær økonomi" />
+												<field.TextareaField label={m["environmental.B7.circularEconomyDescription"]()} />
 											)}
 										</form.AppField>
 									)
@@ -93,7 +94,7 @@ export function B7ResourceUseCircularEconomyForm() {
 						<CardContent className="space-y-6">
 							<form.AppField name="significantMaterialFlows">
 								{(field) => (
-									<field.SwitchField label="Opererer virksomheten i en sektor som anvender betydelige materialstrømmer (f.eks. produksjon, bygg og anlegg, emballasje o.l.)?" />
+									<field.SwitchField label={m["environmental.B7.significantMaterialFlows"]()} />
 								)}
 							</form.AppField>
 
@@ -107,7 +108,7 @@ export function B7ResourceUseCircularEconomyForm() {
 												<div className="space-y-4">
 													<div className="flex items-center justify-between">
 														<h3 className="text-base font-medium">
-															Årlig massestrøm av betydelige materialer
+															{m["environmental.B7.annualMassFlows"]()}
 														</h3>
 														<Button
 															type="button"
@@ -124,7 +125,7 @@ export function B7ResourceUseCircularEconomyForm() {
 															disabled={status === 'submitted'}
 														>
 															<Plus className="h-4 w-4 mr-2" />
-															Legg til materialtype
+															{m["environmental.B7.addMaterialType"]()}
 														</Button>
 													</div>
 
@@ -137,22 +138,22 @@ export function B7ResourceUseCircularEconomyForm() {
 																	>
 																		{(f) => (
 																			<f.TextField
-																				label="Materialtype"
-																				placeholder="f.eks. stål, betong, tre..."
+																				label={m["environmental.B7.materialType"]()}
+																				placeholder={m["environmental.B7.materialTypePlaceholder"]()}
 																			/>
 																		)}
 																	</form.AppField>
 																	<form.AppField
 																		name={`annualMassFlows[${i}].volume`}
 																	>
-																		{(f) => <f.NumberField label="Volum" />}
+																		{(f) => <f.NumberField label={m["environmental.B7.annualMassFlows"]()} />}
 																	</form.AppField>
 																	<form.AppField
 																		name={`annualMassFlows[${i}].unit`}
 																	>
 																		{(f) => (
 																			<f.SelectField
-																				label="Enhet"
+																				label={m["environmental.B7.unit"]()}
 																				options={RECYCLED_MATERIAL_UNITS.map(
 																					(unit) => ({
 																						label: unit,

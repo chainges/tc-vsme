@@ -1,4 +1,3 @@
-import { Link } from '@tanstack/react-router'
 import { useStore as useYearStore } from '@tanstack/react-store'
 import { Info, Plus, Trash2 } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -12,6 +11,7 @@ import {
 	sustainabilityInitiativesSchema,
 } from '@/lib/forms/schemas/b2-sustainability-initiatives-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 
 export function B2SustainabilityInitiativesForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
@@ -38,21 +38,18 @@ export function B2SustainabilityInitiativesForm() {
 
 	return (
 		<>
-			<Alert variant="info" className="mb-6">
+			<Alert variant='info' className='mb-6'>
 				<Info />
-				<AlertTitle>About sustainability initiatives</AlertTitle>
+				<AlertTitle>{m["general.B2.sustainabilityTitle"]()}</AlertTitle>
 				<AlertDescription>
-					The Basic Module only requires a yes/no answer on whether you have measures,
-					guidelines, or future initiatives for transitioning to a more
-					sustainable economy. The Comprehensive Module requires that you provide
-					details and a more comprehensive description of these.{' '}
+					{m["general.B2.sustainabilityDescription"]()}{' '}
 					<a
-						className="underline"
-						rel="noopener noreferrer"
-						target="_blank"
-						href="https://www.efrag.org/en/vsme-supporting-guide-on-disclosure-c2-comprehensive-module-practices-policies-and-future"
+						className='underline'
+						rel='noopener noreferrer'
+						target='_blank'
+						href='https://www.efrag.org/en/vsme-supporting-guide-on-disclosure-c2-comprehensive-module-practices-policies-and-future'
 					>
-						Read more about sustainability initiatives here.
+						{m["general.B2.readMore"]()}
 					</a>
 				</AlertDescription>
 			</Alert>
@@ -64,91 +61,71 @@ export function B2SustainabilityInitiativesForm() {
 						form.handleSubmit()
 					}}
 				>
-					<fieldset disabled={status === 'submitted'} className="space-y-6">
+					<fieldset disabled={status === "submitted"} className='space-y-6'>
 						{/* Hidden reporting year field */}
-						<form.AppField name="reportingYear">
-							{(field) => (
-								<field.TextField
-									label="Reporting Year"
-									placeholder="YYYY"
-									hidden
-								/>
-							)}
+						<form.AppField name='reportingYear'>
+							{(field) => <field.TextField label={m["general.reportingYear"]()} placeholder={"YYYY"} hidden />}
 						</form.AppField>
 
 						{/* Publicly available switch */}
 
 						{/* Initiatives array */}
-						<form.AppField name="initiatives">
+						<form.AppField name='initiatives'>
 							{(field) => (
-								<div className="space-y-4">
+								<div className='space-y-4'>
 									{field.state.value?.length === 0 && (
-										<Card className="bg-muted/30">
-											<CardContent className="pt-6 text-center">
-												<div className="text-4xl mb-2">📋</div>
-												<h3 className="font-medium mb-2">
-													No initiatives added yet
-												</h3>
-												<p className="text-sm text-muted-foreground mb-4">
-													It&apos;s okay if you don&apos;t have any
-													sustainability initiatives to report. You can submit
-													this form empty or add initiatives below.
+										<Card className='bg-muted/30'>
+											<CardContent className='pt-6 text-center'>
+												<div className='text-4xl mb-2'>📋</div>
+												<h3 className='font-medium mb-2'>{m["general.B2.noInitiativesAdded"]()}</h3>
+												<p className='text-sm text-muted-foreground mb-4'>
+													{m["general.B2.noInitiativesAddedDescription"]()}
 												</p>
 											</CardContent>
 										</Card>
 									)}
 
 									{field.state.value?.map((item, i) => (
-										<Card key={item.id} className="relative">
-											<CardContent className="space-y-4">
-												<div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-end">
+										<Card key={item.id} className='relative'>
+											<CardContent className='space-y-4'>
+												<div className='grid grid-cols-1 sm:grid-cols-2 gap-6 items-end'>
 													<form.AppField name={`initiatives[${i}].title`}>
 														{(f) => (
 															<f.ComboboxField
-																label="Initiative Title"
+																label={m["general.B2.initiativeTitle"]()}
 																options={PREDEFINED_TITLES}
-																placeholder="Select or type a custom title..."
-																helperText="💡 Tip: You can type a custom title if none match"
+																placeholder={m["general.B2.initiativePlaceholder"]()}
+																helperText={m["general.B2.initiativeHelperText"]()}
 															/>
 														)}
 													</form.AppField>
-													<form.AppField
-														name={`initiatives[${i}].publiclyAvailable`}
-													>
-														{(field) => (
-															<field.SwitchField label="Publicly available" />
-														)}
+													<form.AppField name={`initiatives[${i}].publiclyAvailable`}>
+														{(field) => <field.SwitchField label={m["general.B2.availablity"]()} />}
 													</form.AppField>
 												</div>
 
 												<form.AppField name={`initiatives[${i}].description`}>
 													{(f) => (
-														<f.TextareaField
-															label="Description"
-															placeholder="Describe the initiative..."
-															rows={3}
-														/>
+														<f.TextareaField label={m["general.B2.initiativeDescriptionLabel"]()} placeholder={m["general.B2.initiativeDescriptionPlaceholder"]()} rows={3} />
 													)}
 												</form.AppField>
 
 												<form.AppField name={`initiatives[${i}].goals`}>
 													{(f) => (
 														<f.TextareaField
-															label="Goals"
-															placeholder="What are the goals of this initiative?"
+															label={m["general.B2.initiativeGoalsLabel"]()}
+															placeholder={m["general.B2.initiativeGoalsPlaceholder"]()}
 															rows={3}
 														/>
 													)}
 												</form.AppField>
 
-												<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-													<form.AppField
-														name={`initiatives[${i}].responsiblePerson`}
-													>
+												<div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
+													<form.AppField name={`initiatives[${i}].responsiblePerson`}>
 														{(f) => (
 															<f.TextField
-																label="Responsible Role"
-																placeholder="CEO, Sustainability Manager, etc..."
+																label={m["general.B2.initiativeResponsibleLabel"]()}
+																placeholder={m["general.B2.initiativeResponsiblePlaceholder"]()}
 															/>
 														)}
 													</form.AppField>
@@ -156,33 +133,33 @@ export function B2SustainabilityInitiativesForm() {
 													<form.AppField name={`initiatives[${i}].status`}>
 														{(f) => (
 															<f.SelectField
-																label="Status"
+																label={m["general.B2.initiativeStatusLabel"]()}
 																options={[
 																	{
-																		label: 'Not Started',
-																		value: 'not_started',
+																		label: `${m["general.B2.initiativeStatusNotStarted"]()}`,
+																		value: "not_started",
 																	},
 																	{
-																		label: 'In Progress',
-																		value: 'in_progress',
+																		label: `${m["general.B2.initiativeStatusInProgress"]()}`,
+																		value: "in_progress",
 																	},
-																	{ label: 'Completed', value: 'completed' },
+																	{ label: `${m["general.B2.initiativeStatusCompleted"]()}`, value: "completed" },
 																]}
 															/>
 														)}
 													</form.AppField>
 												</div>
-												<div className="flex justify-end">
+												<div className='flex justify-end'>
 													<Button
-														type="button"
-														variant="outline"
-														size="sm"
-														className="text-destructive border-destructive/20 hover:bg-destructive/10"
+														type='button'
+														variant='outline'
+														size='sm'
+														className='text-destructive border-destructive/20 hover:bg-destructive/10'
 														onClick={() => field.removeValue(i)}
-														disabled={status === 'submitted'}
+														disabled={status === "submitted"}
 													>
-														<Trash2 className="h-4 w-4" />
-														Remove
+														<Trash2 className='h-4 w-4' />
+														{m["general.B2.Remove"]()}
 													</Button>
 												</div>
 											</CardContent>
@@ -190,24 +167,24 @@ export function B2SustainabilityInitiativesForm() {
 									))}
 
 									<Button
-										type="button"
-										variant="outline"
-										className="w-full"
+										type='button'
+										variant='outline'
+										className='w-full'
 										onClick={() =>
 											field.pushValue({
 												id: crypto.randomUUID(),
-												title: '',
-												description: '',
-												goals: '',
-												responsiblePerson: '',
-												status: 'not_started',
+												title: "",
+												description: "",
+												goals: "",
+												responsiblePerson: "",
+												status: "not_started",
 												publiclyAvailable: false,
 											})
 										}
-										disabled={status === 'submitted'}
+										disabled={status === "submitted"}
 									>
-										<Plus className="h-4 w-4 mr-2" />
-										Add Initiative
+										<Plus className='h-4 w-4 mr-2' />
+										{m["general.B2.addInitiative"]()}
 									</Button>
 								</div>
 							)}
@@ -215,7 +192,7 @@ export function B2SustainabilityInitiativesForm() {
 					</fieldset>
 
 					<FormButtons
-						status={status as 'not_started' | 'draft' | 'submitted'}
+						status={status as "not_started" | "draft" | "submitted"}
 						isSaving={isSaving}
 						onSaveDraft={saveDraft}
 						onSubmit={submit}

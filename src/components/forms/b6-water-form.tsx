@@ -9,6 +9,7 @@ import {
 	b6WaterSchema,
 } from '@/lib/forms/schemas/b6-water-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 
 export function B6WaterManagementForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
@@ -64,7 +65,7 @@ export function B6WaterManagementForm() {
 					<form.AppField name="reportingYear">
 						{(field) => (
 							<field.TextField
-								label="Rapporteringsår"
+								label={m["environmental.B6.reportingYearLabel"]()}
 								placeholder="YYYY"
 								hidden
 							/>
@@ -77,9 +78,9 @@ export function B6WaterManagementForm() {
 								<form.AppField name="waterWithdrawal">
 									{(field) => (
 										<field.NumberField
-											label="Vannuttak"
-											unit="m³"
-											description="Totalt vannuttak i kubikkmeter (alt vann hentet inn fra alle kilder)"
+											label={m["environmental.B6.waterWithdrawal"]()}
+											unit={m["environmental.B6.unit"]()}
+											description={m["environmental.B6.waterWithdrawalDescription"]()}
 										/>
 									)}
 								</form.AppField>
@@ -87,9 +88,9 @@ export function B6WaterManagementForm() {
 								<form.AppField name="waterWithdrawalStress">
 									{(field) => (
 										<field.NumberField
-											label="Vannuttak i vannstressområder"
-											unit="m³"
-											description="Vannuttak fra lokasjoner i områder med høy vannstress (m³)"
+											label={m["environmental.B6.waterWithdrawalStress"]()}
+											unit={m["environmental.B6.unit"]()}
+											description={m["environmental.B6.waterWithdrawalStressDescription"]()}
 										/>
 									)}
 								</form.AppField>
@@ -99,19 +100,18 @@ export function B6WaterManagementForm() {
 								<form.AppField name="waterDischarge">
 									{(field) => (
 										<field.NumberField
-											label="Vannutslipp"
-											unit="m³"
-											description="Totalt vann returnert til miljøet (m³)"
+											label={m["environmental.B6.waterDischarge"]()}
+											unit={m["environmental.B6.unit"]()}
+											description={m["environmental.B6.waterDischargeDescription"]()}
 										/>
 									)}
 								</form.AppField>
 
 								<NumberFieldReadOnly
-									label="Vannforbruk"
-									unit="m³"
+									label={m["environmental.B6.waterConsumptionLabel"]()}
+									unit={m["environmental.B6.unit"]()}
 									value={waterConsumption}
-									disabled
-									description="Beregnet: vannuttak minus vannutslipp"
+									description={m["environmental.B6.waterConsumptionDescription"]()}
 								/>
 							</div>
 						</CardContent>

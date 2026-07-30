@@ -7,6 +7,7 @@ import {
 	c8SectorInvolvementSchema,
 } from '@/lib/forms/schemas/c8-sector-involvement-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 
 export function C8SectorInvolvementForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
@@ -33,7 +34,7 @@ export function C8SectorInvolvementForm() {
 	if (isLoading) {
 		return (
 			<div className="flex items-center justify-center p-8 text-muted-foreground">
-				Loading...
+				{m["governance.C8.loading"]()}
 			</div>
 		)
 	}
@@ -54,7 +55,7 @@ export function C8SectorInvolvementForm() {
 							<form.AppField name="reportingYear">
 								{(field) => (
 									<field.TextField
-										label="Rapporteringsår"
+										label={m["governance.C8.reportingYearLabel"]()}
 										placeholder="YYYY"
 										hidden
 									/>
@@ -62,7 +63,7 @@ export function C8SectorInvolvementForm() {
 							</form.AppField>
 
 							<div className="font-semibold">
-								Inntekter fra spesifikke sektorer
+								{m["governance.C8.sectorRevenueTitle"]()}
 							</div>
 
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -82,7 +83,7 @@ export function C8SectorInvolvementForm() {
 										}}
 									>
 										{(field) => (
-											<field.CheckboxField label="Controversial Weapons" />
+											<field.CheckboxField label={m["governance.C8.controversialWeaponsLabel"]()} />
 										)}
 									</form.AppField>
 
@@ -94,9 +95,9 @@ export function C8SectorInvolvementForm() {
 												<form.AppField name="controversialWeaponsRevenue">
 													{(field) => (
 														<field.NumberField
-															label="Controversial Weapons Revenue"
+															label={m["governance.C8.controversialWeaponsRevenueLabel"]()}
 															unit="NOK"
-															description="Total revenue from controversial weapons-related activities"
+															description={m["governance.C8.controversialWeaponsRevenueDescription"]()}
 														/>
 													)}
 												</form.AppField>
@@ -124,7 +125,7 @@ export function C8SectorInvolvementForm() {
 											},
 										}}
 									>
-										{(field) => <field.CheckboxField label="Fossil Fuels" />}
+										{(field) => <field.CheckboxField label={m["governance.C8.fossilFuelsLabel"]()} />}
 									</form.AppField>
 
 									<form.Subscribe
@@ -136,17 +137,17 @@ export function C8SectorInvolvementForm() {
 													<form.AppField name="fossilFuelRevenue">
 														{(field) => (
 															<field.NumberField
-																label="Fossil Fuel Revenue"
+																label={m["governance.C8.fossilFuelRevenueLabel"]()}
 																unit="NOK"
-																description="Total revenue from fossil fuel-related activities"
+																description={m["governance.C8.fossilFuelRevenueDescription"]()}
 															/>
 														)}
 													</form.AppField>
 													<form.AppField name="fossilFuelsBreakdown">
 														{(field) => (
 															<field.TextareaField
-																label="Fossil Fuels Breakdown"
-																description="Detailed breakdown of fossil fuel activities"
+																label={m["governance.C8.fossilFuelsBreakdownLabel"]()}
+																description={m["governance.C8.fossilFuelsBreakdownDescription"]()}
 																rows={3}
 															/>
 														)}
@@ -173,7 +174,7 @@ export function C8SectorInvolvementForm() {
 										}}
 									>
 										{(field) => (
-											<field.CheckboxField label="Agricultural Chemicals" />
+											<field.CheckboxField label={m["governance.C8.agriculturalChemicalsLabel"]()} />
 										)}
 									</form.AppField>
 
@@ -185,9 +186,9 @@ export function C8SectorInvolvementForm() {
 												<form.AppField name="agriculturalChemicalsRevenue">
 													{(field) => (
 														<field.NumberField
-															label="Agricultural Chemicals Revenue"
+															label={m["governance.C8.agriculturalChemicalsRevenueLabel"]()}
 															unit="NOK"
-															description="Total revenue from agricultural chemicals-related activities"
+															description={m["governance.C8.agriculturalChemicalsRevenueDescription"]()}
 														/>
 													)}
 												</form.AppField>
@@ -200,7 +201,7 @@ export function C8SectorInvolvementForm() {
 								<div className="space-y-4 pt-1">
 									<form.AppField name="euBenchmarksExclusion">
 										{(field) => (
-											<field.CheckboxField label="EU Benchmarks Exclusion" />
+											<field.CheckboxField label={m["governance.C8.euBenchmarksExclusionLabel"]()} />
 										)}
 									</form.AppField>
 								</div>

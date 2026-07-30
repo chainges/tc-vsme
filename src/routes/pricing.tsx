@@ -48,13 +48,13 @@ function PricingPage() {
 							variant="outline"
 							className="mb-4 border-sky/50 text-sky bg-sky/10 backdrop-blur-sm"
 						>
-							{m.pricing_page_title()}
+							{m["pricing.page_title"]()}
 						</Badge>
 						<h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-							{m.pricing_page_title()}
+							{m["pricing.page_title"]()}
 						</h1>
 						<p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-							{m.pricing_page_subtitle()}
+							{m["pricing.page_subtitle"]()}
 						</p>
 					</div>
 
@@ -65,15 +65,15 @@ function PricingPage() {
 								!isAnnual ? 'text-foreground' : 'text-muted-foreground'
 							}`}
 						>
-							{m.pricing_billing_monthly()}
+							{m["pricing.billing_monthly"]()}
 						</span>
 						<Switch
 							checked={isAnnual}
 							onCheckedChange={toggleBilling}
 							aria-label={
 								isAnnual
-									? m.pricing_billing_annual()
-									: m.pricing_billing_monthly()
+									? m["pricing.billing_annual"]()
+									: m["pricing.billing_monthly"]()
 							}
 						/>
 						<span
@@ -81,11 +81,11 @@ function PricingPage() {
 								isAnnual ? 'text-foreground' : 'text-muted-foreground'
 							}`}
 						>
-							{m.pricing_billing_annual()}
+							{m["pricing.billing_annual"]()}
 						</span>
 						{isAnnual && (
 							<Badge className="bg-teal-600 text-white border-0">
-								{m.pricing_save_annual()}
+								{m["pricing.save_annual"]()}
 							</Badge>
 						)}
 					</div>
@@ -94,39 +94,39 @@ function PricingPage() {
 					<div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
 						{/* Starter Plan */}
 						<PricingCard
-							planName={m.pricing_plan_starter_name()}
-							planDescription={m.pricing_plan_starter_description()}
+							planName={m["pricing.plan_starter_name"]()}
+							planDescription={m["pricing.plan_starter_description"]()}
 							price={
 								isAnnual
-									? m.pricing_plan_starter_annual()
-									: m.pricing_plan_starter_monthly()
+									? m["pricing.plan_starter_annual"]()
+									: m["pricing.plan_starter_monthly"]()
 							}
-							perMonth={m.pricing_plan_starter_per_month()}
-							ctaText={m.pricing_plan_starter_cta()}
+							perMonth={m["pricing.plan_starter_per_month"]()}
+							ctaText={m["pricing.plan_starter_cta"]()}
 							features={[
 								{
 									icon: <BarChart3 className="h-4 w-4" />,
-									text: m.pricing_feature_basic_measurements(),
+									text: m["pricing.feature_basic_measurements"](),
 								},
 								{
 									icon: <Users className="h-4 w-4" />,
-									text: m.pricing_feature_one_user(),
+									text: m["pricing.feature_one_user"](),
 								},
 								{
 									icon: <FileBarChart className="h-4 w-4" />,
-									text: m.pricing_feature_standard_templates(),
+									text: m["pricing.feature_standard_templates"](),
 								},
 								{
 									icon: <Check className="h-4 w-4" />,
-									text: m.pricing_feature_export_reports(),
+									text: m["pricing.feature_export_reports"](),
 								},
 								{
 									icon: <Zap className="h-4 w-4" />,
-									text: m.pricing_feature_basic_analytics(),
+									text: m["pricing.feature_basic_analytics"](),
 								},
 								{
 									icon: <Shield className="h-4 w-4" />,
-									text: m.pricing_feature_progress_tracking(),
+									text: m["pricing.feature_progress_tracking"](),
 								},
 							]}
 							isRecommended={false}
@@ -135,81 +135,81 @@ function PricingPage() {
 
 						{/* Professional Plan - Recommended */}
 						<PricingCard
-							planName={m.pricing_plan_professional_name()}
-							planDescription={m.pricing_plan_professional_description()}
+							planName={m["pricing.plan_professional_name"]()}
+							planDescription={m["pricing.plan_professional_description"]()}
 							price={
 								isAnnual
-									? m.pricing_plan_professional_annual()
-									: m.pricing_plan_professional_monthly()
+									? m["pricing.plan_professional_annual"]()
+									: m["pricing.plan_professional_monthly"]()
 							}
-							perMonth={m.pricing_plan_professional_per_month()}
-							ctaText={m.pricing_plan_professional_cta()}
+							perMonth={m["pricing.plan_professional_per_month"]()}
+							ctaText={m["pricing.plan_professional_cta"]()}
 							features={[
 								{
 									icon: <Check className="h-4 w-4" />,
-									text: m.pricing_feature_all_basic(),
+									text: m["pricing.feature_all_basic"](),
 								},
 								{
 									icon: <BarChart3 className="h-4 w-4" />,
-									text: m.pricing_feature_full_climate(),
+									text: m["pricing.feature_full_climate"](),
 								},
 								{
 									icon: <Users className="h-4 w-4" />,
-									text: m.pricing_feature_three_users(),
+									text: m["pricing.feature_three_users"](),
 								},
 								{
 									icon: <FileBarChart className="h-4 w-4" />,
-									text: m.pricing_feature_custom_templates(),
+									text: m["pricing.feature_custom_templates"](),
 								},
 								{
 									icon: <Shield className="h-4 w-4" />,
-									text: m.pricing_feature_priority_support(),
+									text: m["pricing.feature_priority_support"](),
 								},
 								{
 									icon: <Zap className="h-4 w-4" />,
-									text: m.pricing_feature_advanced_analytics(),
+									text: m["pricing.feature_advanced_analytics"](),
 								},
 							]}
 							isRecommended={true}
-							recommendedLabel={m.pricing_plan_recommended()}
+							recommendedLabel={m["pricing.plan_recommended"]()}
 							variant="default"
 						/>
 
 						{/* Enterprise Plan */}
 						<PricingCard
-							planName={m.pricing_plan_enterprise_name()}
-							planDescription={m.pricing_plan_enterprise_description()}
+							planName={m["pricing.plan_enterprise_name"]()}
+							planDescription={m["pricing.plan_enterprise_description"]()}
 							price={
 								isAnnual
-									? m.pricing_plan_enterprise_annual()
-									: m.pricing_plan_enterprise_monthly()
+									? m["pricing.plan_enterprise_annual"]()
+									: m["pricing.plan_enterprise_monthly"]()
 							}
 							perMonth=""
-							ctaText={m.pricing_plan_enterprise_cta()}
+							ctaText={m["pricing.plan_enterprise_cta"]()}
 							features={[
 								{
 									icon: <Check className="h-4 w-4" />,
-									text: m.pricing_feature_all_features(),
+									text: m["pricing.feature_all_features"](),
 								},
 								{
 									icon: <Users className="h-4 w-4" />,
-									text: m.pricing_feature_unlimited_users(),
+									text: m["pricing.feature_unlimited_users"](),
 								},
 								{
 									icon: <Zap className="h-4 w-4" />,
-									text: m.pricing_feature_custom_integrations(),
+									text: m["pricing.feature_custom_integrations"](),
 								},
 								{
 									icon: <Shield className="h-4 w-4" />,
-									text: m.pricing_feature_dedicated_support(),
+									text: m["pricing.feature_dedicated_support"](),
 								},
 								{
 									icon: <BarChart3 className="h-4 w-4" />,
-									text: m.pricing_feature_custom_analytics(),
+									text: m["pricing.feature_custom_analytics"](),
 								},
 								{
 									icon: <FileBarChart className="h-4 w-4" />,
-									text: m.pricing_feature_realtime_updates(),
+									text: m["pricing.feature_realtime_updates"](),
 								},
 							]}
 							isRecommended={false}
@@ -230,30 +230,30 @@ function PricingPage() {
 							FAQ
 						</Badge>
 						<h2 className="text-3xl md:text-4xl font-bold mb-4">
-							{m.pricing_faq_title()}
+							{m["pricing.faq_title"]()}
 						</h2>
-						<p className="text-muted-foreground">{m.pricing_faq_subtitle()}</p>
+						<p className="text-muted-foreground">{m["pricing.faq_subtitle"]()}</p>
 					</div>
 					<Accordion type="single" collapsible className="w-full">
 						<AccordionItem value="item-1">
-							<AccordionTrigger>{m.pricing_faq_q1()}</AccordionTrigger>
-							<AccordionContent>{m.pricing_faq_a1()}</AccordionContent>
+							<AccordionTrigger>{m["pricing.faq_q1"]()}</AccordionTrigger>
+							<AccordionContent>{m["pricing.faq_a1"]()}</AccordionContent>
 						</AccordionItem>
 						<AccordionItem value="item-2">
-							<AccordionTrigger>{m.pricing_faq_q2()}</AccordionTrigger>
-							<AccordionContent>{m.pricing_faq_a2()}</AccordionContent>
+							<AccordionTrigger>{m["pricing.faq_q2"]()}</AccordionTrigger>
+							<AccordionContent>{m["pricing.faq_a2"]()}</AccordionContent>
 						</AccordionItem>
 						<AccordionItem value="item-3">
-							<AccordionTrigger>{m.pricing_faq_q3()}</AccordionTrigger>
-							<AccordionContent>{m.pricing_faq_a3()}</AccordionContent>
+							<AccordionTrigger>{m["pricing.faq_q3"]()}</AccordionTrigger>
+							<AccordionContent>{m["pricing.faq_a3"]()}</AccordionContent>
 						</AccordionItem>
 						<AccordionItem value="item-4">
-							<AccordionTrigger>{m.pricing_faq_q4()}</AccordionTrigger>
-							<AccordionContent>{m.pricing_faq_a4()}</AccordionContent>
+							<AccordionTrigger>{m["pricing.faq_q4"]()}</AccordionTrigger>
+							<AccordionContent>{m["pricing.faq_a4"]()}</AccordionContent>
 						</AccordionItem>
 						<AccordionItem value="item-5">
-							<AccordionTrigger>{m.pricing_faq_q5()}</AccordionTrigger>
-							<AccordionContent>{m.pricing_faq_a5()}</AccordionContent>
+							<AccordionTrigger>{m["pricing.faq_q5"]()}</AccordionTrigger>
+							<AccordionContent>{m["pricing.faq_a5"]()}</AccordionContent>
 						</AccordionItem>
 					</Accordion>
 				</div>

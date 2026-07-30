@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/tooltip'
 import { useExpandable } from '@/hooks/use-expandable'
 import { cn } from '@/lib/utils'
+import { m } from "@/paraglide/messages"
 
 export type FormStatus = 'not_started' | 'draft' | 'submitted'
 
@@ -68,6 +69,17 @@ export function FormCard({
 	const { isExpanded, toggleExpand } = useExpandable()
 	const contentRef = useRef<HTMLDivElement>(null)
 	const hasHelpButton = Boolean(buttonText)
+
+	const getModuleLabel = (type: 'Basic Module' | 'Comprehensive Module') => {
+		switch (type) {
+			case 'Basic Module':
+				return m["general.basicModule"]()
+			case 'Comprehensive Module':
+				return m["general.comprehensiveModule"]()
+			default:
+				return ''
+		}
+	}
 
 	return (
 		<Card
@@ -164,7 +176,7 @@ export function FormCard({
 											'bg-primary text-primary-foreground',
 									)}
 								>
-									{module}
+									{getModuleLabel(module)}
 								</Badge>
 							)}
 						</div>

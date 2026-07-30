@@ -12,6 +12,7 @@ import {
 	b3EnergyEmissionsSchema,
 } from '@/lib/forms/schemas/b3-energy-emissions-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 import { api } from '../../../convex/_generated/api'
 import type { FieldChange, FormVersion } from '../../../convex/forms/_utils'
 import {
@@ -213,7 +214,7 @@ export function B3EnergyEmissionsForm() {
 	if (isLoading || isFetchingMongo) {
 		return (
 			<div className="p-8 text-center text-muted-foreground">
-				Loading form data...
+				{m["environmental.B3.loadingFormData"]()}
 			</div>
 		)
 	}
@@ -231,16 +232,16 @@ export function B3EnergyEmissionsForm() {
 					<fieldset disabled={status === 'submitted'} className="space-y-6">
 						<Card>
 							<CardHeader>
-								<CardTitle>Energy Consumption</CardTitle>
+								<CardTitle>{m["environmental.B3.energyConsumptionTitle"]()}</CardTitle>
 								<CardDescription>
-									Report your energy consumption data for the reporting year.
+									{m["environmental.B3.energyConsumptionDescription"]()}
 								</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-6">
 								<form.AppField name="reportingYear">
 									{(field) => (
 										<field.TextField
-											label="Rapporteringsår"
+											label={m["environmental.B3.reportingYearLabel"]()}
 											placeholder="YYYY"
 											hidden
 										/>
@@ -251,9 +252,9 @@ export function B3EnergyEmissionsForm() {
 									<form.AppField name="renewableElectricity">
 										{(field) => (
 											<field.NumberField
-												label="Renewable Electricity"
+												label={m["environmental.B3.renewableElectricityLabel"]()}
 												unit="kWh"
-												description="Total electricity consumption from renewable sources like solar, wind, and hydro"
+												description={m["environmental.B3.renewableElectricityDescription"]()}
 											/>
 										)}
 									</form.AppField>
@@ -261,9 +262,9 @@ export function B3EnergyEmissionsForm() {
 									<form.AppField name="nonRenewableElectricity">
 										{(field) => (
 											<field.NumberField
-												label="Non-Renewable Electricity"
+												label={m["environmental.B3.nonRenewableElectricityLabel"]()}
 												unit="kWh"
-												description="Total electricity consumption from non-renewable sources like coal and gas"
+												description={m["environmental.B3.nonRenewableElectricityDescription"]()}
 											/>
 										)}
 									</form.AppField>
@@ -271,9 +272,9 @@ export function B3EnergyEmissionsForm() {
 									<form.AppField name="stationaryCombustion">
 										{(field) => (
 											<field.NumberField
-												label="Stationary Combustion"
+												label={m["environmental.B3.stationaryCombustionLabel"]()}
 												unit="kWh"
-												description="Energy consumption from stationary sources like boilers and furnaces"
+												description={m["environmental.B3.stationaryCombustionDescription"]()}
 											/>
 										)}
 									</form.AppField>
@@ -281,9 +282,9 @@ export function B3EnergyEmissionsForm() {
 									<form.AppField name="mobileCombustion">
 										{(field) => (
 											<field.NumberField
-												label="Mobile Combustion"
+												label={m["environmental.B3.mobileCombustionLabel"]()}
 												unit="kWh"
-												description="Energy consumption from mobile sources like vehicles and machinery"
+												description={m["environmental.B3.mobileCombustionDescription"]()}
 											/>
 										)}
 									</form.AppField>
@@ -291,9 +292,9 @@ export function B3EnergyEmissionsForm() {
 									<form.AppField name="renewableFuels">
 										{(field) => (
 											<field.NumberField
-												label="Renewable Fuels"
+												label={m["environmental.B3.renewableFuelsLabel"]()}
 												unit="kWh"
-												description="Energy from fuel consumption from renewable sources like biomass, biogas, and biofuels."
+												description={m["environmental.B3.renewableFuelsDescription"]()}
 											/>
 										)}
 									</form.AppField>
@@ -301,27 +302,27 @@ export function B3EnergyEmissionsForm() {
 									<form.AppField name="otherEnergySources">
 										{(field) => (
 											<field.NumberField
-												label="Other Energy Sources"
+												label={m["environmental.B3.otherEnergySourcesLabel"]()}
 												unit="kWh"
-												description="Energy consumption from other sources like district heat and cooling."
+												description={m["environmental.B3.otherEnergySourcesDescription"]()}
 											/>
 										)}
 									</form.AppField>
 									<form.AppField name="selfGeneratedEnergy">
 										{(field) => (
 											<field.NumberField
-												label="Self-Generated Electricity"
+												label={m["environmental.B3.selfGeneratedElectricityLabel"]()}
 												unit="kWh"
-												description="Energy generated by the organization itself, e.g. from solar or wind power."
+												description={m["environmental.B3.selfGeneratedElectricityDescription"]()}
 											/>
 										)}
 									</form.AppField>
 									<form.AppField name="totalEnergyConsumption">
 										{(field) => (
 											<field.NumberField
-												label="Total Energy Consumption"
+												label={m["environmental.B3.totalEnergyConsumptionLabel"]()}
 												unit="kWh"
-												description="Total energy consumption from all sources. Should be the sum of all the above fields."
+												description={m["environmental.B3.totalEnergyConsumptionDescription"]()}
 											/>
 										)}
 									</form.AppField>
@@ -329,19 +330,16 @@ export function B3EnergyEmissionsForm() {
 
 								<Alert variant="info" className="mb-6 border-l-4">
 									<Info />
-									<AlertTitle>Om energiberegninger</AlertTitle>
-									<AlertDescription>
-										Det skal rapporteres på energibruk fra elektrisitet og
-										drivstoff. Fornybart og fossilt. Stasjonær og mobil
-										forbrenning ansees her som fossilt. Andre energikilder og
-										egenprodusert ansees her som fornybart.{' '}
+									<AlertTitle>{m["environmental.B3.energyCalculationsTitle"]()}</AlertTitle>
+									<AlertDescription className="text-sm text-white!">
+										{m["environmental.B3.energyCalculationsDescription"]()} {" "}
 										<a
 											className="underline"
 											rel="noopener noreferrer"
 											target="_blank"
 											href="https://www.efrag.org/en/vsme-supporting-guide-on-disclosure-c2-comprehensive-module-practices-policies-and-future"
 										>
-											Her kan du gjøre beregninger.
+											{m["environmental.B3.energyCalculationsLinkText"]()}
 										</a>
 									</AlertDescription>
 								</Alert>
@@ -354,10 +352,10 @@ export function B3EnergyEmissionsForm() {
 									<form.AppField name="emissionsIntensity">
 										{(field) => (
 											<field.NumberField
-												label="Emissions Intensity"
+												label={m["environmental.B3.emissionsIntensityLabel"]()}
 												unit="kgCO₂e/tNOK"
 												step="0.01"
-												description="Total emissions per unit of revenue (kgCO₂e/tNOK)"
+												description={m["environmental.B3.emissionsIntensityDescription"]()}
 											/>
 										)}
 									</form.AppField>
@@ -365,10 +363,10 @@ export function B3EnergyEmissionsForm() {
 									<form.AppField name="scope1Emissions">
 										{(field) => (
 											<field.NumberField
-												label="Scope 1 Emissions"
+												label={m["environmental.B3.scope1EmissionsLabel"]()}
 												unit="tCO₂e"
 												step="0.001"
-												description="Direct emissions from owned or controlled sources"
+												description={m["environmental.B3.scope1EmissionsDescription"]()}
 											/>
 										)}
 									</form.AppField>
@@ -376,10 +374,10 @@ export function B3EnergyEmissionsForm() {
 									<form.AppField name="scope2EmissionsLocationBased">
 										{(field) => (
 											<field.NumberField
-												label="Scope 2 Emissions (Location-based)"
+												label={m["environmental.B3.scope2EmissionsLocationBasedLabel"]()}
 												unit="tCO₂e"
 												step="0.001"
-												description="Indirect emissions using average grid emission factors"
+												description={m["environmental.B3.scope2EmissionsLocationBasedDescription"]()}
 											/>
 										)}
 									</form.AppField>
@@ -387,10 +385,10 @@ export function B3EnergyEmissionsForm() {
 									<form.AppField name="scope2EmissionsMarketBased">
 										{(field) => (
 											<field.NumberField
-												label="Scope 2 Emissions (Market-based)"
+												label={m["environmental.B3.scope2EmissionsMarketBasedLabel"]()}
 												unit="tCO₂e"
 												step="0.001"
-												description="Indirect emissions using supplier-specific emission factors"
+												description={m["environmental.B3.scope2EmissionsMarketBasedDescription"]()}
 											/>
 										)}
 									</form.AppField>
@@ -400,9 +398,9 @@ export function B3EnergyEmissionsForm() {
 									<form.AppField name="climateDataCollectionMethod">
 										{(field) => (
 											<field.TextareaField
-												label="Climate data collection method"
-												placeholder="E.g. accounting data, measurements, estimates, third-party tools..."
-												description="Describe how climate data was collected and calculated"
+												label={m["environmental.B3.climateDataCollectionMethodLabel"]()}
+												placeholder={m["environmental.B3.climateDataCollectionMethodPlaceholder"]()}
+												description={m["environmental.B3.climateDataCollectionMethodDescription"]()}
 											/>
 										)}
 									</form.AppField>
@@ -410,9 +408,9 @@ export function B3EnergyEmissionsForm() {
 									<form.AppField name="dataUncertainty">
 										{(field) => (
 											<field.TextareaField
-												label="Data uncertainty"
-												placeholder="E.g. estimated values, missing data for parts of the year..."
-												description="Describe any uncertainties or limitations in the climate data"
+												label={m["environmental.B3.dataUncertaintyLabel"]()}
+												placeholder={m["environmental.B3.dataUncertaintyPlaceholder"]()}
+												description={m["environmental.B3.dataUncertaintyDescription"]()}
 											/>
 										)}
 									</form.AppField>
@@ -439,7 +437,7 @@ export function B3EnergyEmissionsForm() {
 							<AccordionTrigger className="hover:no-underline py-0">
 								<h3 className="text-lg font-medium flex items-center gap-2">
 									<History className="h-5 w-5" />
-									Version History
+									{m["environmental.B3.versionHistoryTitle"]()}
 								</h3>
 							</AccordionTrigger>
 							<AccordionContent className="pt-4">
@@ -453,7 +451,7 @@ export function B3EnergyEmissionsForm() {
 											>
 												<div className="flex justify-between items-start mb-2">
 													<div className="font-medium">
-														Version {version.version}
+														{m["environmental.B3.versionLabel"]({ version: version.version })}
 													</div>
 													<div className="flex gap-3 items-center ml-auto">
 														<div className="text-muted-foreground text-xs font-mono">
@@ -466,7 +464,7 @@ export function B3EnergyEmissionsForm() {
 															onClick={() => rollback(version.version)}
 															disabled={isSaving || status === 'submitted'}
 														>
-															Rull tilbake
+															{m["environmental.B3.rollbackButton"]()}
 														</Button>
 													</div>
 												</div>
@@ -477,14 +475,14 @@ export function B3EnergyEmissionsForm() {
 																(change: FieldChange, i: number) => (
 																	<li key={`${change.field}-${i}`}>
 																		{change.field === '_rollback'
-																			? `Rolled back to version ${change.newValue}`
-																			: `Changed ${change.field}`}
+																			? m["environmental.B3.rolledBackToVersion"]({ version: String(change.newValue) })
+																			: m["environmental.B3.changedField"]({ field: change.field })}
 																	</li>
 																),
 															)}
 														</ul>
 													) : (
-														<span className="italic">No changes recorded</span>
+														<span className="italic">{m["environmental.B3.noChangesRecorded"]()}</span>
 													)}
 												</div>
 											</div>

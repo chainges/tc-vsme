@@ -8,6 +8,7 @@ import {
 	c7SeriousHumanRightsSchema,
 } from '@/lib/forms/schemas/c7-serious-human-rights-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 
 const INCIDENT_ITEMS = [
 	{
@@ -104,60 +105,44 @@ export function C7SeriousHumanRightsForm() {
 			>
 				<Card>
 					<CardContent>
-						<fieldset disabled={status === 'submitted'} className="space-y-6">
+						<fieldset disabled={status === "submitted"} className='space-y-6'>
 							{/* Hidden reporting year */}
-							<form.AppField name="reportingYear">
-								{(field) => (
-									<field.TextField
-										label="Rapporteringsår"
-										placeholder="YYYY"
-										hidden
-									/>
-								)}
+							<form.AppField name='reportingYear'>
+								{(field) => <field.TextField label={m["social.C7.reportingYearLabel"]()} placeholder='YYYY' hidden />}
 							</form.AppField>
 
 							{/* (a) Confirmed incidents in own workforce */}
-							<div className="flex flex-col items-start gap-3">
-								<h3 className="text-base font-semibold">
-									Confirmed Incidents – Own Workforce
-								</h3>
-								<p className="text-sm text-muted-foreground">
-									Does the undertaking have confirmed incidents in its own
-									workforce related to:
+							<div className='flex flex-col items-start gap-3'>
+								<h3 className='text-base font-semibold'>{m["social.C7.confirmedIncidentsOwnWorkforce"]()}</h3>
+								<p className='text-sm text-muted-foreground'>
+									{m["social.C7.confirmedIncidentsOwnWorkforceDescription"]()}
 								</p>
 							</div>
 
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
 								{INCIDENT_ITEMS.map((item) => (
-									<div key={item.boolField} className="flex flex-col gap-2">
+									<div key={item.boolField} className='flex flex-col gap-2'>
 										<form.AppField
 											name={item.boolField}
 											listeners={{
 												onChange: ({ value, fieldApi }) => {
 													if (!value) {
-														fieldApi.form.setFieldValue(item.measuresField, '')
+														fieldApi.form.setFieldValue(item.measuresField, "")
 													}
 												},
 											}}
 										>
-											{(field) => (
-												<field.CheckboxField
-													label={item.label}
-													description={item.description}
-												/>
-											)}
+											{(field) => <field.CheckboxField label={item.label} description={item.description} />}
 										</form.AppField>
 
-										<form.Subscribe
-											selector={(state) => state.values[item.boolField]}
-										>
+										<form.Subscribe selector={(state) => state.values[item.boolField]}>
 											{(isChecked) =>
 												isChecked ? (
 													<form.AppField name={item.measuresField}>
 														{(field) => (
 															<field.TextareaField
 																label={item.measuresLabel}
-																placeholder="Describe the measures taken to address this incident..."
+																placeholder='Describe the measures taken to address this incident...'
 																rows={3}
 															/>
 														)}
@@ -170,45 +155,33 @@ export function C7SeriousHumanRightsForm() {
 							</div>
 
 							{/* (c) Value chain / affected communities / consumers incidents */}
-							<div className="flex flex-col items-start gap-3 pt-4 border-t">
-								<h3 className="text-base font-semibold">
-									Incidents in Value Chain
-								</h3>
+							<div className='flex flex-col items-start gap-3 pt-4 border-t'>
+								<h3 className='text-base font-semibold'>{m["social.C7.incidentsInValueChain"]()}</h3>
 
 								<form.AppField
-									name="hasValueChainIncidents"
+									name='hasValueChainIncidents'
 									listeners={{
 										onChange: ({ value, fieldApi }) => {
 											if (!value) {
-												fieldApi.form.setFieldValue(
-													'valueChainIncidentsDescription',
-													'',
-												)
+												fieldApi.form.setFieldValue("valueChainIncidentsDescription", "")
 											}
 										},
 									}}
 								>
 									{(field) => (
-										<field.SwitchField
-											label=""
-											description="Is the undertaking aware of any confirmed incidents involving workers in the value chain, affected communities, consumers and end-users?"
-										/>
+										<field.SwitchField label='' description={m["social.C7.incidentsInValueChainDescription"]()} />
 									)}
 								</form.AppField>
-								<span className="text-sm">
-									{hasValueChainIncidents ? 'Yes' : 'No'}
-								</span>
+								<span className='text-sm'>{hasValueChainIncidents ? m["social.C7.yes"]() : m["social.C7.no"]()}</span>
 
-								<form.Subscribe
-									selector={(state) => state.values.hasValueChainIncidents}
-								>
+								<form.Subscribe selector={(state) => state.values.hasValueChainIncidents}>
 									{(hasIncidents) =>
 										hasIncidents ? (
-											<form.AppField name="valueChainIncidentsDescription">
+											<form.AppField name='valueChainIncidentsDescription'>
 												{(field) => (
 													<field.TextareaField
-														label="Specify incidents"
-														placeholder="Describe the confirmed incidents involving workers in the value chain, affected communities, consumers and end-users..."
+														label={m["social.C7.specifyIncidents"]()}
+														placeholder={m["social.C7.specifyIncidentsDescription"]()}
 														rows={4}
 													/>
 												)}
@@ -222,7 +195,7 @@ export function C7SeriousHumanRightsForm() {
 				</Card>
 
 				<FormButtons
-					status={status as 'not_started' | 'draft' | 'submitted'}
+					status={status as "not_started" | "draft" | "submitted"}
 					isSaving={isSaving}
 					onSaveDraft={saveDraft}
 					onSubmit={submit}

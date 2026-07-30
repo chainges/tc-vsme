@@ -24,6 +24,8 @@ import {
 	b8WorkforceSchema,
 } from '@/lib/forms/schemas/b8-workforce-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from "@/paraglide/messages"
+
 
 interface EmployeeCountAlertProps {
 	form: AnyFormApi
@@ -82,7 +84,7 @@ interface B8WorkforceFormProps {
 export function B8WorkforceForm({
 	totalEmployees,
 	companyCountry,
-	generalFormData,
+	generalFormData
 }: B8WorkforceFormProps) {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
 	const [isUpdatingCompany, setIsUpdatingCompany] = useState(false)
@@ -182,7 +184,7 @@ export function B8WorkforceForm({
 	}
 	if (requiresTurnover && !turnoverComplete) {
 		submitDisabledReasons.push(
-			'Turnover rate is required for companies with 50+ employees. Fill in Employees Left, Employees at Start, and Employees at End.',
+			m["social.B8.turnoverRateRequired"](),
 		)
 	}
 
@@ -218,10 +220,10 @@ export function B8WorkforceForm({
 				},
 			})
 			toast.success(
-				`Oppdatert antall ansatte i selskapet til ${newEmployeeCount}`,
+				m["social.B8.updatedCompanyEmployees"]({ newEmployeeCount }),
 			)
 		} catch (error) {
-			toast.error('Kunne ikke oppdatere antall ansatte i B1')
+			toast.error(m["social.B8.updateCompanyEmployeesError"]())
 			console.error(error)
 		} finally {
 			setIsUpdatingCompany(false)
@@ -231,7 +233,7 @@ export function B8WorkforceForm({
 	if (isLoading) {
 		return (
 			<div className="flex items-center justify-center p-8 text-muted-foreground">
-				Loading...
+				{m["social.B8.loading"]()}
 			</div>
 		)
 	}
@@ -250,7 +252,7 @@ export function B8WorkforceForm({
 					<form.AppField name="reportingYear">
 						{(field) => (
 							<field.TextField
-								label="Rapporteringsår"
+								label={m["social.B8.reportingYearLabel"]()}
 								placeholder="YYYY"
 								hidden
 							/>
@@ -260,9 +262,13 @@ export function B8WorkforceForm({
 					{/* Card 1 — Country distribution */}
 					<Card>
 						<CardHeader>
-							<CardTitle className="text-base">Ansatte per land</CardTitle>
+							<CardTitle className="text-base">
+								{m["social.B8.countryDistributionTitle"]()}
+							</CardTitle>
 							<p className="text-sm text-muted-foreground">
-								Totalt {totalEmployees} ansatte fra B1 — fordel per land
+								{m["social.B8.countryDistributionDescription"]({
+									totalEmployees,
+								})}
 							</p>
 						</CardHeader>
 						<CardContent>
@@ -281,9 +287,9 @@ export function B8WorkforceForm({
 												<Table>
 													<TableHeader>
 														<TableRow>
-															<TableHead className="w-[50%]">Land</TableHead>
+															<TableHead className="w-[50%]">{m["social.B8.countryLabel"]()}</TableHead>
 															<TableHead className="w-[35%]">
-																Antall ansatte
+																{m["social.B8.employeeCountLabel"]()}
 															</TableHead>
 															<TableHead className="w-[15%] text-right">
 																&nbsp;
@@ -297,8 +303,7 @@ export function B8WorkforceForm({
 																	colSpan={3}
 																	className="h-16 text-center text-muted-foreground"
 																>
-																	Ingen land lagt til. Klikk "Legg til land" for
-																	å begynne.
+																	{m["social.B8.noCountriesAdded"]()}
 																</TableCell>
 															</TableRow>
 														)}
@@ -311,7 +316,7 @@ export function B8WorkforceForm({
 																		{(f) => (
 																			<f.CountryField
 																				label=""
-																				placeholder="Velg land"
+																				placeholder={m["social.B8.countryPlaceholder"]()}
 																			/>
 																		)}
 																	</form.AppField>
@@ -347,15 +352,10 @@ export function B8WorkforceForm({
 											{rows.length > 0 && (
 												<div className="flex items-center justify-between text-sm px-1">
 													<span className="text-muted-foreground">
-														Fordelt:{' '}
-														<span className="font-medium text-foreground">
-															{totalAllocated}
-														</span>{' '}
-														av{' '}
-														<span className="font-medium text-foreground">
-															{totalEmployees}
-														</span>{' '}
-														ansatte
+														{m["social.B8.countryCountSummary"]({
+															totalAllocated,
+															totalEmployees,
+														})}
 													</span>
 													{remaining !== 0 && (
 														<span
@@ -366,13 +366,13 @@ export function B8WorkforceForm({
 															}
 														>
 															{remaining > 0
-																? `${remaining} ansatte ikke fordelt`
-																: `${Math.abs(remaining)} ansatte for mye fordelt`}
+																? m["social.B8.countryCountRemaining"]({ remaining })
+																: m["social.B8.countryCountOver"]({ remaining: Math.abs(remaining) })}
 														</span>
 													)}
 													{remaining === 0 && (
 														<span className="text-emerald-600 font-medium">
-															Alle ansatte fordelt
+																{m["social.B8.allEmployeesAllocated"]()}
 														</span>
 													)}
 												</div>
@@ -392,7 +392,7 @@ export function B8WorkforceForm({
 													disabled={status === 'submitted'}
 												>
 													<Plus className="h-4 w-4 mr-1" />
-													Legg til land
+												{m["social.B8.addCountry"]()}
 												</Button>
 												{totalAllocated !== totalEmployees &&
 													generalFormData &&
@@ -407,7 +407,7 @@ export function B8WorkforceForm({
 															}
 														>
 															<Save className="h-4 w-4 mr-1" />
-															Oppdater B1
+															{m["social.B8.updateB1"]()}
 														</Button>
 													)}
 											</div>
@@ -421,9 +421,9 @@ export function B8WorkforceForm({
 					{/* Card 2 — Employees */}
 					<Card>
 						<CardHeader>
-							<CardTitle className="text-base">Ansatte</CardTitle>
+							<CardTitle className="text-base">{m["social.B8.employeeSectionTitle"]()}</CardTitle>
 							<p className="text-sm text-muted-foreground">
-								Fordeling av ansatte etter ansettelsestype
+								{m["social.B8.employeeSectionDescription"]()}
 							</p>
 						</CardHeader>
 						<CardContent className="space-y-6">
@@ -431,8 +431,8 @@ export function B8WorkforceForm({
 								<form.AppField name="heltidsansatte">
 									{(field) => (
 										<field.NumberField
-											label="Heltidsansatte"
-											description="Antall ansatte som jobber standard heltid"
+											label={m["social.B8.fullTimeLabel"]()}
+											description={m["social.B8.fullTimeDescription"]()}
 										/>
 									)}
 								</form.AppField>
@@ -440,8 +440,8 @@ export function B8WorkforceForm({
 								<form.AppField name="deltidsansatte">
 									{(field) => (
 										<field.NumberField
-											label="Deltidsansatte"
-											description="Antall ansatte som jobber mindre enn heltid"
+											label={m["social.B8.partTimeLabel"]()}
+											description={m["social.B8.partTimeDescription"]()}
 										/>
 									)}
 								</form.AppField>
@@ -451,8 +451,8 @@ export function B8WorkforceForm({
 								<form.AppField name="midlertidigAnsatte">
 									{(field) => (
 										<field.NumberField
-											label="Midlertidig ansatte"
-											description="Antall ansatte med tidsbegrensede kontrakter"
+											label={m["social.B8.temporaryLabel"]()}
+											description={m["social.B8.temporaryDescription"]()}
 										/>
 									)}
 								</form.AppField>
@@ -467,23 +467,23 @@ export function B8WorkforceForm({
 					{/* Card 3 — Gender */}
 					<Card>
 						<CardHeader>
-							<CardTitle className="text-base">Kjønnsfordeling</CardTitle>
+							<CardTitle className="text-base">{m["social.B8.genderSectionTitle"]()}</CardTitle>
 							<p className="text-sm text-muted-foreground">
-								Fordeling av ansatte etter kjønn
+								{m["social.B8.genderSectionDescription"]()}
 							</p>
 						</CardHeader>
 						<CardContent className="space-y-6">
 							<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 								<form.AppField name="menn">
-									{(field) => <field.NumberField label="Menn" />}
+									{(field) => <field.NumberField label={m["social.B8.maleLabel"]()} />}
 								</form.AppField>
 
 								<form.AppField name="kvinner">
-									{(field) => <field.NumberField label="Kvinner" />}
+									{(field) => <field.NumberField label={m["social.B8.femaleLabel"]()} />}
 								</form.AppField>
 
 								<form.AppField name="annet">
-									{(field) => <field.NumberField label="Annet" />}
+									{(field) => <field.NumberField label={m["social.B8.otherLabel"]()} />}
 								</form.AppField>
 							</div>
 
@@ -493,19 +493,18 @@ export function B8WorkforceForm({
 					{/* Card 4 — Turnover Rate */}
 					<Card>
 						<CardHeader>
-							<CardTitle className="text-base">Turnover Rate</CardTitle>
+							<CardTitle className="text-base">{m["social.B8.turnoverSectionTitle"]()}</CardTitle>
 							<p className="text-sm text-muted-foreground">
-								Employee turnover during the reporting period
+								{m["social.B8.turnoverSectionDescription"]()}
 							</p>
 						</CardHeader>
 						<CardContent>
 							{totalEmployees < 50 && (
 								<Alert variant="info" className="mb-6 border-l-4">
 									<Info />
-									<AlertTitle>About Turnover Rate</AlertTitle>
+									<AlertTitle>{m["social.B8.turnoverInfoTitle"]()}</AlertTitle>
 									<AlertDescription>
-										Reporting turnover rate is only mandatory for undertakings
-										with 50 or more employees.
+										{m["social.B8.turnoverInfoDescription"]()}
 									</AlertDescription>
 								</Alert>
 							)}
@@ -513,8 +512,8 @@ export function B8WorkforceForm({
 								<form.AppField name="employeesLeft">
 									{(field) => (
 										<field.NumberField
-											label="Employees Left"
-											description="Number of employees who left during the reporting period"
+											label={m["social.B8.employeesLeftLabel"]()}
+											description={m["social.B8.employeesLeftDescription"]()}
 										/>
 									)}
 								</form.AppField>
@@ -522,8 +521,8 @@ export function B8WorkforceForm({
 								<form.AppField name="employeesAtStart">
 									{(field) => (
 										<field.NumberField
-											label="Employees at Start"
-											description="Number of employees at the beginning of the reporting period"
+											label={m["social.B8.employeesAtStartLabel"]()}
+											description={m["social.B8.employeesAtStartDescription"]()}
 										/>
 									)}
 								</form.AppField>
@@ -531,17 +530,17 @@ export function B8WorkforceForm({
 								<form.AppField name="employeesAtEnd">
 									{(field) => (
 										<field.NumberField
-											label="Employees at End"
-											description="Number of employees at the end of the reporting period"
+											label={m["social.B8.employeesAtEndLabel"]()}
+											description={m["social.B8.employeesAtEndDescription"]()}
 										/>
 									)}
 								</form.AppField>
 
 								<NumberFieldReadOnly
-									label="Employee Turnover Rate"
+									label={m["social.B8.turnoverRateLabel"]()}
 									unit="%"
 									value={turnoverRatePercent ?? ''}
-									description="Employee turnover rate in the reporting period (calculated automatically)"
+									description={m["social.B8.turnoverRateDescription"]()}
 									placeholder="—"
 								/>
 							</div>
@@ -552,9 +551,9 @@ export function B8WorkforceForm({
 					<form.AppField name="eventuellUtfyllendeInfo">
 						{(field) => (
 							<field.TextareaField
-								label="Eventuell utfyllende info"
-								placeholder="Beskriv eventuelle ekstraordinære forhold, endringer i organisering, eller annen relevant kontekst..."
-								description="Oppgi eventuell tilleggsinformasjon eller forklaringer til arbeidsstyrkedata"
+								label={m["social.B8.additionalInfoLabel"]()}
+								placeholder={m["social.B8.additionalInfoPlaceholder"]()}
+								description={m["social.B8.additionalInfoDescription"]()}
 							/>
 						)}
 					</form.AppField>

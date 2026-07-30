@@ -13,17 +13,17 @@ function AboutPage() {
 					{/* Header Section */}
 					<div className="space-y-4">
 						<h1 className="text-5xl font-bold bg-linear-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-							{m.about_title()}
+							{m["about.title"]()}
 						</h1>
 						<p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
-							{m.about_intro()}
+							{m["about.intro"]()}
 						</p>
 					</div>
 
 					{/* What's Included Section */}
 					<div className="bg-card border border-border rounded-xl p-8 shadow-sm hover:shadow-md transition-shadow">
 						<h2 className="text-3xl font-semibold text-foreground mb-6">
-							{m.about_whats_included()}
+							{m["about.whats_included"]()}
 						</h2>
 						<ul className="space-y-4">
 							<li className="flex items-start gap-4 group">
@@ -31,7 +31,7 @@ function AboutPage() {
 									✓
 								</span>
 								<span className="text-muted-foreground group-hover:text-foreground transition-colors">
-									{m.about_router()}
+									{m["about.router"]()}
 								</span>
 							</li>
 							<li className="flex items-start gap-4 group">
@@ -39,7 +39,7 @@ function AboutPage() {
 									✓
 								</span>
 								<span className="text-muted-foreground group-hover:text-foreground transition-colors">
-									{m.about_query()}
+									{m["about.query"]()}
 								</span>
 							</li>
 							<li className="flex items-start gap-4 group">
@@ -47,7 +47,7 @@ function AboutPage() {
 									✓
 								</span>
 								<span className="text-muted-foreground group-hover:text-foreground transition-colors">
-									{m.about_form()}
+									{m["about.form"]()}
 								</span>
 							</li>
 							<li className="flex items-start gap-4 group">
@@ -55,7 +55,7 @@ function AboutPage() {
 									✓
 								</span>
 								<span className="text-muted-foreground group-hover:text-foreground transition-colors">
-									{m.about_clerk()}
+									{m["about.clerk"]()}
 								</span>
 							</li>
 							<li className="flex items-start gap-4 group">
@@ -63,7 +63,7 @@ function AboutPage() {
 									✓
 								</span>
 								<span className="text-muted-foreground group-hover:text-foreground transition-colors">
-									{m.about_convex()}
+									{m["about.convex"]()}
 								</span>
 							</li>
 							<li className="flex items-start gap-4 group">
@@ -71,7 +71,7 @@ function AboutPage() {
 									✓
 								</span>
 								<span className="text-muted-foreground group-hover:text-foreground transition-colors">
-									{m.about_ai()}
+									{m["about.ai"]()}
 								</span>
 							</li>
 						</ul>
@@ -80,13 +80,13 @@ function AboutPage() {
 					{/* Explore Section */}
 					<div className="space-y-4">
 						<h2 className="text-3xl font-semibold text-foreground">
-							{m.about_explore()}
+							{m["about.explore"]()}
 						</h2>
 						<p className="text-muted-foreground leading-relaxed">
-							{m.about_explore_desc()}
+							{m["about.explore_desc"]()}
 						</p>
 						<p className="text-sm text-muted-foreground italic border-l-4 border-primary/30 pl-4 py-2">
-							{m.about_note()}
+							{m["about.note"]()}
 						</p>
 					</div>
 				</div>

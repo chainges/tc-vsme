@@ -7,6 +7,7 @@ import {
 	c9BoardCompositionSchema,
 } from '@/lib/forms/schemas/c9-board-composition-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 
 export function C9BoardCompositionForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
@@ -29,7 +30,7 @@ export function C9BoardCompositionForm() {
 	if (isLoading) {
 		return (
 			<div className="flex items-center justify-center p-8 text-muted-foreground">
-				Loading...
+				{m["governance.C9.loading"]()}
 			</div>
 		)
 	}
@@ -50,21 +51,21 @@ export function C9BoardCompositionForm() {
 							<form.AppField name="reportingYear">
 								{(field) => (
 									<field.TextField
-										label="Rapporteringsår"
+										label={m["governance.C9.reportingYearLabel"]()}
 										placeholder="YYYY"
 										hidden
 									/>
 								)}
 							</form.AppField>
 
-							<div className="font-semibold">Styrets kjønnsbalanse</div>
+							<div className="font-semibold">{m["governance.C9.boardGenderBalanceTitle"]()}</div>
 
 							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 								<form.AppField name="totalMembers">
 									{(field) => (
 										<field.NumberField
-											label="Total Members"
-											description="Total number of board members"
+											label={m["governance.C9.totalMembersLabel"]()}
+											description={m["governance.C9.totalMembersDescription"]()}
 										/>
 									)}
 								</form.AppField>
@@ -72,8 +73,8 @@ export function C9BoardCompositionForm() {
 								<form.AppField name="femaleMembers">
 									{(field) => (
 										<field.NumberField
-											label="Female Members"
-											description="Number of female board members"
+											label={m["governance.C9.femaleMembersLabel"]()}
+											description={m["governance.C9.femaleMembersDescription"]()}
 										/>
 									)}
 								</form.AppField>
@@ -81,8 +82,8 @@ export function C9BoardCompositionForm() {
 								<form.AppField name="maleMembers">
 									{(field) => (
 										<field.NumberField
-											label="Male Members"
-											description="Number of male board members"
+											label={m["governance.C9.maleMembersLabel"]()}
+											description={m["governance.C9.maleMembersDescription"]()}
 										/>
 									)}
 								</form.AppField>
@@ -90,8 +91,8 @@ export function C9BoardCompositionForm() {
 								<form.AppField name="otherMembers">
 									{(field) => (
 										<field.NumberField
-											label="Other Members"
-											description="Number of board members with other gender identities"
+											label={m["governance.C9.otherMembersLabel"]()}
+											description={m["governance.C9.otherMembersDescription"]()}
 										/>
 									)}
 								</form.AppField>

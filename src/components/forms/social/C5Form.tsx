@@ -9,6 +9,7 @@ import {
 	c5AdditionalWorkforceSchema,
 } from '@/lib/forms/schemas/c5-additional-workforce-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 
 interface C5AdditionalWorkforceFormProps {
 	totalEmployees: number
@@ -78,12 +79,10 @@ export function C5AdditionalWorkforceForm({
 							<Alert variant="info" className="mb-6 border-l-4">
 								<Info />
 								<AlertTitle>
-									About Additional (general) workforce characteristics
+									{m["social.C5.about"]()}
 								</AlertTitle>
 								<AlertDescription>
-									If the undertaking employs 50 or more employees, it may
-									disclose the female-to-male ratio at management level and the
-									number of self-employed workers and contract workers.
+									{m["social.C5.description"]()}
 								</AlertDescription>
 							</Alert>
 						)}
@@ -92,7 +91,7 @@ export function C5AdditionalWorkforceForm({
 							<form.AppField name="reportingYear">
 								{(field) => (
 									<field.TextField
-										label="Rapporteringsår"
+										label={m["social.C5.reportingYearLabel"]()}
 										placeholder="YYYY"
 										hidden
 									/>
@@ -103,8 +102,8 @@ export function C5AdditionalWorkforceForm({
 								<form.AppField name="maleManagers">
 									{(field) => (
 										<field.NumberField
-											label="Male Managers"
-											description="Number of male employees at management level"
+											label={m["social.C5.maleManagers"]()}
+											description={m["social.C5.maleManagersDescription"]()}
 										/>
 									)}
 								</form.AppField>
@@ -112,16 +111,16 @@ export function C5AdditionalWorkforceForm({
 								<form.AppField name="femaleManagers">
 									{(field) => (
 										<field.NumberField
-											label="Female Managers"
-											description="Number of female employees at management level"
+											label={m["social.C5.femaleManagers"]()}
+											description={m["social.C5.femaleManagersDescription"]()}
 										/>
 									)}
 								</form.AppField>
 								<form.AppField name="selfEmployedWorkers">
 									{(field) => (
 										<field.NumberField
-											label="Self-employed Workers"
-											description="Number of self-employed individuals working for the organization"
+											label={m["social.C5.selfEmployedWorkers"]()}
+											description={m["social.C5.selfEmployedWorkersDescription"]()}
 										/>
 									)}
 								</form.AppField>
@@ -129,8 +128,8 @@ export function C5AdditionalWorkforceForm({
 								<form.AppField name="contractWorkers">
 									{(field) => (
 										<field.NumberField
-											label="Contract Workers"
-											description="Number of workers on contract or temporary arrangements"
+											label={m["social.C5.contractWorkers"]()}
+											description={m["social.C5.contractWorkersDescription"]()}
 										/>
 									)}
 								</form.AppField>

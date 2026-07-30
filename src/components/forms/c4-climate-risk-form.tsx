@@ -7,6 +7,7 @@ import {
 	c4ClimateRiskSchema,
 } from '@/lib/forms/schemas/c4-climate-risk-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 
 export function C4ClimateRiskForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
@@ -26,7 +27,7 @@ export function C4ClimateRiskForm() {
 	if (isLoading) {
 		return (
 			<div className="flex items-center justify-center p-8 text-muted-foreground">
-				Loading...
+				{m["environmental.C4.loading"]()}
 			</div>
 		)
 	}
@@ -44,7 +45,7 @@ export function C4ClimateRiskForm() {
 					<form.AppField name="reportingYear">
 						{(field) => (
 							<field.TextField
-								label="Reporting Year"
+								label={m["environmental.C4.reportingYearLabel"]()}
 								placeholder="YYYY"
 								hidden
 							/>
@@ -56,10 +57,10 @@ export function C4ClimateRiskForm() {
 							<form.AppField name="climateRiskDescription">
 								{(field) => (
 									<field.TextareaField
-										label="Description of climate risks"
-										placeholder="Describe potential climate risks that may affect the business, including physical risks (extreme weather, temperature changes) and transition risks (new regulations, technological changes)..."
+										label={m["environmental.C4.climateRiskDescriptionLabel"]()}
+										placeholder={m["environmental.C4.climateRiskDescriptionPlaceholder"]()}
 										rows={8}
-										description="Describe how climate change may affect the business (physical and transition risks)."
+										description={m["environmental.C4.climateRiskDescriptionDescription"]()}
 									/>
 								)}
 							</form.AppField>

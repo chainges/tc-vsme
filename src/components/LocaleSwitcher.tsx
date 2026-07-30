@@ -22,10 +22,10 @@ export default function ParaglideLocaleSwitcher() {
 				alignItems: 'center',
 				color: 'inherit',
 			}}
-			aria-label={m.language_label()}
+			aria-label={m["language.label"]()}
 		>
 			<span style={{ opacity: 0.85 }}>
-				{m.current_locale({ locale: currentLocale })}
+				{m["current.locale"]({ locale: currentLocale })}
 			</span>
 			<LanguageSwitcher
 				languages={languages}

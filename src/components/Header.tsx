@@ -75,7 +75,7 @@ export default function Header() {
 											className="h-8"
 										/>
 										<span className="text-sm font-medium text-foreground">
-											{m.nav_home()}
+											{m["nav.home"]()}
 										</span>
 									</Link>
 								</SheetHeader>
@@ -88,7 +88,7 @@ export default function Header() {
 										}}
 										onClick={() => setIsOpen(false)}
 									>
-										{m.nav_demo()}
+										{m["nav.demo"]()}
 									</Link>
 									<Link
 										to="/about"
@@ -98,7 +98,7 @@ export default function Header() {
 										}}
 										onClick={() => setIsOpen(false)}
 									>
-										{m.nav_about()}
+										{m["nav.about"]()}
 									</Link>
 								</nav>
 							</SheetContent>
@@ -122,7 +122,7 @@ export default function Header() {
 					>
 						<img src="/scope321-icon.svg" alt="Scope321 Logo" className="h-8" />
 						<span className="text-sm font-medium text-foreground">
-							{m.nav_home()}
+							{m["nav.home"]()}
 						</span>
 					</Link>
 
@@ -135,7 +135,7 @@ export default function Header() {
 								className: 'text-sm font-medium text-accent',
 							}}
 						>
-							{m.nav_demo()}
+							{m["nav.demo"]()}
 						</Link>
 						<Link
 							to="/about"
@@ -144,7 +144,7 @@ export default function Header() {
 								className: 'text-sm font-medium text-accent',
 							}}
 						>
-							{m.nav_about()}
+							{m["nav.about"]()}
 						</Link>
 					</nav>
 

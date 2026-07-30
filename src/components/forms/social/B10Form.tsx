@@ -9,6 +9,7 @@ import {
 	b10CompensationSchema,
 } from '@/lib/forms/schemas/b10-compensation-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 
 interface B10CompensationFormProps {
 	totalEmployees: number
@@ -19,7 +20,7 @@ export function B10CompensationForm({
 }: B10CompensationFormProps) {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
 
-	const { form, status, isSaving, isLoading, saveDraft, submit, reopen } =
+	const { form, status, isSaving,saveDraft, submit, reopen } =
 		useFormSubmission<B10CompensationFormValues>({
 			table: 'formSocial',
 			reportingYear,
@@ -97,101 +98,90 @@ export function B10CompensationForm({
 			>
 				<Card>
 					<CardContent>
-						<fieldset disabled={status === 'submitted'} className="space-y-6">
+						<fieldset disabled={status === "submitted"} className='space-y-6'>
 							{/* Hidden reporting year */}
-							<form.AppField name="reportingYear">
-								{(field) => (
-									<field.TextField
-										label="Rapporteringsår"
-										placeholder="YYYY"
-										hidden
-									/>
-								)}
+							<form.AppField name='reportingYear'>
+								{(field) => <field.TextField label={m["social.B10.reportingYearLabel"]()} placeholder='YYYY' hidden />}
 							</form.AppField>
 							{/* Minstelønnsansvar */}
-							<div className="flex flex-col items-start gap-3">
-								<h3 className="text-base font-semibold">Minstelønnsansvar</h3>
-								<form.AppField name="minstelonnsansvar">
+							<div className='flex flex-col items-start gap-3'>
+								<h3 className='text-base font-semibold'>{m["social.B10.minimumWageLiabilityLabel"]()}</h3>
+								<form.AppField name='minstelonnsansvar'>
 									{(field) => (
-										<field.SwitchField
-											label=""
-											description="Mottar de ansatte lønn som er lik eller over minstelønnen i landet det opereres i?"
-										/>
+										<field.SwitchField label='' description={m["social.B10.minimumWageLiabilityDescription"]()} />
 									)}
 								</form.AppField>
-								<span className="text-sm">
-									{minstelonnsansvar ? 'Ja' : 'Nei'}
-								</span>
+								<span className='text-sm'>{minstelonnsansvar ? m["social.B10.yes"]() : m["social.B10.no"]()}</span>
 							</div>
 
 							{/* Hourly Pay */}
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<form.AppField name="hourlyPayMale">
+							<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+								<form.AppField name='hourlyPayMale'>
 									{(field) => (
 										<field.NumberField
-											label="Gjennomsnittlig timeslønn for menn"
-											description="Kan utelates for selskaper under 150 ansatte"
-											step="0.1"
-											min="0"
-											unit="EUR"
+											label={m["social.B10.hourlyPayMaleLabel"]()}
+											description={m["social.B10.hourlyPayMaleDescription"]()}
+											step='0.1'
+											min='0'
+											unit='EUR'
 										/>
 									)}
 								</form.AppField>
-								<form.AppField name="hourlyPayFemale">
+								<form.AppField name='hourlyPayFemale'>
 									{(field) => (
 										<field.NumberField
-											label="Gjennomsnittlig timeslønn for kvinner"
-											description="Kan utelates for selskaper under 150 ansatte"
-											unit="EUR"
-											step="0.1"
-											min="0"
+											label={m["social.B10.hourlyPayFemaleLabel"]()}
+											description={m["social.B10.hourlyPayFemaleDescription"]()}
+											unit='EUR'
+											step='0.1'
+											min='0'
 										/>
 									)}
 								</form.AppField>
 
 								{/* Training Hours */}
-								<form.AppField name="trainingHoursMale">
+								<form.AppField name='trainingHoursMale'>
 									{(field) => (
 										<field.NumberField
-											label="Opplæring for menn"
-											description="Gjennomsnittlig årlig opplæring for menn"
-											step="0.1"
-											min="0"
-											unit="Timer"
+											label={m["social.B10.trainingHoursMaleLabel"]()}
+											description={m["social.B10.trainingHoursMaleDescription"]()}
+											step='0.1'
+											min='0'
+											unit='Timer'
 										/>
 									)}
 								</form.AppField>
-								<form.AppField name="trainingHoursFemale">
+								<form.AppField name='trainingHoursFemale'>
 									{(field) => (
 										<field.NumberField
-											label="Opplæring for kvinner"
-											description="Gjennomsnittlig årlig opplæring for kvinner"
-											unit="Timer"
-											step="0.1"
-											min="0"
+											label={m["social.B10.trainingHoursFemaleLabel"]()}
+											description={m["social.B10.trainingHoursFemaleDescription"]()}
+											unit='Timer'
+											step='0.1'
+											min='0'
 										/>
 									)}
 								</form.AppField>
 								{/* Tariffavtaledekning */}
-								<form.AppField name="collectiveBargainingAgreement">
+								<form.AppField name='collectiveBargainingAgreement'>
 									{(field) => (
 										<field.NumberField
-											label="Kollektive forhandlinger"
-											description="Antall medarbeidere dekket av kollektive forhandlinger/tariffavtaler."
-											step="1"
-											min="0"
+											label={m["social.B10.collectiveBargainingAgreementLabel"]()}
+											description={m["social.B10.collectiveBargainingAgreementDescription"]()}
+											step='1'
+											min='0'
 										/>
 									)}
 								</form.AppField>
-								<form.AppField name="collectiveBargainingShare">
+								<form.AppField name='collectiveBargainingShare'>
 									{(field) => (
 										<field.NumberField
-											label="Kollektiv dekning (%)"
-											description={`Prosentandel ansatte dekket av tariffavtaler (av totalt ${totalEmployees})`}
-											unit="%"
-											step="0.1"
-											min="0"
-											max="100"
+											label={m["social.B10.collectiveBargainingShareLabel"]()}
+											description={m["social.B10.collectiveBargainingShareDescription"]({ totalEmployees })}
+											unit='%'
+											step='0.1'
+											min='0'
+											max='100'
 											disabled
 										/>
 									)}
@@ -202,7 +192,7 @@ export function B10CompensationForm({
 				</Card>
 
 				<FormButtons
-					status={status as 'not_started' | 'draft' | 'submitted'}
+					status={status as "not_started" | "draft" | "submitted"}
 					isSaving={isSaving}
 					onSaveDraft={saveDraft}
 					onSubmit={submit}

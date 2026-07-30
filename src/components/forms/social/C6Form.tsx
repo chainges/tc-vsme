@@ -8,6 +8,7 @@ import {
 	c6HumanRightsPoliciesSchema,
 } from '@/lib/forms/schemas/c6-human-rights-policies-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 
 export function C6HumanRightsPoliciesForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
@@ -57,134 +58,94 @@ export function C6HumanRightsPoliciesForm() {
 			>
 				<Card>
 					<CardContent>
-						<fieldset disabled={status === 'submitted'} className="space-y-6">
+						<fieldset disabled={status === "submitted"} className='space-y-6'>
 							{/* Hidden reporting year */}
-							<form.AppField name="reportingYear">
-								{(field) => (
-									<field.TextField
-										label="Rapporteringsår"
-										placeholder="YYYY"
-										hidden
-									/>
-								)}
+							<form.AppField name='reportingYear'>
+								{(field) => <field.TextField label={m["social.C6.reportingYearLabel"]()} placeholder='YYYY' hidden />}
 							</form.AppField>
 
 							{/* (a) Does the undertaking have a code of conduct or human rights policy? */}
-							<div className="flex flex-col items-start gap-3">
-								<h3 className="text-base font-semibold">
-									Code of Conduct / Human Rights Policy
-								</h3>
+							<div className='flex flex-col items-start gap-3'>
+								<h3 className='text-base font-semibold'>{m["social.C6.codeOfConduct"]()}</h3>
 
 								<form.AppField
-									name="hasCodeOfConduct"
+									name='hasCodeOfConduct'
 									listeners={{
 										onChange: ({ value, fieldApi }) => {
 											if (!value) {
 												// Reset all sub-fields when gate is NO
-												fieldApi.form.setFieldValue('childLaborPolicy', false)
-												fieldApi.form.setFieldValue('forcedLaborPolicy', false)
-												fieldApi.form.setFieldValue(
-													'humanTraffickingPolicy',
-													false,
-												)
-												fieldApi.form.setFieldValue(
-													'discriminationPolicy',
-													false,
-												)
-												fieldApi.form.setFieldValue(
-													'accidentPreventionPolicy',
-													false,
-												)
-												fieldApi.form.setFieldValue('hasOtherPolicies', false)
-												fieldApi.form.setFieldValue('otherPolicies', '')
+												fieldApi.form.setFieldValue("childLaborPolicy", false)
+												fieldApi.form.setFieldValue("forcedLaborPolicy", false)
+												fieldApi.form.setFieldValue("humanTraffickingPolicy", false)
+												fieldApi.form.setFieldValue("discriminationPolicy", false)
+												fieldApi.form.setFieldValue("accidentPreventionPolicy", false)
+												fieldApi.form.setFieldValue("hasOtherPolicies", false)
+												fieldApi.form.setFieldValue("otherPolicies", "")
 											}
 										},
 									}}
 								>
-									{(field) => (
-										<field.SwitchField
-											label=""
-											description="Does the undertaking have a code of conduct or human rights policy for its own workforce?"
-										/>
-									)}
+									{(field) => <field.SwitchField label='' description={m["social.C6.codeOfConductDescription"]()} />}
 								</form.AppField>
-								<span className="text-sm">
-									{hasCodeOfConduct ? 'Yes' : 'No'}
-								</span>
+								<span className='text-sm'>{hasCodeOfConduct ? m["social.C6.yes"]() : m["social.C6.no"]()}</span>
 							</div>
 
 							{/* (b) If yes, does this cover: */}
-							<form.Subscribe
-								selector={(state) => state.values.hasCodeOfConduct}
-							>
+							<form.Subscribe selector={(state) => state.values.hasCodeOfConduct}>
 								{(hasPolicy) =>
 									hasPolicy ? (
-										<div className="space-y-4 pl-4 border-l-2 border-muted">
-											<h4 className="text-sm font-semibold text-muted-foreground">
-												Does the policy cover:
-											</h4>
-											<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+										<div className='space-y-4 pl-4 border-l-2 border-muted'>
+											<h4 className='text-sm font-semibold text-muted-foreground'>{m["social.C6.policyCoverage"]()}</h4>
+											<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
 												{/* (b.i) Child labour */}
-												<form.AppField name="childLaborPolicy">
-													{(field) => (
-														<field.CheckboxField label="Child labour" />
-													)}
+												<form.AppField name='childLaborPolicy'>
+													{(field) => <field.CheckboxField label={m["social.C6.childLaborPolicy"]()} />}
 												</form.AppField>
 
 												{/* (b.ii) Forced labour */}
-												<form.AppField name="forcedLaborPolicy">
-													{(field) => (
-														<field.CheckboxField label="Forced labour" />
-													)}
+												<form.AppField name='forcedLaborPolicy'>
+													{(field) => <field.CheckboxField label={m["social.C6.forcedLaborPolicy"]()} />}
 												</form.AppField>
 
 												{/* (b.iii) Human trafficking */}
-												<form.AppField name="humanTraffickingPolicy">
-													{(field) => (
-														<field.CheckboxField label="Human trafficking" />
-													)}
+												<form.AppField name='humanTraffickingPolicy'>
+													{(field) => <field.CheckboxField label={m["social.C6.humanTraffickingPolicy"]()} />}
 												</form.AppField>
 
 												{/* (b.iv) Discrimination */}
-												<form.AppField name="discriminationPolicy">
-													{(field) => (
-														<field.CheckboxField label="Discrimination" />
-													)}
+												<form.AppField name='discriminationPolicy'>
+													{(field) => <field.CheckboxField label={m["social.C6.discriminationPolicy"]()} />}
 												</form.AppField>
 
 												{/* (b.v) Accident prevention */}
-												<form.AppField name="accidentPreventionPolicy">
-													{(field) => (
-														<field.CheckboxField label="Accident prevention" />
-													)}
+												<form.AppField name='accidentPreventionPolicy'>
+													{(field) => <field.CheckboxField label={m["social.C6.accidentPreventionPolicy"]()} />}
 												</form.AppField>
 
 												{/* (b.vi) Other */}
 												<form.AppField
-													name="hasOtherPolicies"
+													name='hasOtherPolicies'
 													listeners={{
 														onChange: ({ value, fieldApi }) => {
 															if (!value) {
-																fieldApi.form.setFieldValue('otherPolicies', '')
+																fieldApi.form.setFieldValue("otherPolicies", "")
 															}
 														},
 													}}
 												>
-													{(field) => <field.CheckboxField label="Other" />}
+													{(field) => <field.CheckboxField label={m["social.C6.other"]()} />}
 												</form.AppField>
 											</div>
 
 											{/* Other policies specification — conditional on hasOtherPolicies */}
-											<form.Subscribe
-												selector={(state) => state.values.hasOtherPolicies}
-											>
+											<form.Subscribe selector={(state) => state.values.hasOtherPolicies}>
 												{(hasOther) =>
 													hasOther ? (
-														<form.AppField name="otherPolicies">
+														<form.AppField name='otherPolicies'>
 															{(field) => (
 																<field.TextareaField
-																	label="Specify other policies"
-																	placeholder="Describe the other policies covered..."
+																	label={m["social.C6.otherPolicy"]()}
+																	placeholder={m["social.C6.otherPolicyDescription"]()}
 																	rows={2}
 																/>
 															)}
@@ -198,28 +159,17 @@ export function C6HumanRightsPoliciesForm() {
 							</form.Subscribe>
 
 							{/* (c) Complaints-handling mechanism */}
-							<div className="flex flex-col items-start gap-3">
-								<h3 className="text-base font-semibold">
-									Complaints-handling Mechanism
-								</h3>
+							<div className='flex flex-col items-start gap-3'>
+								<h3 className='text-base font-semibold'>{m["social.C6.complaintsHandlingMechanismLabel"]()}</h3>
 
-								<form.AppField name="hasComplaintsHandlingMechanism">
+								<form.AppField name='hasComplaintsHandlingMechanism'>
 									{(field) => (
-										<field.SwitchField
-											label=""
-											description="Does the undertaking have a complaints-handling mechanism for its own workforce?"
-										/>
+										<field.SwitchField label='' description={m["social.C6.complaintsHandlingMechanismDescription"]()} />
 									)}
 								</form.AppField>
-								<form.Subscribe
-									selector={(state) =>
-										state.values.hasComplaintsHandlingMechanism
-									}
-								>
+								<form.Subscribe selector={(state) => state.values.hasComplaintsHandlingMechanism}>
 									{(hasMechanism) => (
-										<span className="text-sm">
-											{hasMechanism ? 'Yes' : 'No'}
-										</span>
+										<span className='text-sm'>{hasMechanism ? m["social.C6.yes"]() : m["social.C6.no"]()}</span>
 									)}
 								</form.Subscribe>
 							</div>
@@ -228,7 +178,7 @@ export function C6HumanRightsPoliciesForm() {
 				</Card>
 
 				<FormButtons
-					status={status as 'not_started' | 'draft' | 'submitted'}
+					status={status as "not_started" | "draft" | "submitted"}
 					isSaving={isSaving}
 					onSaveDraft={saveDraft}
 					onSubmit={submit}

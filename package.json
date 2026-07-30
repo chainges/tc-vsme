@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "BUN_HMR=false bunx vite --port 3000",
+    "dev": "cross-env BUN_HMR=false bunx vite --port 3000",
     "build": "bun run --bun vite build",
     "preview": "bun run --bun vite preview",
     "test": "bun run --bun vitest run",

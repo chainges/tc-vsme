@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/expandable-card-simple'
 import { useOrgGuard } from '@/hooks/use-org-guard'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 import { BiodiversityHelp } from './-biodiversity-help'
 import { C3TargetsForm } from './-c3-targets-card'
 import { CircularHelp } from './-circular-help'
@@ -79,18 +80,18 @@ function EnvironmentalPage() {
 
 	return (
 		<div className="flex flex-col gap-4 md:grid-cols-1 mt-4 max-w-6xl w-full mx-auto">
-			<h1 className="text-2xl font-bold">Environmental Reporting</h1>
+			<h1 className="text-2xl font-bold">{m["environmental.title"]()}</h1>
 			<h3 className="text-lg text-muted-foreground">
-				Environmental impact and sustainability metrics
+				{m["environmental.description"]()}
 			</h3>
 			<FormCard
-				title="Energy and climate emissions"
+				title={m["environmental.B3.title"]()}
 				updatedDate={formatDate(energyEmissions?.lastModifiedAt)}
-				toolTip="Click to expand"
+				toolTip={m["environmental.B3.tooltip"]()}
 				status={(energyEmissions?.status ?? 'not_started') as FormStatus}
 				contributor={energyEmissions?.contributor || { name: 'Unknown' }}
 				code="B3"
-				buttonText="Hjelp"
+				buttonText={m["environmental.B3.buttonText"]()}
 				onClick={() => setEnergyHelpOpen(true)}
 				version={
 					energyEmissions?.versions?.length
@@ -103,13 +104,13 @@ function EnvironmentalPage() {
 			</FormCard>
 
 			<FormCard
-				title="Air, Water and Soil Pollution"
+				title={m["environmental.B4.title"]()}
 				updatedDate={formatDate(pollution?.lastModifiedAt)}
-				toolTip="Document your organization's emissions to air, water, and soil, including types and quantities of pollutants."
+				toolTip={m["environmental.B4.tooltip"]()}
 				status={(pollution?.status ?? 'not_started') as FormStatus}
 				contributor={pollution?.contributor || { name: 'Unknown' }}
 				code="B4"
-				buttonText="Hjelp"
+				buttonText={m["environmental.B4.buttonText"]()}
 				onClick={() => setPollutionHelpOpen(true)}
 				version={
 					pollution?.versions?.length
@@ -121,14 +122,14 @@ function EnvironmentalPage() {
 			</FormCard>
 
 			<FormCard
-				title="Biodiversity"
+				title={m["environmental.B5.title"]()}
 				updatedDate={formatDate(biodiversity?.lastModifiedAt)}
-				toolTip="Click to expand"
+				toolTip={m["environmental.B5.tooltip"]()}
 				status={(biodiversity?.status ?? 'not_started') as FormStatus}
 				contributor={biodiversity?.contributor || { name: 'Unknown' }}
 				code="B5"
 				module="Basic Module"
-				buttonText="Hjelp"
+				buttonText={m["environmental.B5.buttonText"]()}
 				onClick={() => setBiodiversityHelpOpen(true)}
 				version={
 					biodiversity?.versions?.length
@@ -140,14 +141,14 @@ function EnvironmentalPage() {
 			</FormCard>
 
 			<FormCard
-				title="Water Management"
+				title={m["environmental.B6.title"]()}
 				updatedDate={formatDate(waterManagement?.lastModifiedAt)}
-				toolTip="Click to expand"
+				toolTip={m["environmental.B6.tooltip"]()}
 				status={(waterManagement?.status ?? 'not_started') as FormStatus}
 				contributor={waterManagement?.contributor || { name: 'Unknown' }}
 				code="B6"
 				module="Basic Module"
-				buttonText="Hjelp"
+				buttonText={m["environmental.B6.buttonText"]()}
 				onClick={() => setWaterHelpOpen(true)}
 				version={
 					waterManagement?.versions?.length
@@ -160,9 +161,9 @@ function EnvironmentalPage() {
 			</FormCard>
 
 			<FormCard
-				title="Resource Use and Circular Economy"
+				title={m["environmental.B7.title"]()}
 				updatedDate={formatDate(resourceUseCircularEconomy?.lastModifiedAt)}
-				toolTip="Click to expand"
+				toolTip={m["environmental.B7.tooltip"]()}
 				status={
 					(resourceUseCircularEconomy?.status ?? 'not_started') as FormStatus
 				}
@@ -171,7 +172,7 @@ function EnvironmentalPage() {
 				}
 				code="B7"
 				module="Basic Module"
-				buttonText="Hjelp"
+				buttonText={m["environmental.B7.buttonText"]()}
 				onClick={() => setCircularHelpOpen(true)}
 				version={
 					resourceUseCircularEconomy?.versions?.length
@@ -230,9 +231,9 @@ function EnvironmentalPage() {
 			</HelpSheet>
 
 			<FormCard
-				title="Scope 3 Emissions"
+				title={m["environmental.C2.title"]()}
 				updatedDate={formatDate(scope3Emissions?.lastModifiedAt)}
-				toolTip="Click to expand"
+				toolTip={m["environmental.C2.tooltip"]()}
 				status={(scope3Emissions?.status ?? 'not_started') as FormStatus}
 				contributor={scope3Emissions?.contributor || { name: 'Unknown' }}
 				code="C2"
@@ -248,9 +249,9 @@ function EnvironmentalPage() {
 			</FormCard>
 
 			<FormCard
-				title="Emission reduction targets"
+				title={m["environmental.C3.title"]()}
 				updatedDate={formatDate(targetsData?.lastModifiedAt)}
-				toolTip="View and manage your organization's emission reduction targets."
+				toolTip={m["environmental.C3.tooltip"]()}
 				status={targetsData ? 'submitted' : 'not_started'}
 				contributor={targetsData?.contributor || { name: 'Unknown' }}
 				code="C3"
@@ -263,9 +264,9 @@ function EnvironmentalPage() {
 			</FormCard>
 
 			<FormCard
-				title="Climate Risk Analysis"
+				title={m["environmental.C4.title"]()}
 				updatedDate={formatDate(climateRiskAnalysis?.lastModifiedAt)}
-				toolTip="Describe climate-related risks that may affect the business."
+				toolTip={m["environmental.C4.tooltip"]()}
 				status={(climateRiskAnalysis?.status ?? 'not_started') as FormStatus}
 				contributor={climateRiskAnalysis?.contributor || { name: 'Unknown' }}
 				code="C4"

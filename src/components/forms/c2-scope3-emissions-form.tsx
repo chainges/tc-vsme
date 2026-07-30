@@ -17,6 +17,7 @@ import {
 	SCOPE_3_CATEGORIES,
 } from '@/lib/forms/schemas/c2-scope3-emissions-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 import { api } from '../../../convex/_generated/api'
 
 type MongoEmissionsData = {
@@ -199,26 +200,22 @@ export function C2Scope3EmissionsForm() {
 					form.handleSubmit()
 				}}
 			>
-				<fieldset disabled={status === 'submitted'} className="space-y-6">
-					<form.AppField name="reportingYear">
+				<fieldset disabled={status === "submitted"} className='space-y-6'>
+					<form.AppField name='reportingYear'>
 						{(field) => (
-							<field.TextField
-								label="Rapporteringsår"
-								placeholder="YYYY"
-								hidden
-							/>
+							<field.TextField label={m["environmental.C2.reportingYearLabel"]()} placeholder='YYYY' hidden />
 						)}
 					</form.AppField>
 
 					<Card>
-						<CardContent className="pt-6 space-y-6">
-							<h3 className="text-lg font-medium mb-4">Scope 3 Emissions</h3>
-							<form.AppField name="totalScope3Emissions">
+						<CardContent className='pt-6 space-y-6'>
+							<h3 className='text-lg font-medium mb-4'>{m["environmental.C2.title"]()}</h3>
+							<form.AppField name='totalScope3Emissions'>
 								{(field) => (
 									<field.NumberField
-										label="Total Scope 3 Emissions"
-										unit="tCO₂e"
-										description="Total indirect emissions in value chain"
+										label={m["environmental.C2.totalScope3EmissionsLabel"]()}
+										unit='tCO₂e'
+										description={m["environmental.C2.totalScope3EmissionsDescription"]()}
 									/>
 								)}
 							</form.AppField>
@@ -226,91 +223,78 @@ export function C2Scope3EmissionsForm() {
 					</Card>
 
 					<Card>
-						<CardContent className="pt-6">
-							<h3 className="text-lg font-medium mb-4">Scope 3 Categories</h3>
+						<CardContent className='pt-6'>
+							<h3 className='text-lg font-medium mb-4'>{m["environmental.C2.title"]()}</h3>
 
 							{/* Category Sum Validation Warning */}
 							{hasMismatch && (
-								<Alert variant="warning" className="mb-4">
-									<AlertTriangle className="h-4 w-4" />
+								<Alert variant='warning' className='mb-4'>
+									<AlertTriangle className='h-4 w-4' />
 									<AlertDescription>
-										⚠️ Warning: Categories sum to {categorySum.toFixed(2)} tCO₂e
-										but total is {totalScope3.toFixed(2)} tCO₂e. Difference:{' '}
-										{difference.toFixed(2)} tCO₂e
+										{m["environmental.C2.alertDescription"]({
+											categorySum: (categorySum.toFixed(2)).toString(),
+											totalScope3: (totalScope3.toFixed(2)).toString(),
+											difference: (difference.toFixed(2)).toString(),
+										})}
+										
 									</AlertDescription>
 								</Alert>
 							)}
 
-							<Tabs defaultValue="upstream" className="w-full">
-								<TabsList className="grid w-full grid-cols-2">
-									<TabsTrigger value="upstream">
-										Upstream (Cat. 1-8)
-									</TabsTrigger>
-									<TabsTrigger value="downstream">
-										Downstream (Cat. 9-15)
-									</TabsTrigger>
+							<Tabs defaultValue='upstream' className='w-full'>
+								<TabsList className='grid w-full grid-cols-2'>
+									<TabsTrigger value='upstream'>{m["environmental.C2.upstream"]()}</TabsTrigger>
+									<TabsTrigger value='downstream'>{m["environmental.C2.downstream"]()}</TabsTrigger>
 								</TabsList>
 
-								<TabsContent value="upstream" className="mt-6">
+								<TabsContent value='upstream' className='mt-6'>
 									<AnimatePresence>
 										<motion.div
-											animate="visible"
-											className="grid grid-cols-1 md:grid-cols-2 gap-6"
-											exit="hidden"
-											initial="hidden"
+											animate='visible'
+											className='grid grid-cols-1 md:grid-cols-2 gap-6'
+											exit='hidden'
+											initial='hidden'
 											variants={listVariants}
 										>
-											{SCOPE_3_CATEGORIES.filter((cat) => cat.number <= 8).map(
-												(cat) => (
-													<motion.div
-														key={cat.number}
-														transition={{ type: 'tween' }}
-														variants={itemVariants}
-													>
-														<form.AppField name={`category${cat.number}`}>
-															{(field) => (
-																<field.NumberField
-																	label={`${cat.name} (cat. ${cat.number})`}
-																	unit="tCO₂e"
-																	description={`Emissions from ${cat.name.toLowerCase()}`}
-																/>
-															)}
-														</form.AppField>
-													</motion.div>
-												),
-											)}
+											{SCOPE_3_CATEGORIES.filter((cat) => cat.number <= 8).map((cat) => (
+												<motion.div key={cat.number} transition={{ type: "tween" }} variants={itemVariants}>
+													<form.AppField name={`category${cat.number}`}>
+														{(field) => (
+															<field.NumberField
+																label={`${cat.name} (cat. ${cat.number})`}
+																unit='tCO₂e'
+																description={`Emissions from ${cat.name.toLowerCase()}`}
+															/>
+														)}
+													</form.AppField>
+												</motion.div>
+											))}
 										</motion.div>
 									</AnimatePresence>
 								</TabsContent>
 
-								<TabsContent value="downstream" className="mt-6">
+								<TabsContent value='downstream' className='mt-6'>
 									<AnimatePresence>
 										<motion.div
-											animate="visible"
-											className="grid grid-cols-1 md:grid-cols-2 gap-6"
-											exit="hidden"
-											initial="hidden"
+											animate='visible'
+											className='grid grid-cols-1 md:grid-cols-2 gap-6'
+											exit='hidden'
+											initial='hidden'
 											variants={listVariants}
 										>
-											{SCOPE_3_CATEGORIES.filter((cat) => cat.number >= 9).map(
-												(cat) => (
-													<motion.div
-														key={cat.number}
-														transition={{ type: 'tween' }}
-														variants={itemVariants}
-													>
-														<form.AppField name={`category${cat.number}`}>
-															{(field) => (
-																<field.NumberField
-																	label={`${cat.name} (cat. ${cat.number})`}
-																	unit="tCO₂e"
-																	description={`Emissions from ${cat.name.toLowerCase()}`}
-																/>
-															)}
-														</form.AppField>
-													</motion.div>
-												),
-											)}
+											{SCOPE_3_CATEGORIES.filter((cat) => cat.number >= 9).map((cat) => (
+												<motion.div key={cat.number} transition={{ type: "tween" }} variants={itemVariants}>
+													<form.AppField name={`category${cat.number}`}>
+														{(field) => (
+															<field.NumberField
+																label={`${cat.name} (cat. ${cat.number})`}
+																unit='tCO₂e'
+																description={`Emissions from ${cat.name.toLowerCase()}`}
+															/>
+														)}
+													</form.AppField>
+												</motion.div>
+											))}
 										</motion.div>
 									</AnimatePresence>
 								</TabsContent>
@@ -320,7 +304,7 @@ export function C2Scope3EmissionsForm() {
 				</fieldset>
 
 				<FormButtons
-					status={status as 'not_started' | 'draft' | 'submitted'}
+					status={status as "not_started" | "draft" | "submitted"}
 					isSaving={isSaving}
 					onSaveDraft={saveDraft}
 					onSubmit={submit}

@@ -15,6 +15,8 @@ import {
 } from '@/components/ui/expandable-card-simple'
 import { useOrgGuard } from '@/hooks/use-org-guard'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
+
 
 export const Route = createFileRoute('/_appLayout/app/social/')({
 	component: SocialPage,
@@ -84,9 +86,9 @@ function SocialPage() {
 			</h3>
 
 			<FormCard
-				title="Arbeidsstyrke"
+				title={m["social.B8.title"]()}
 				updatedDate={formatDate(workforce?.lastModifiedAt)}
-				toolTip="Rapporter ansettelsesforhold, kjønnsfordeling og geografisk fordeling av arbeidsstyrken."
+				toolTip={m["social.B8.tooltip"]()}
 				status={(workforce?.status ?? 'not_started') as FormStatus}
 				contributor={workforce?.contributor || { name: 'Unknown' }}
 				code="B8"
@@ -105,9 +107,9 @@ function SocialPage() {
 			</FormCard>
 
 			<FormCard
-				title="Helse og sikkerhet"
+				title={m["social.B9.title"]()}
 				updatedDate={formatDate(healthSafety?.lastModifiedAt)}
-				toolTip="Rapporter arbeidsulykker, sykefravær, HMS-opplæring og omkomne."
+				toolTip={m["social.B9.tooltip"]()}
 				status={(healthSafety?.status ?? 'not_started') as FormStatus}
 				contributor={healthSafety?.contributor || { name: 'Unknown' }}
 				code="B9"
@@ -122,9 +124,9 @@ function SocialPage() {
 			</FormCard>
 
 			<FormCard
-				title="Kompensasjon og kollektive forhandlinger"
+				title={m["social.B10.title"]()}
 				updatedDate={formatDate(compensationCollective?.lastModifiedAt)}
-				toolTip="Rapporter tariffavtaledekning, gjennomsnittlig opplæring og minstelønnsansvar."
+				toolTip={m["social.B10.tooltip"]()}
 				status={(compensationCollective?.status ?? 'not_started') as FormStatus}
 				contributor={compensationCollective?.contributor || { name: 'Unknown' }}
 				code="B10"
@@ -159,9 +161,9 @@ function SocialPage() {
 			</FormCard> */}
 
 			<FormCard
-				title="Additional (general) workforce characteristics"
+				title={m["social.C5.title"]()}
 				updatedDate={formatDate(additionalWorkforce?.lastModifiedAt)}
-				toolTip="Companies with more than 50 employees may report on workforce characteristics."
+				toolTip={m["social.C5.tooltip"]()}
 				status={(additionalWorkforce?.status ?? 'not_started') as FormStatus}
 				contributor={additionalWorkforce?.contributor || { name: 'Unknown' }}
 				code="C5"
@@ -178,9 +180,9 @@ function SocialPage() {
 			</FormCard>
 
 			<FormCard
-				title="Human rights policies and processes"
+				title={m["social.C6.title"]()}
 				updatedDate={formatDate(humanRightsPolicies?.lastModifiedAt)}
-				toolTip="Code of conduct or human rights policy and complaints-handling mechanism on workforce?"
+				toolTip={m["social.C6.tooltip"]()}
 				status={(humanRightsPolicies?.status ?? 'not_started') as FormStatus}
 				contributor={humanRightsPolicies?.contributor || { name: 'Unknown' }}
 				code="C6"
@@ -197,9 +199,9 @@ function SocialPage() {
 			</FormCard>
 
 			<FormCard
-				title="Severe negative human rights incidents"
+				title={m["social.C7.title"]()}
 				updatedDate={formatDate(seriousHumanRightsIncidents?.lastModifiedAt)}
-				toolTip="Disclosure of human rights incidents."
+				toolTip={m["social.C7.tooltip"]()}
 				status={
 					(seriousHumanRightsIncidents?.status ?? 'not_started') as FormStatus
 				}

@@ -8,6 +8,7 @@ import {
 	b11FinesPenaltiesSchema,
 } from '@/lib/forms/schemas/b11-fines-penalties-schema'
 import { yearStore } from '@/lib/year-store'
+import { m } from '@/paraglide/messages'
 
 export function B11FinesPenaltiesForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
@@ -34,7 +35,7 @@ export function B11FinesPenaltiesForm() {
 	if (isLoading) {
 		return (
 			<div className="flex items-center justify-center p-8 text-muted-foreground">
-				Loading...
+				{m["governance.B11.loading"]()}
 			</div>
 		)
 	}
@@ -55,7 +56,7 @@ export function B11FinesPenaltiesForm() {
 							<form.AppField name="reportingYear">
 								{(field) => (
 									<field.TextField
-										label="Rapporteringsår"
+										label={m["governance.B11.reportingYearLabel"]()}
 										placeholder="YYYY"
 										hidden
 									/>
@@ -64,7 +65,7 @@ export function B11FinesPenaltiesForm() {
 
 							<div className="flex flex-col items-start gap-3">
 								<h3 className="text-base font-semibold">
-									Bøter og straffer for korrupsjon
+									{m["governance.B11.corruptionFinesTitle"]()}
 								</h3>
 
 								<form.AppField
@@ -97,12 +98,14 @@ export function B11FinesPenaltiesForm() {
 									{(field) => (
 										<field.SwitchField
 											label=""
-											description="Has fines or penalties during the period related to violations of anti-corruption or anti-bribery laws?"
+											description={m["governance.B11.hasFinesDescription"]()}
 										/>
 									)}
 								</form.AppField>
 								<span className="text-sm">
-									{hasCorruptionFines ? 'Ja' : 'Nei'}
+									{hasCorruptionFines
+										? m["governance.B11.yes"]()
+										: m["governance.B11.no"]()}
 								</span>
 
 								<form.Subscribe
@@ -114,7 +117,7 @@ export function B11FinesPenaltiesForm() {
 												<form.AppField name="numberOfConvictions">
 													{(field) => (
 														<field.NumberField
-															label="Number of Convictions"
+															label={m["governance.B11.numberOfConvictionsLabel"]()}
 															placeholder="0"
 														/>
 													)}
@@ -124,7 +127,7 @@ export function B11FinesPenaltiesForm() {
 														<form.AppField name="totalFines">
 															{(field) => (
 																<field.NumberField
-																	label="Total Fines"
+																	label={m["governance.B11.totalFinesLabel"]()}
 																	placeholder="0"
 																/>
 															)}
@@ -134,7 +137,7 @@ export function B11FinesPenaltiesForm() {
 														<form.AppField name="currency">
 															{(field) => (
 																<field.SelectField
-																	label="Currency"
+																	label={m["governance.B11.currencyLabel"]()}
 																	options={[
 																		{ label: 'NOK', value: 'NOK' },
 																		{ label: 'SEK', value: 'SEK' },
@@ -151,8 +154,8 @@ export function B11FinesPenaltiesForm() {
 												<form.AppField name="corruptionFinesDescription">
 													{(field) => (
 														<field.TextareaField
-															label="Description"
-															placeholder="Provide more information if relevant..."
+															label={m["governance.B11.descriptionLabel"]()}
+															placeholder={m["governance.B11.descriptionPlaceholder"]()}
 															rows={4}
 														/>
 													)}
