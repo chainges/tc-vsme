@@ -233,33 +233,33 @@ const formEnvironmentalDataValidator = v.union(
 // Social form data validators
 const workforceDataValidator = v.object({
   reportingYear: v.string(),
-  heltidsansatte: v.number(),
-  deltidsansatte: v.number(),
-  midlertidigAnsatte: v.number(),
-  menn: v.number(),
-  kvinner: v.number(),
-  annet: v.number(),
-  ansattePerLand: v.array(
+  fullTimeEmployees: v.number(),
+  partTimeEmployees: v.number(),
+  temporaryEmployees: v.number(),
+  men: v.number(),
+  women: v.number(),
+  other: v.number(),
+  employeesPerCountry: v.array(
     v.object({
       id: v.string(),
-      land: v.string(),
-      antallAnsatte: v.number(),
+      country: v.string(),
+      numberOfEmployees: v.number(),
     })
   ),
   employeesLeft: v.optional(v.number()),
   employeesAtStart: v.optional(v.number()),
   employeesAtEnd: v.optional(v.number()),
   employeeTurnoverRate: v.optional(v.number()),
-  eventuellUtfyllendeInfo: v.optional(v.string()),
+  anyAdditionalInfo: v.optional(v.string()),
 })
 
 const healthSafetyDataValidator = v.object({
   reportingYear: v.string(),
-  arbeidsulykker: v.number(),
-  sykefravarProsent: v.number(),
-  hmsOpplaering: v.number(),
-  omkomne: v.number(),
-  eventuellUtfyllendeInfo: v.optional(v.string()),
+  workAccidents: v.number(),
+  sicknessAbsencePercentage: v.number(),
+  hmsTraining: v.number(),
+  deceased: v.number(),
+  anyAdditionalInfo: v.optional(v.string()),
 })
 
 const compensationCollectiveDataValidator = v.object({
@@ -271,7 +271,7 @@ const compensationCollectiveDataValidator = v.object({
   collectiveBargainingAgreement: v.number(),
   collectiveBargainingShare: v.optional(v.number()),
   genderPayGap: v.optional(v.number()),
-  minstelonnsansvar: v.boolean(),
+  minimumWageLiability: v.boolean(),
 })
 
 const workLifeBalanceDataValidator = v.object({

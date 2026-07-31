@@ -20,7 +20,7 @@ export const b10CompensationSchema = z.object({
 		.min(0, 'Må være 0 eller mer'),
 	collectiveBargainingShare: z.number().optional(),
 	genderPayGap: z.number().optional(),
-	minstelonnsansvar: z.boolean(),
+	minimumWageLiability: z.boolean(),
 })
 
 export type B10CompensationFormValues = z.infer<typeof b10CompensationSchema>

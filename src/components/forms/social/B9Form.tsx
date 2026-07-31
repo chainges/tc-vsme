@@ -20,7 +20,7 @@ export function B9HealthSafetyForm() {
 			schema: b9HealthSafetySchema,
 			defaultValues: {
 				reportingYear: reportingYear.toString(),
-				eventuellUtfyllendeInfo: '',
+				anyAdditionalInfo: '',
 			} as B9HealthSafetyFormValues,
 		})
 
@@ -57,7 +57,7 @@ export function B9HealthSafetyForm() {
 
 							{/* Arbeidsulykker + Sykefravær */}
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<form.AppField name="arbeidsulykker">
+								<form.AppField name="workAccidents">
 									{(field) => (
 										<field.NumberField
 											label={m["social.B9.workAccidentsLabel"]()}
@@ -66,7 +66,7 @@ export function B9HealthSafetyForm() {
 									)}
 								</form.AppField>
 
-								<form.AppField name="sykefravarProsent">
+								<form.AppField name="sicknessAbsencePercentage">
 									{(field) => (
 										<field.NumberField
 											label={m["social.B9.sickLeaveLabel"]()}
@@ -82,7 +82,7 @@ export function B9HealthSafetyForm() {
 
 							{/* HMS-opplæring + Omkomne */}
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<form.AppField name="hmsOpplaering">
+								<form.AppField name="hmsTraining">
 									{(field) => (
 										<field.NumberField
 											label={m["social.B9.hseTrainingLabel"]()}
@@ -91,7 +91,7 @@ export function B9HealthSafetyForm() {
 									)}
 								</form.AppField>
 
-								<form.AppField name="omkomne">
+								<form.AppField name="deceased">
 									{(field) => (
 										<field.NumberField
 											label={m["social.B9.fatalitiesLabel"]()}
@@ -102,7 +102,7 @@ export function B9HealthSafetyForm() {
 							</div>
 
 							{/* Eventuell utfyllende info */}
-							<form.AppField name="eventuellUtfyllendeInfo">
+							<form.AppField name="anyAdditionalInfo">
 								{(field) => (
 									<field.TextareaField
 										label={m["social.B9.additionalInfoLabel"]()}

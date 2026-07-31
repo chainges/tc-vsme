@@ -2,8 +2,8 @@ import { z } from 'zod'
 
 export const employeePerCountrySchema = z.object({
 	id: z.string(),
-	land: z.string().min(1, 'Land er påkrevd'),
-	antallAnsatte: z
+	country: z.string().min(1, 'Land er påkrevd'),
+	numberOfEmployees: z
 		.number({ message: 'Antall ansatte er påkrevd' })
 		.int('Må være et heltall')
 		.min(0, 'Må være 0 eller mer'),
@@ -11,31 +11,31 @@ export const employeePerCountrySchema = z.object({
 
 export const b8WorkforceSchema = z.object({
 	reportingYear: z.string().regex(/^\d{4}$/, 'Year must be 4 digits'),
-	heltidsansatte: z
+	fullTimeEmployees: z
 		.number({ message: 'Dette feltet er påkrevd' })
 		.int('Må være et heltall')
 		.min(0, 'Må være 0 eller mer'),
-	deltidsansatte: z
+	partTimeEmployees: z
 		.number({ message: 'Dette feltet er påkrevd' })
 		.int('Må være et heltall')
 		.min(0, 'Må være 0 eller mer'),
-	midlertidigAnsatte: z
+	temporaryEmployees: z
 		.number({ message: 'Dette feltet er påkrevd' })
 		.int('Må være et heltall')
 		.min(0, 'Må være 0 eller mer'),
-	menn: z
+	men: z
 		.number({ message: 'Dette feltet er påkrevd' })
 		.int('Må være et heltall')
 		.min(0, 'Må være 0 eller mer'),
-	kvinner: z
+	women: z
 		.number({ message: 'Dette feltet er påkrevd' })
 		.int('Må være et heltall')
 		.min(0, 'Må være 0 eller mer'),
-	annet: z
+	other: z
 		.number({ message: 'Dette feltet er påkrevd' })
 		.int('Må være et heltall')
 		.min(0, 'Må være 0 eller mer'),
-	ansattePerLand: z.array(employeePerCountrySchema),
+	employeesPerCountry: z.array(employeePerCountrySchema),
 	employeesLeft: z
 		.number()
 		.int('Må være et heltall')
@@ -51,7 +51,7 @@ export const b8WorkforceSchema = z.object({
 		.int('Må være et heltall')
 		.min(0, 'Må være 0 eller mer')
 		.optional(),
-	eventuellUtfyllendeInfo: z.string().optional(),
+	anyAdditionalInfo: z.string().optional(),
 })
 
 export type EmployeePerCountry = z.infer<typeof employeePerCountrySchema>

@@ -34,8 +34,8 @@ interface EmployeeCountAlertProps {
 
 function EmployeeCountAlert({ form, totalEmployees }: EmployeeCountAlertProps) {
 	const employeeSum = useStore(form.store, (state) => {
-		const h = state.values.heltidsansatte ?? 0
-		const m = state.values.midlertidigAnsatte ?? 0
+		const h = state.values.fullTimeEmployees ?? 0
+		const m = state.values.temporaryEmployees ?? 0
 		return h + m
 	})
 	const matches = employeeSum === totalEmployees
@@ -55,10 +55,10 @@ function EmployeeCountAlert({ form, totalEmployees }: EmployeeCountAlertProps) {
 
 function GenderCountAlert({ form, totalEmployees }: EmployeeCountAlertProps) {
 	const genderSum = useStore(form.store, (state) => {
-		const menn = state.values.menn ?? 0
-		const kvinner = state.values.kvinner ?? 0
-		const annet = state.values.annet ?? 0
-		return menn + kvinner + annet
+		const men = state.values.men ?? 0
+		const women = state.values.women ?? 0
+		const other = state.values.other ?? 0
+		return men + women + other
 	})
 	const matches = genderSum === totalEmployees
 
@@ -96,8 +96,8 @@ export function B8WorkforceForm({
 			return [
 				{
 					id: crypto.randomUUID(),
-					land: companyCountry,
-					antallAnsatte: totalEmployees,
+					country: companyCountry,
+					numberOfEmployees: totalEmployees,
 				},
 			]
 		}
@@ -112,14 +112,14 @@ export function B8WorkforceForm({
 			schema: b8WorkforceSchema,
 			defaultValues: {
 				reportingYear: reportingYear.toString(),
-				heltidsansatte: totalEmployees,
-				deltidsansatte: 0,
-				midlertidigAnsatte: 0,
-				menn: 0,
-				kvinner: 0,
-				annet: 0,
-				ansattePerLand: defaultEmployeesByCountry,
-				eventuellUtfyllendeInfo: '',
+				fullTimeEmployees: totalEmployees,
+				partTimeEmployees: 0,
+				temporaryEmployees: 0,
+				men: 0,
+				women: 0,
+				other: 0,
+				employeesPerCountry: defaultEmployeesByCountry,
+				anyAdditionalInfo: '',
 			} as B8WorkforceFormValues,
 			transformBeforeSave: (values) => {
 				const left = values.employeesLeft ?? 0
@@ -134,15 +134,15 @@ export function B8WorkforceForm({
 		})
 
 	const employeeSum = useStore(form.store, (state) => {
-		const h = state.values.heltidsansatte ?? 0
-		const m = state.values.midlertidigAnsatte ?? 0
+		const h = state.values.fullTimeEmployees ?? 0
+		const m = state.values.temporaryEmployees ?? 0
 		return h + m
 	})
 	const genderSum = useStore(form.store, (state) => {
-		const menn = state.values.menn ?? 0
-		const kvinner = state.values.kvinner ?? 0
-		const annet = state.values.annet ?? 0
-		return menn + kvinner + annet
+		const men = state.values.men ?? 0
+		const women = state.values.women ?? 0
+		const other = state.values.other ?? 0
+		return men + women + other
 	})
 
 	const employeesLeft = useStore(
@@ -272,11 +272,11 @@ export function B8WorkforceForm({
 							</p>
 						</CardHeader>
 						<CardContent>
-							<form.AppField name="ansattePerLand">
+							<form.AppField name="employeesPerCountry">
 								{(field) => {
 									const rows = field.state.value ?? []
 									const totalAllocated = rows.reduce(
-										(sum, r) => sum + (r.antallAnsatte ?? 0),
+										(sum, r) => sum + (r.numberOfEmployees ?? 0),
 										0,
 									)
 									const remaining = totalEmployees - totalAllocated
@@ -311,7 +311,7 @@ export function B8WorkforceForm({
 															<TableRow key={item.id}>
 																<TableCell>
 																	<form.AppField
-																		name={`ansattePerLand[${i}].land`}
+																		name={`employeesPerCountry[${i}].country`}
 																	>
 																		{(f) => (
 																			<f.CountryField
@@ -323,7 +323,7 @@ export function B8WorkforceForm({
 																</TableCell>
 																<TableCell>
 																	<form.AppField
-																		name={`ansattePerLand[${i}].antallAnsatte`}
+																		name={`employeesPerCountry[${i}].numberOfEmployees`}
 																	>
 																		{(f) => (
 																			<f.NumberField label="" placeholder="0" />
@@ -385,8 +385,8 @@ export function B8WorkforceForm({
 													onClick={() =>
 														field.pushValue({
 															id: crypto.randomUUID(),
-															land: '',
-															antallAnsatte: 0,
+															country: '',
+															numberOfEmployees: 0,
 														})
 													}
 													disabled={status === 'submitted'}
@@ -428,7 +428,7 @@ export function B8WorkforceForm({
 						</CardHeader>
 						<CardContent className="space-y-6">
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<form.AppField name="heltidsansatte">
+								<form.AppField name="fullTimeEmployees">
 									{(field) => (
 										<field.NumberField
 											label={m["social.B8.fullTimeLabel"]()}
@@ -437,7 +437,7 @@ export function B8WorkforceForm({
 									)}
 								</form.AppField>
 
-								<form.AppField name="deltidsansatte">
+								<form.AppField name="partTimeEmployees">
 									{(field) => (
 										<field.NumberField
 											label={m["social.B8.partTimeLabel"]()}
@@ -448,7 +448,7 @@ export function B8WorkforceForm({
 							</div>
 
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<form.AppField name="midlertidigAnsatte">
+								<form.AppField name="temporaryEmployees">
 									{(field) => (
 										<field.NumberField
 											label={m["social.B8.temporaryLabel"]()}
@@ -474,15 +474,15 @@ export function B8WorkforceForm({
 						</CardHeader>
 						<CardContent className="space-y-6">
 							<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-								<form.AppField name="menn">
+								<form.AppField name="men">
 									{(field) => <field.NumberField label={m["social.B8.maleLabel"]()} />}
 								</form.AppField>
 
-								<form.AppField name="kvinner">
+								<form.AppField name="women">
 									{(field) => <field.NumberField label={m["social.B8.femaleLabel"]()} />}
 								</form.AppField>
 
-								<form.AppField name="annet">
+								<form.AppField name="other">
 									{(field) => <field.NumberField label={m["social.B8.otherLabel"]()} />}
 								</form.AppField>
 							</div>
@@ -548,7 +548,7 @@ export function B8WorkforceForm({
 					</Card>
 
 					{/* Eventuell utfyllende info */}
-					<form.AppField name="eventuellUtfyllendeInfo">
+					<form.AppField name="anyAdditionalInfo">
 						{(field) => (
 							<field.TextareaField
 								label={m["social.B8.additionalInfoLabel"]()}

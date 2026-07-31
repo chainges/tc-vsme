@@ -49,14 +49,14 @@ export function B10CompensationForm({
 			},
 			defaultValues: {
 				reportingYear: reportingYear.toString(),
-				minstelonnsansvar: false,
+				minimumWageLiability: false,
 			} as B10CompensationFormValues,
 		})
 
 	// Subscribe to fields for reactive updates
-	const minstelonnsansvar = useStore(
+	const minimumWageLiability = useStore(
 		form.store,
-		(state) => state.values.minstelonnsansvar,
+		(state) => state.values.minimumWageLiability,
 	)
 
 	const collectiveBargainingAgreement = useStore(
@@ -106,12 +106,12 @@ export function B10CompensationForm({
 							{/* Minstelønnsansvar */}
 							<div className='flex flex-col items-start gap-3'>
 								<h3 className='text-base font-semibold'>{m["social.B10.minimumWageLiabilityLabel"]()}</h3>
-								<form.AppField name='minstelonnsansvar'>
+								<form.AppField name='minimumWageLiability'>
 									{(field) => (
 										<field.SwitchField label='' description={m["social.B10.minimumWageLiabilityDescription"]()} />
 									)}
 								</form.AppField>
-								<span className='text-sm'>{minstelonnsansvar ? m["social.B10.yes"]() : m["social.B10.no"]()}</span>
+								<span className='text-sm'>{minimumWageLiability ? m["social.B10.yes"]() : m["social.B10.no"]()}</span>
 							</div>
 
 							{/* Hourly Pay */}
