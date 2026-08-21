@@ -9,6 +9,12 @@ export const Route = createFileRoute('/_appLayout/app/emissions')({
 	component: EmissionsPage,
 })
 
+// Hardcoded orgId for now
+const HARDCODED_ORG_ID = 'org_2tWO47gV8vEOLN1lrpV57N02Dh2'
+
+// Toggle between hardcoded and authContext orgId for testing
+const USE_HARDCODED_ORG = false // Set to true to use hardcoded orgId instead of authContext
+
 type EmissionsData = {
 	TotalCo2?: number
 	[key: string]: string | number | boolean | null | undefined
@@ -38,6 +44,9 @@ function EmissionsPage() {
 	const { isAuthenticated } = useConvexAuth()
 	const { authContext } = Route.useRouteContext()
 	const { orgId } = authContext
+	const orgIdToUse = USE_HARDCODED_ORG
+		? HARDCODED_ORG_ID
+		: orgId || HARDCODED_ORG_ID
 
 	// TanStack Query with intelligent caching
 	const {
@@ -47,7 +56,7 @@ function EmissionsPage() {
 		refetch,
 		isRefetching,
 	} = useQuery({
-		queryKey: ['emissions', { orgId }],
+		queryKey: ['emissions', { orgId: orgIdToUse }],
 		enabled: isAuthenticated,
 		queryFn: async () => {
 			const result = await getEmissions({})
@@ -93,7 +102,7 @@ function EmissionsPage() {
 				<div className="flex flex-col gap-2">
 					<h1 className="text-3xl font-bold">Emissions Data</h1>
 					<p className="text-muted-foreground">
-						Viewing emissions data for organization: {orgId}
+						Viewing emissions data for organization: {orgIdToUse}
 					</p>
 				</div>
 				<button

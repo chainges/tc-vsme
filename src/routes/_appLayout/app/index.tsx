@@ -22,9 +22,14 @@ export const Route = createFileRoute('/_appLayout/app/')({
 	component: RouteComponent,
 })
 
+type EmissionsData = {
+	TotalCo2?: number
+	[key: string]: string | number | boolean | null | undefined
+}
+
 function RouteComponent() {
-	const { isLoaded: isUserLoaded } = useUser()
-	const { isLoaded: isOrgLoaded } = useOrganization()
+	const { user, isLoaded: isUserLoaded } = useUser()
+	const { organization, isLoaded: isOrgLoaded } = useOrganization()
 	const { isAuthenticated } = useConvexAuth()
 	const selectedYear = useStore(yearStore, (s) => s.selectedYear)
 
@@ -33,12 +38,7 @@ function RouteComponent() {
 		isAuthenticated ? {} : 'skip',
 	)
 
-	// All years from 2023 through the current year, no manual updates needed
-	const START_YEAR = 2023
-	const years = Array.from(
-		{ length: new Date().getFullYear() - START_YEAR + 1 },
-		(_, i) => String(START_YEAR + i),
-	)
+	const years = ['2023', '2024', '2025']
 	const locationBasedData = years.map(
 		(y) => (allEmissions?.[y]?.locationBased as number) ?? null,
 	)
@@ -151,6 +151,38 @@ function RouteComponent() {
 						<HighchartsReact options={chartOptions} />
 					</CardContent>
 				</Card>
+
+				{/* {organization && (
+					<Card className="max-w-2xl">
+						<CardHeader>
+							<CardTitle>{orgData?.name || organization.name}</CardTitle>
+							<CardDescription>Current Organization</CardDescription>
+						</CardHeader>
+						<CardContent className="space-y-2 text-sm">
+							<p className="text-muted-foreground">ID: {organization.id}</p>
+							{orgData?.name && (
+								<p className="text-muted-foreground">Name: {orgData.name}</p>
+							)}
+							{orgData?.slug && (
+								<p className="text-muted-foreground">Slug: {orgData.slug}</p>
+							)}
+							{orgData?.orgNumber && (
+								<p className="text-muted-foreground">
+									Org. Number: {orgData.orgNumber}
+								</p>
+							)}
+							{orgData?.website && (
+								<p className="text-muted-foreground">
+									Website: {orgData.website}
+								</p>
+							)}
+						</CardContent>
+					</Card>
+				)} */}
+
+				{/* <pre className="p-4 border border-border rounded text-xs bg-muted/50 overflow-auto max-h-[400px]">
+					{JSON.stringify(user, null, 2)}
+				</pre> */}
 			</div>
 		</div>
 	)
