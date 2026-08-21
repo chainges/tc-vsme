@@ -68,6 +68,8 @@ export function FormCard({
 	const { isExpanded, toggleExpand } = useExpandable()
 	const contentRef = useRef<HTMLDivElement>(null)
 	const hasHelpButton = Boolean(buttonText)
+	// Fall back to 'Not Started' for unexpected status values from the backend
+	const statusConfig = STATUS_CONFIG[status] ?? STATUS_CONFIG.not_started
 
 	return (
 		<Card
@@ -151,9 +153,9 @@ export function FormCard({
 						<div className="flex gap-2">
 							<Badge
 								variant="secondary"
-								className={STATUS_CONFIG[status].className}
+								className={statusConfig.className}
 							>
-								{STATUS_CONFIG[status].label}
+								{statusConfig.label}
 							</Badge>
 							{module && (
 								<Badge
@@ -173,7 +175,7 @@ export function FormCard({
 							<div>
 								Status:{' '}
 								<span className="font-medium">
-									{STATUS_CONFIG[status].label}
+									{statusConfig.label}
 								</span>
 							</div>
 							{version !== undefined && <div>Version: {version}</div>}
