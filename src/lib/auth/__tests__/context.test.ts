@@ -62,9 +62,13 @@ describe('getAuthContext', () => {
 			mockConvexHttpClient,
 		)
 
-                // Clear cache before each test
-                const { authContextCache } = await import('../context')
-                authContextCache.clear()
+		// Clear cache before each test
+		const { authContextCache } = await import('../context')
+		authContextCache.clear()
+	})
+
+	describe('Unauthenticated User', () => {
+		it('returns null when no userId in session', async () => {
 			mockAuth.mockResolvedValue({ userId: null, orgId: null })
 
 			const { getAuthContext } = await import('../context')

@@ -103,7 +103,6 @@ export function C2Scope3EmissionsForm() {
 		queryKey: ['emissions', organization?.id, reportingYear],
 		queryFn: async () => {
 			const result = await getEmissions({
-				orgIdToUse: organization!.id,
 				year: reportingYear,
 			})
 
@@ -320,7 +319,7 @@ export function C2Scope3EmissionsForm() {
 				</fieldset>
 
 				<FormButtons
-					status={status as 'draft' | 'submitted'}
+					status={status as 'not_started' | 'draft' | 'submitted'}
 					isSaving={isSaving}
 					onSaveDraft={saveDraft}
 					onSubmit={submit}

@@ -9,7 +9,10 @@ import { B10CompensationForm } from '@/components/forms/social/B10Form'
 import { C5AdditionalWorkforceForm } from '@/components/forms/social/C5Form'
 import { C6HumanRightsPoliciesForm } from '@/components/forms/social/C6Form'
 import { C7SeriousHumanRightsForm } from '@/components/forms/social/C7Form'
-import { FormCard } from '@/components/ui/expandable-card-simple'
+import {
+	FormCard,
+	type FormStatus,
+} from '@/components/ui/expandable-card-simple'
 import { useOrgGuard } from '@/hooks/use-org-guard'
 import { yearStore } from '@/lib/year-store'
 
@@ -84,7 +87,7 @@ function SocialPage() {
 				title="Arbeidsstyrke"
 				updatedDate={formatDate(workforce?.lastModifiedAt)}
 				toolTip="Rapporter ansettelsesforhold, kjønnsfordeling og geografisk fordeling av arbeidsstyrken."
-				status={workforce?.status ?? 'draft'}
+				status={(workforce?.status ?? 'not_started') as FormStatus}
 				contributor={workforce?.contributor || { name: 'Unknown' }}
 				code="B8"
 				module="Basic Module"
@@ -105,7 +108,7 @@ function SocialPage() {
 				title="Helse og sikkerhet"
 				updatedDate={formatDate(healthSafety?.lastModifiedAt)}
 				toolTip="Rapporter arbeidsulykker, sykefravær, HMS-opplæring og omkomne."
-				status={healthSafety?.status ?? 'draft'}
+				status={(healthSafety?.status ?? 'not_started') as FormStatus}
 				contributor={healthSafety?.contributor || { name: 'Unknown' }}
 				code="B9"
 				module="Basic Module"
@@ -122,7 +125,7 @@ function SocialPage() {
 				title="Kompensasjon og kollektive forhandlinger"
 				updatedDate={formatDate(compensationCollective?.lastModifiedAt)}
 				toolTip="Rapporter tariffavtaledekning, gjennomsnittlig opplæring og minstelønnsansvar."
-				status={compensationCollective?.status ?? 'draft'}
+				status={(compensationCollective?.status ?? 'not_started') as FormStatus}
 				contributor={compensationCollective?.contributor || { name: 'Unknown' }}
 				code="B10"
 				module="Basic Module"
@@ -141,7 +144,7 @@ function SocialPage() {
 				title="Arbeid-privatliv-balanse"
 				updatedDate={formatDate(workLifeBalance?.lastModifiedAt)}
 				toolTip="Rapporter foreldrepermisjon og relaterte ordninger."
-				status={workLifeBalance?.status ?? 'draft'}
+				status={workLifeBalance?.status ?? 'not_started'}
 				contributor={workLifeBalance?.contributor || { name: 'Unknown' }}
 				code="B11"
 				module="Basic Module"
@@ -159,7 +162,7 @@ function SocialPage() {
 				title="Additional (general) workforce characteristics"
 				updatedDate={formatDate(additionalWorkforce?.lastModifiedAt)}
 				toolTip="Companies with more than 50 employees may report on workforce characteristics."
-				status={additionalWorkforce?.status ?? 'draft'}
+				status={(additionalWorkforce?.status ?? 'not_started') as FormStatus}
 				contributor={additionalWorkforce?.contributor || { name: 'Unknown' }}
 				code="C5"
 				module="Comprehensive Module"
@@ -178,7 +181,7 @@ function SocialPage() {
 				title="Human rights policies and processes"
 				updatedDate={formatDate(humanRightsPolicies?.lastModifiedAt)}
 				toolTip="Code of conduct or human rights policy and complaints-handling mechanism on workforce?"
-				status={humanRightsPolicies?.status ?? 'draft'}
+				status={(humanRightsPolicies?.status ?? 'not_started') as FormStatus}
 				contributor={humanRightsPolicies?.contributor || { name: 'Unknown' }}
 				code="C6"
 				module="Comprehensive Module"
@@ -197,7 +200,9 @@ function SocialPage() {
 				title="Severe negative human rights incidents"
 				updatedDate={formatDate(seriousHumanRightsIncidents?.lastModifiedAt)}
 				toolTip="Disclosure of human rights incidents."
-				status={seriousHumanRightsIncidents?.status ?? 'draft'}
+				status={
+					(seriousHumanRightsIncidents?.status ?? 'not_started') as FormStatus
+				}
 				contributor={
 					seriousHumanRightsIncidents?.contributor || { name: 'Unknown' }
 				}

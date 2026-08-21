@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
-import { useAction } from 'convex/react'
+import { useAction, useConvexAuth } from 'convex/react'
 import { yearStore } from '@/lib/year-store'
 import { api } from '../../../../convex/_generated/api'
 
@@ -41,12 +41,12 @@ function EmissionsPage() {
 	const getEmissions = useAction(api.emissions.getEmissionsByOrgId)
 	const selectedYear = useStore(yearStore, (state) => state.selectedYear)
 
+	const { isAuthenticated } = useConvexAuth()
 	const { authContext } = Route.useRouteContext()
 	const { orgId } = authContext
 	const orgIdToUse = USE_HARDCODED_ORG
 		? HARDCODED_ORG_ID
 		: orgId || HARDCODED_ORG_ID
-	console.log('orgIdToUse', orgIdToUse)
 
 	// TanStack Query with intelligent caching
 	const {
@@ -57,15 +57,12 @@ function EmissionsPage() {
 		isRefetching,
 	} = useQuery({
 		queryKey: ['emissions', { orgId: orgIdToUse }],
+		enabled: isAuthenticated,
 		queryFn: async () => {
-			const result = await getEmissions({
-				orgIdToUse: orgIdToUse,
-				testingMode: USE_HARDCODED_ORG,
-			})
+			const result = await getEmissions({})
 			if (!result.success) {
 				throw new Error(result.error || 'Failed to fetch data')
 			}
-			console.log('result.data', result.data)
 			return result.data as Record<string, EmissionsData>
 		},
 		staleTime: 5 * 60 * 1000, // Data fresh for 5 minutes

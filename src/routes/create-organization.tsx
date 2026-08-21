@@ -1,4 +1,4 @@
-import { useOrganizationList, useUser } from '@clerk/react'
+import { useOrganization, useOrganizationList, useUser } from '@clerk/react'
 import { auth, clerkClient } from '@clerk/tanstack-react-start/server'
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
@@ -18,7 +18,10 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { getAuthContext, invalidateAuthContext } from '@/lib/auth'
-import { setupOrganization } from '@/lib/convex/setup-organization'
+import {
+	registerActiveOrganization,
+	setupOrganization,
+} from '@/lib/convex/setup-organization'
 
 /**
  * Server function to check Clerk directly for hasVsme permission.
@@ -32,6 +35,24 @@ const checkClerkHasVsme = createServerFn({ method: 'GET' }).handler(
 		const client = await clerkClient()
 		const user = await client.users.getUser(userId)
 		return Boolean(user.publicMetadata?.hasVsme)
+	},
+)
+
+/**
+ * Server function to check Clerk directly for the active organization's hasVsme flag.
+ * Mirrors checkClerkHasVsme but for the active org. Used as a fallback when Convex
+ * doesn't yet know about an org the user was invited to (admin set
+ * publicMetadata.hasVsme = true on the org).
+ */
+const checkClerkOrgHasVsme = createServerFn({ method: 'GET' }).handler(
+	async () => {
+		const { orgId } = await auth()
+		if (!orgId) return false
+		const client = await clerkClient()
+		const org = await client.organizations.getOrganization({
+			organizationId: orgId,
+		})
+		return Boolean(org.publicMetadata?.hasVsme)
 	},
 )
 
@@ -50,41 +71,45 @@ export const Route = createFileRoute('/create-organization')({
 			throw redirect({ to: '/sign-in' })
 		}
 
-		// Fallback check: if Convex doesn't know about user's hasVsme permission yet,
+		// Fallback check: if Convex doesn't know about the user's/org's hasVsme
+		// permission yet (e.g. user was just invited to an org with hasVsme set),
 		// directly check Clerk exactly once for this route to avoid rate limits elsewhere.
 		if (!authContext.hasVsme && !authContext.orgHasVsme) {
-			const clerkHasVsme = await checkClerkHasVsme()
-			if (clerkHasVsme) {
-				authContext.hasVsme = true
-				// We also flag needsOrgSetup because they have the permission but no DB
-				authContext.needsOrgSetup = true
+			try {
+				const clerkUserHasVsme = await checkClerkHasVsme()
+				const clerkOrgHasVsme = clerkUserHasVsme
+					? false
+					: await checkClerkOrgHasVsme()
+				if (clerkUserHasVsme) {
+					authContext.hasVsme = true
+				}
+				if (clerkOrgHasVsme) {
+					authContext.orgHasVsme = true
+				}
+				if (clerkUserHasVsme || clerkOrgHasVsme) {
+					// They have the permission but no DB record yet
+					authContext.needsOrgSetup = true
+				}
+			} catch (err) {
+				// Clerk may be unreachable (e.g. transient outage / rate limit, or no
+				// request context). Fall through to the Convex-based decision below
+				// instead of crashing the route.
+				console.warn('Clerk permission fallback failed:', err)
 			}
 		}
 
-		// Check 2: User hasVsme permission ->
-		if (authContext.hasVsme) {
-			console.log('User has VSME permission')
-
-			return { authContext }
-		}
-		// Check 3: User must have hasVsme permission
-		// if (authContext.orgHasVsme && !authContext.vsmeDb) {
-		if (authContext.needsOrgSetup) {
-			return { authContext }
-		}
-
-		// Check 4: User must have hasVsme permission
+		// No VSME access (neither personal nor org-level) → home
 		if (!authContext.hasVsme && !authContext.orgHasVsme) {
-			console.log('User does not have VSME permission')
 			throw redirect({ to: '/' })
 		}
 
-		// Check 5: Redirect if user already has full access
+		// Already fully set up → dashboard. This must precede the allow fall-through,
+		// otherwise a user with both hasVsme and canAccessDashboard would slip through.
 		if (authContext.canAccessDashboard) {
 			throw redirect({ to: '/app' })
 		}
 
-		// Pass auth context to component
+		// User has VSME permission but still needs to set up / register an org
 		return { authContext }
 	},
 })
@@ -102,12 +127,25 @@ function CreateOrganizationPage() {
 		isLoaded: isOrgListLoaded,
 	} = useOrganizationList()
 	const { user, isLoaded: isUserLoaded } = useUser()
+	const { organization, isLoaded: isOrgLoaded } = useOrganization()
 	const navigate = useNavigate()
 
 	const [selectedOrg, setSelectedOrg] = useState<BrregUnit | null>(null)
 	const [slug, setSlug] = useState('')
 	const [isCreating, setIsCreating] = useState(false)
 	const [error, setError] = useState<string | null>(null)
+
+	// Detect "register existing active org" mode: the user is a member of a Clerk org
+	// that has hasVsme set but has not been set up in the Convex database yet.
+	const activeOrgName = organization?.name ?? null
+	const registrationNumberRaw = organization?.publicMetadata?.registrationNumber
+	const registrationNumber =
+		typeof registrationNumberRaw === 'string' ? registrationNumberRaw : null
+	const clerkOrgHasVsme = Boolean(organization?.publicMetadata?.hasVsme)
+	const clerkVsmeDb = Boolean(organization?.publicMetadata?.vsmeDb)
+	const isRegisterExisting = Boolean(
+		organization && clerkOrgHasVsme && !clerkVsmeDb,
+	)
 
 	const handleSelect = (org: BrregUnit) => {
 		setSelectedOrg(org)
@@ -196,7 +234,28 @@ function CreateOrganizationPage() {
 		}
 	}
 
-	if (!isOrgListLoaded || !isUserLoaded) {
+	const handleRegisterExisting = async () => {
+		setIsCreating(true)
+		setError(null)
+		try {
+			const result = await registerActiveOrganization()
+			if (result.success) {
+				await invalidateAuthContext()
+				navigate({ to: '/app' })
+			} else {
+				setError(result.error || 'Failed to register organization')
+			}
+		} catch (err: unknown) {
+			console.error('Registration error:', err)
+			setError(
+				err instanceof Error ? err.message : 'An unexpected error occurred',
+			)
+		} finally {
+			setIsCreating(false)
+		}
+	}
+
+	if (!isOrgListLoaded || !isUserLoaded || !isOrgLoaded) {
 		return (
 			<div className="min-h-screen flex items-center justify-center">
 				<Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -214,76 +273,129 @@ function CreateOrganizationPage() {
 							Set Up Your Organization
 						</h1>
 						<p className="text-muted-foreground">
-							Search for your organization in the Brønnøysund Register Center
+							{isRegisterExisting
+								? 'Register your organization to continue.'
+								: 'Search for your organization in the Brønnøysund Register Center'}
 						</p>
 					</div>
 
-					<Card>
-						<CardHeader>
-							<CardTitle>Find Organization</CardTitle>
-							<CardDescription>
-								Search by name or organization number (9 digits).
-							</CardDescription>
-						</CardHeader>
-						<CardContent className="space-y-4">
-							<BrregSearch onSelect={handleSelect} />
-
-							{selectedOrg && (
-								<div className="mt-4 pt-4 border-t space-y-4 animate-in fade-in slide-in-from-top-2">
-									<div className="grid gap-2">
-										<Label>Organization Name</Label>
-										<Input value={selectedOrg.navn} disabled />
-									</div>
-
-									<div className="grid gap-2">
-										<Label>Organization Slug (URL)</Label>
-										<Input
-											value={slug}
-											onChange={(e) => setSlug(e.target.value)}
-											placeholder="organization-slug"
-										/>
-										<p className="text-xs text-muted-foreground">
-											This will be used in your organization's URL.
-										</p>
-									</div>
-
-									<div className="grid grid-cols-2 gap-4">
-										<div className="grid gap-2">
-											<Label>Org. Number</Label>
-											<Input value={selectedOrg.organisasjonsnummer} disabled />
-										</div>
-										<div className="grid gap-2">
-											<Label>Type</Label>
-											<Input
-												value={selectedOrg.organisasjonsform?.beskrivelse || ''}
-												disabled
-											/>
-										</div>
-									</div>
+					{isRegisterExisting ? (
+						<Card>
+							<CardHeader>
+								<CardTitle>Register Your Organization</CardTitle>
+								<CardDescription>
+									You are a member of an organization that is ready to be set
+									up.
+								</CardDescription>
+							</CardHeader>
+							<CardContent className="space-y-4">
+								<div className="grid gap-2">
+									<Label>Organization Name</Label>
+									<Input value={activeOrgName ?? ''} disabled />
 								</div>
-							)}
-
-							{error && (
-								<div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
-									⚠️ {error}
+								<div className="grid gap-2">
+									<Label>Registration Number</Label>
+									<Input value={registrationNumber ?? ''} disabled />
 								</div>
-							)}
-						</CardContent>
-						<CardFooter className="flex justify-end">
-							<Button
-								onClick={handleCreate}
-								disabled={!selectedOrg || !slug || isCreating}
-								className="w-full sm:w-auto"
-							>
-								{isCreating && (
-									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								{!registrationNumber && (
+									<p className="text-sm text-destructive">
+										Your organization does not have a registration number set.
+										Ask an administrator to add it to the organization's
+										metadata before continuing.
+									</p>
 								)}
-								{isCreating
-									? 'Creating Organization...'
-									: 'Create Organization'}
-							</Button>
-						</CardFooter>
-					</Card>
+								{error && (
+									<div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+										⚠️ {error}
+									</div>
+								)}
+							</CardContent>
+							<CardFooter className="flex justify-end">
+								<Button
+									onClick={handleRegisterExisting}
+									disabled={!registrationNumber || isCreating}
+									className="w-full sm:w-auto"
+								>
+									{isCreating && (
+										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+									)}
+									{isCreating ? 'Registering...' : 'Register Organization'}
+								</Button>
+							</CardFooter>
+						</Card>
+					) : (
+						<Card>
+							<CardHeader>
+								<CardTitle>Find Organization</CardTitle>
+								<CardDescription>
+									Search by name or organization number (9 digits).
+								</CardDescription>
+							</CardHeader>
+							<CardContent className="space-y-4">
+								<BrregSearch onSelect={handleSelect} />
+
+								{selectedOrg && (
+									<div className="mt-4 pt-4 border-t space-y-4 animate-in fade-in slide-in-from-top-2">
+										<div className="grid gap-2">
+											<Label>Organization Name</Label>
+											<Input value={selectedOrg.navn} disabled />
+										</div>
+
+										<div className="grid gap-2">
+											<Label>Organization Slug (URL)</Label>
+											<Input
+												value={slug}
+												onChange={(e) => setSlug(e.target.value)}
+												placeholder="organization-slug"
+											/>
+											<p className="text-xs text-muted-foreground">
+												This will be used in your organization's URL.
+											</p>
+										</div>
+
+										<div className="grid grid-cols-2 gap-4">
+											<div className="grid gap-2">
+												<Label>Org. Number</Label>
+												<Input
+													value={selectedOrg.organisasjonsnummer}
+													disabled
+												/>
+											</div>
+											<div className="grid gap-2">
+												<Label>Type</Label>
+												<Input
+													value={
+														selectedOrg.organisasjonsform?.beskrivelse || ''
+													}
+													disabled
+												/>
+											</div>
+										</div>
+									</div>
+								)}
+
+								{error && (
+									<div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
+										⚠️ {error}
+									</div>
+								)}
+							</CardContent>
+							<CardFooter className="flex justify-end">
+								<Button
+									onClick={handleCreate}
+									disabled={!selectedOrg || !slug || isCreating}
+									className="w-full sm:w-auto"
+								>
+									{isCreating && (
+										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+									)}
+									{isCreating
+										? 'Creating Organization...'
+										: 'Create Organization'}
+								</Button>
+							</CardFooter>
+						</Card>
+					)}
 
 					{import.meta.env.DEV && (
 						<details className="mt-4 p-4 rounded-lg bg-muted/30 border border-border text-xs">
