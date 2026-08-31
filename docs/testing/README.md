@@ -1,7 +1,7 @@
 # Authentication Test Suite
 
 ## Status
-- **Tests:** 62/62 passing (100%)
+- **Tests:** 62/62 passing (100%) as of the 2026-01-21 snapshot below; suite has since grown (emissions, mongodb, organizations, users tests)
 - **Grade:** A - Production Ready
 - **Last Updated:** January 20, 2026
 
@@ -16,27 +16,29 @@
 
 ```bash
 # All auth tests
-bun test convex/_utils/__tests__/auth.test.ts \
+bun run vitest run convex/_utils/__tests__/auth.test.ts \
   convex/__tests__/users-auth.test.ts \
   convex/__tests__/organizations-auth.test.ts \
   convex/__tests__/jwt-integration.test.ts \
   src/lib/auth/__tests__/context.test.ts
 
 # Auth utilities only
-bun test convex/_utils/__tests__/auth.test.ts
+bun run vitest run convex/_utils/__tests__/auth.test.ts
 
 # Watch mode
-bun test --watch convex/_utils/__tests__/auth.test.ts
+bun run vitest convex/_utils/__tests__/auth.test.ts
 
 # All tests
 bun run test
 ```
 
+Note: `bun test` (Bun's own runner) silently skips this project's Vitest config (edge-runtime for Convex, jsdom for frontend) — use `bun run vitest` / `bun run test` instead.
+
 ## Documentation
 
 | Document | Purpose |
 |----------|---------|
-| [SUMMARY.md](./SUMMARY.md) | Comprehensive test analysis and findings |
+| [SUMMARY.md](../OLD/testing-SUMMARY-2026-01.md) | Comprehensive test analysis (frozen snapshot, 2026-01-21) |
 | [IMPROVEMENTS.md](./IMPROVEMENTS.md) | New tests added and recommendations |
 
 ## Key Findings

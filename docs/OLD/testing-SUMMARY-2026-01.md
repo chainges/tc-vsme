@@ -1,5 +1,7 @@
 # Authentication Test Suite - Summary
 
+> **Snapshot of 2026-01-21**; suite has since grown (emissions, mongodb, organizations, users tests) and moved to the Vitest two-project split.
+
 ## Test Results
 - **Total:** 62 tests
 - **Passing:** 62 (100%)

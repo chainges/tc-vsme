@@ -119,8 +119,10 @@ The project follows a strict TDD approach as documented in `.agents/skills/tdd`:
 ### Convex Schema
 - **Organizations**: Store org records with Clerk org IDs
 - **Users**: Store user records with multi-org support
-- **Todos**: Example collection for todos
-- **Products**: Example collection for products
+- **Form tables**: `formGeneral`, `formEnvironmental`, `formSocial`, `formGovernance`
+- **Targets**: `targets` table
+- **Todos**: Demo collection for todos
+- **Products**: Demo collection for products
 
 ### External Data Source
 - **MongoDB**: External emissions data (connected via Convex actions)
@@ -139,8 +141,8 @@ The project follows a strict TDD approach as documented in `.agents/skills/tdd`:
 - Examples: Button, Card, Dialog, Input, etc.
 
 ### Tailwind CSS
-- Configuration in `tailwind.config.ts`
-- Global styles in `src/styles.css`
+- Tailwind v4, CSS-first configuration (no `tailwind.config.ts`)
+- Configuration and global styles in `src/styles.css`
 
 ## i18n
 
@@ -153,11 +155,16 @@ The project follows a strict TDD approach as documented in `.agents/skills/tdd`:
 
 Comprehensive documentation is available in the `docs/` directory:
 
-- **Authentication**: `authentication-approach.md`, `authentication-flow.md`, `authentication-implementation-plan.md`
-- **Story 5 (Convex Schema)**: `story5-*.md` files
-- **Story 7 (JWT Integration)**: `story7-implementation-summary.md`
-- **Story 7.1 (MongoDB Integration)**: `story7.1-*.md` files
-- **Testing**: `testing/` directory with test guidelines
+- **Authentication**: `AUTH.md` — the current, comprehensive auth doc
+- **Forms**: `forms/` — form implementation reference, validation guide, new-form recipe
+- **Private/internal notes**: `private/` — form-validation and organization-guard notes, GEMINI.md
+- **Testing**: `testing/` — test guidelines (`README.md`)
+- **Walkthroughs**: `walkthroughs/` — specific bug-fix/incident writeups
+- **Research**: `research/` — investigation writeups (e.g. skills directory consolidation)
+- **Agent process docs**: `agents/` — issue tracker, triage labels, domain docs
+- **Archived/deprecated**: `OLD/` — superseded docs kept for reference
+
+Plans and audits live in `plans/` at the repo root (e.g. `codebase-audit-2026-07.md`).
 
 ## Quick Start
 
@@ -171,24 +178,35 @@ npx convex dev
 # Start React development server
 bun run dev
 
-# Run tests
-bun run vitest
+# Run tests (Vitest, two-project split: edge-runtime for Convex, jsdom for frontend)
+bun run test
 ```
 
 ## Key Patterns
 
 ### Route Protection
-Protected routes use `beforeLoad` hooks in `_appLayout`:
+Protected routes use `beforeLoad` hooks in `_appLayout`, calling `getAuthContext()` and redirecting based on permission flags — no `loader`:
 
 ```typescript
 // src/routes/_appLayout/route.tsx
-export const Route = createFileRoute("/_appLayout")({
+export const Route = createFileRoute('/_appLayout')({
   component: RouteComponent,
-  beforeLoad: async () => await authStateFn(),
-  loader: async ({ context }) => {
-    return { userId: context.userId };
+  beforeLoad: async () => {
+    const authContext = await getAuthContext()
+
+    if (!authContext) {
+      throw redirect({ to: '/sign-in' })
+    }
+    if (authContext.needsOrgSetup) {
+      throw redirect({ to: '/create-organization' })
+    }
+    if (!authContext.canAccessDashboard) {
+      throw redirect({ to: '/create-organization' })
+    }
+
+    return { authContext }
   },
-});
+})
 ```
 
 ## Success Criteria

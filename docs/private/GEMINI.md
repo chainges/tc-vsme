@@ -116,13 +116,13 @@ When user's prompt is NOT in English:
 
 **Before modifying ANY file:**
 
-1. Check `CODEBASE.md` → File Dependencies
+1. Check `AGENTS.md` / `CLAUDE.md` → File Dependencies
 2. Identify dependent files
 3. Update ALL affected files together
 
 ### 🗺️ System Map Read
 
-> 🔴 **MANDATORY:** Read `ARCHITECTURE.md` at session start to understand Agents, Skills, and Scripts.
+> 🔴 **MANDATORY:** Read `.agent/ARCHITECTURE.md` at session start to understand Agents, Skills, and Scripts.
 
 **Path Awareness:**
 
@@ -242,8 +242,8 @@ When user's prompt is NOT in English:
 
 | Task         | Read                            |
 | ------------ | ------------------------------- |
-| Web UI/UX    | `.agent/frontend-specialist.md` |
-| Mobile UI/UX | `.agent/mobile-developer.md`    |
+| Web UI/UX    | `.agent/agents/frontend-specialist.md` |
+| Mobile UI/UX | `.agent/agents/mobile-developer.md`    |
 
 **These agents contain:**
 

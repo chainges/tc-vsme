@@ -1,6 +1,6 @@
 # TC-VSME Authentication Documentation
 
-**Last Updated**: 2026-05-19
+**Last Updated**: 2026-02-19
 
 This document describes the complete authentication implementation for TC-VSME using TanStack Start, Clerk, and Convex.
 
@@ -165,11 +165,30 @@ export const Route = createFileRoute('/_appLayout')({
 
 ```typescript
 import { clerkMiddleware } from '@clerk/tanstack-react-start/server'
-import { createStart } from '@tanstack/react-start'
+import { createMiddleware, createStart } from '@tanstack/react-start'
+
+// Diagnostic middleware: logs the real error before h3 wraps it as an
+// unhandled HTTPError (which masks message/stack in the response body).
+const errorLoggingMiddleware = createMiddleware({ type: 'request' }).server(
+  async ({ next }) => {
+    try {
+      return await next()
+    } catch (error) {
+      console.error('🔥 REAL ERROR (pre-h3):', error)
+      throw error
+    }
+  },
+)
 
 export const startInstance = createStart(() => {
+  const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+  const secretKey = process.env.CLERK_SECRET_KEY
+
   return {
-    requestMiddleware: [clerkMiddleware()], // Only Clerk's middleware
+    requestMiddleware: [
+      errorLoggingMiddleware,
+      clerkMiddleware({ publishableKey, secretKey }),
+    ],
   }
 })
 ```
@@ -178,6 +197,8 @@ export const startInstance = createStart(() => {
 - Parses JWT from cookies
 - Makes `auth()` function available in server functions
 - Does NOT enforce route protection (that's done in `beforeLoad`)
+
+`errorLoggingMiddleware` runs first purely for diagnostics — it doesn't affect auth behavior.
 
 ---
 
@@ -522,7 +543,7 @@ await invalidateAuthContext() // Clear cache
 navigate({ to: '/app' }) // Fresh data fetched, access granted
 ```
 
-### 6. Calling Convex Actions Inside TanStack Query Without Auth Gate
+### 5. Calling Convex Actions Inside TanStack Query Without Auth Gate
 
 **Problem**: `useQuery` fires immediately on mount, before `ConvexProviderWithClerk` has set the auth token on the Convex client. The action goes out unauthenticated.
 
@@ -546,7 +567,7 @@ const { data } = useQuery({
 
 **Why `useConvexAuth` and not `useAuth` from Clerk?** `useConvexAuth().isAuthenticated` reflects when the Convex client itself has a token set — which is what matters. Clerk's `isSignedIn` can be `false` during SSR hydration even when the user is signed in.
 
-### 5. Dual-Write Inconsistency
+### 6. Dual-Write Inconsistency
 
 **Problem**: Permission flags written to Convex but not Clerk metadata (or vice versa).
 
@@ -625,7 +646,7 @@ export default {
 
 ### Provider Setup
 
-**File**: `src/__root.tsx`
+**File**: `src/routes/__root.tsx`
 
 ```typescript
 import AppClerkProvider from '@/integrations/clerk/provider'
@@ -652,8 +673,6 @@ function RootComponent() {
 
 ## Related Documentation
 
-- **Auth Optimization Plan**: `plans/auth-optimization-plan.md` - Complete 5-story optimization plan
-- **Convex Schema**: `docs/story5-convex-schema.md` - Database schema including permission flags
 - **Testing Guide**: `docs/testing/` - Test guidelines for auth-related code
 
 ---
@@ -720,7 +739,7 @@ navigate({ to: '/app' })
 ### Error: "Unauthorized: User must be authenticated"
 
 1. **Check `bun convex dev` is running:** Dev deployments are paused without it — actions silently fail or return no data. Always keep `convex dev` running during local development.
-2. **Check auth gate in TanStack Query:** If calling a Convex action inside `useQuery`, add `enabled: isAuthenticated` (from `useConvexAuth()`). See pitfall #6 above.
+2. **Check auth gate in TanStack Query:** If calling a Convex action inside `useQuery`, add `enabled: isAuthenticated` (from `useConvexAuth()`). See pitfall #5 above.
 3. **Check await:** Make sure you're `await`ing auth functions
 4. **Check login status:** Verify user is actually signed in with Clerk
 5. **Check Convex logs:** Look for JWT verification errors

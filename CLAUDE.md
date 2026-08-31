@@ -127,6 +127,8 @@ Track session activity in `context/memory/{YYYY-MM-DD}.md`. One file per day, nu
 Log these silently as they happen. Never announce "I've logged that."
 
 ## Agent skills
+### Unslop
+Always apply the unslop skill when working on this project. Acknowledge that you did to the user.
 
 ### Issue tracker
 

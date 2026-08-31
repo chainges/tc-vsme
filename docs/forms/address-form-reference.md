@@ -7,8 +7,8 @@ This guide provides a complete, standalone reference for replicating the Address
 Ensure your project has the following dependencies:
 
 ```bash
-npm install @tanstack/react-form zod @tanstack/react-router convex
-npm install lucide-react clsx tailwind-merge
+bun add @tanstack/react-form zod @tanstack/react-router convex
+bun add lucide-react clsx tailwind-merge
 # Plus your UI library (e.g., shadcn/ui components: button, input, label, select, etc.)
 ```
 
@@ -39,7 +39,7 @@ export default defineSchema({
 });
 ```
 
-### `convex/contacts.ts`
+### `convex/contacts.ts` (code to create — this file does not exist yet)
 The backend logic for CRUD operations and file upload generation.
 
 ```typescript
@@ -118,7 +118,7 @@ export const getUrl = query({
 
 Create a single source of truth for validation and TypeScript types.
 
-### `src/lib/schemas/contacts.ts`
+### `src/lib/forms/schemas/contacts.ts`
 
 ```typescript
 import { z } from 'zod'
@@ -148,7 +148,7 @@ export type Contact = z.infer<typeof contactSchema>
 
 Setting up TanStack Form with a custom context allows you to build reusable, type-safe components.
 
-### `src/hooks/demo.form-context.ts`
+### `src/hooks/form-context.ts`
 Defines the context to be used by the components.
 
 ```typescript
@@ -158,13 +158,13 @@ export const { fieldContext, useFieldContext, formContext, useFormContext } =
   createFormHookContexts()
 ```
 
-### `src/components/FormComponents.tsx`
+### `src/components/demo.FormComponents.tsx` (+ `src/components/form-fields/`)
 These are wrappers around your UI library (e.g., Shadcn) that connect to the form state.
 
 ```tsx
 import { useStore } from "@tanstack/react-form";
 // Types and other component imports (Button, Input, Label, etc from your UI lib)
-import { useFieldContext, useFormContext } from "@/hooks/demo.form-context";
+import { useFieldContext, useFormContext } from "@/hooks/form-context";
 import { ImagePlus, Trash2, Upload, X } from "lucide-react";
 // ... imports
 
@@ -215,13 +215,13 @@ export function SubscribeButton({ label }: { label: string }) {
 }
 ```
 
-### `src/hooks/demo.form.ts`
+### `src/hooks/form.ts`
 The factory that creates the `useAppForm` hook with your components injected.
 
 ```typescript
 import { createFormHook } from "@tanstack/react-form";
 import { ImageField, Select, SubscribeButton, TextArea, TextField } from "../components/demo.FormComponents";
-import { fieldContext, formContext } from "./demo.form-context";
+import { fieldContext, formContext } from "./form-context";
 
 export const { useAppForm } = createFormHook({
 	fieldComponents: {
@@ -240,8 +240,8 @@ export const { useAppForm } = createFormHook({
 
 ## 5. Helper Hooks
 
-### `src/hooks/use-image-upload.tsx`
-Handles the client-side logic for file selection and preview generation before upload.
+### `src/hooks/use-image-upload.tsx` (does not exist — tracked separately)
+`ImageField.tsx` imports this hook but it was never written; the import is currently broken. Restoring it is tracked as its own fix, not part of this reference. Handles the client-side logic for file selection and preview generation before upload.
 
 ```typescript
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -312,7 +312,9 @@ export function useImageUpload({ onUpload }: UseImageUploadProps = {}) {
 
 The final form component that ties everything together.
 
-### `src/routes/demo/form.address.tsx`
+### `src/routes/_demoLayout/demo/form.address.tsx`
+
+The live implementation uses `useAppForm` from `@/hooks/form` and a single `fullName` field (not separate `firstName`/`lastName`); the pattern below is illustrative.
 
 Key Patterns:
 1.  **Form Initialization**: `useAppForm` with default values typed to `Contact`.
@@ -326,8 +328,8 @@ Key Patterns:
 
 ```tsx
 // ... imports
-import { useAppForm } from '@/hooks/demo.form'
-import { contactSchema, type Contact } from '@/lib/schemas/contacts'
+import { useAppForm } from '@/hooks/form'
+import { contactSchema, type Contact } from '@/lib/forms/schemas/contacts'
 
 function AddressForm() {
     // 1. Setup Data Mutations

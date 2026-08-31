@@ -48,8 +48,8 @@ This is a full-codebase audit across four dimensions: security & multi-tenancy, 
 - **Fix:** Delete these routes + `convex/todos.ts` from the build, or gate behind Clerk auth (401) + per-user rate limit if remy-chat becomes a real feature. No other demo refactoring.
 - **Verify:** Unauthenticated POST → 401/404; `todos` absent from Convex `api`.
 
-### 0.6 Strip debug scaffolding from product routes — S
-- **Files:** `src/routes/_appLayout/app/emissions.tsx` (`HARDCODED_ORG_ID` / `USE_HARDCODED_ORG`), `src/routes/_appLayout/route.tsx` (debug auth flags in breadcrumb), `src/routes/index.tsx` (`AuthStatus` bar), `convex/forms/debug.ts` (public `checkDuplicates`)
+### 0.6 Strip debug scaffolding from product routes — PARTIALLY DONE (emissions hardcoded-org removed) — S
+- **Files:** ~~`src/routes/_appLayout/app/emissions.tsx` (`HARDCODED_ORG_ID` / `USE_HARDCODED_ORG`)~~ done; `src/routes/_appLayout/route.tsx` (debug auth flags in breadcrumb), `src/routes/index.tsx` (`AuthStatus` bar), `convex/forms/debug.ts` (public `checkDuplicates`) still remain
 - **Why:** Hardcoded org toggle is one boolean from cross-tenant display; debug auth state leaks internals; `checkDuplicates` exposes form metadata publicly.
 - **Fix:** Delete hardcoded-org branch (0.2 removes its reason to exist), breadcrumb flags, and AuthStatus. Make `debug.ts` `internalQuery` or delete.
 - **Verify:** grep for the identifiers in `src/routes` → zero; emissions page renders for a logged-in org user.
