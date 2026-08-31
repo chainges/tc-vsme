@@ -323,10 +323,10 @@ python .agent/scripts/verify_all.py . --url http://localhost:3000
 npm run lint && npx tsc --noEmit
 
 # P0: Security Scan
-python .agent/skills/vulnerability-scanner/scripts/security_scan.py .
+python .agents/skills/vulnerability-scanner/scripts/security_scan.py .
 
 # P1: UX Audit
-python .agent/skills/frontend-design/scripts/ux_audit.py .
+python .agents/skills/frontend-design/scripts/ux_audit.py .
 
 # P3: Lighthouse (requires running server)
 python .agent/skills/performance-profiling/scripts/lighthouse_audit.py http://localhost:3000

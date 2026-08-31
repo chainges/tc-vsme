@@ -54,32 +54,39 @@ tc-vsme/
 │   ├── components/      # UI components (Shadcn + custom)
 │   ├── routes/          # TanStack Router routes
 │   └── ...
-├── .agent/
-│   └── skills/          # Agent skills directory
+├── .agents/
+│   └── skills/          # Agent skills (single source of truth)
 └── ...
 ```
 
-## Agent Skills Index
+## Agent Skills Layout
 
-The `.agent/skills` directory contains specialized information for agents:
+All skills live in `.agents/skills/` (single source of truth, real files only). The `.claude/skills/`, `.kiro/skills/`, `.augment/skills/`, and `.windsurf/skills/` directories are generated mirrors of it — never edit files there. After adding, removing, or changing a skill in `.agents/skills/`, run:
+
+```bash
+bun run skills:sync
+```
+
+This recreates the mirrors as symlinks (macOS/Linux) or real copies (Windows, where git symlinks often check out as broken text files). `bun run skills:check` verifies the mirrors without modifying anything. A subset of legacy Antigravity-kit skills remains in `.agent/skills/` until the kit is retired.
+
+Key skills:
 
 - **clean-code/**: Clean code principles and patterns
-- **convex/**: Convex database patterns and best practices
-- **form-system/**: Form handling with TanStack Form
+- **convex/**: Convex database patterns and best practices (plus 33 `convex-*` specialists)
+- **diagnosing-bugs/**: Debugging strategies and diagnosis loops
 - **frontend-design/**: Frontend design principles
-- **i18n-localization-paraglidejs/**: Parglide.js i18n implementation
-- **shadcn/**: Shadcn UI component usage
-- **skill-creator/**: Skill creation guidelines
-- **systematic-debugging/**: Debugging strategies
+- **i18n-localization/**: i18n implementation patterns
+- **tdd/**: Test-Driven Development workflow (RED-GREEN-REFACTOR)
 - **tailwind-patterns/**: Tailwind CSS patterns
-- **tdd-workflow/**: Test-Driven Development workflow (RED-GREEN-REFACTOR)
 - **web-design-guidelines/**: Web design best practices
 - **memory-write**: "remember this", "note that", "update memory", "forget about"
+
+Research and rationale: `docs/research/skills-directory-consolidation.md`.
 
 ## Testing Approach
 
 ### TDD Workflow
-The project follows a strict TDD approach as documented in `.agent/skills/tdd-workflow`:
+The project follows a strict TDD approach as documented in `.agents/skills/tdd`:
 
 1. **RED Phase**: Write failing tests first
 2. **GREEN Phase**: Write minimal code to pass tests

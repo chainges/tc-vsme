@@ -14,7 +14,9 @@
     "build-storybook": "storybook build",
     "format": "biome format",
     "lint": "biome lint",
-    "check": "biome check"
+    "check": "biome check",
+    "skills:sync": "bun run scripts/sync-skills.ts",
+    "skills:check": "bun run scripts/sync-skills.ts --check"
   },
   "dependencies": {
     "@clerk/react": "6",

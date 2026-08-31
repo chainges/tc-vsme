@@ -63,8 +63,8 @@ VERIFICATION_SUITE = [
     {
         "category": "Security",
         "checks": [
-            ("Security Scan", ".agent/skills/vulnerability-scanner/scripts/security_scan.py", True),
-            ("Dependency Analysis", ".agent/skills/vulnerability-scanner/scripts/dependency_analyzer.py", False),
+            ("Security Scan", ".agents/skills/vulnerability-scanner/scripts/security_scan.py", True),
+            ("Dependency Analysis", ".agents/skills/vulnerability-scanner/scripts/dependency_analyzer.py", False),
         ]
     },
     
@@ -97,8 +97,8 @@ VERIFICATION_SUITE = [
     {
         "category": "UX & Accessibility",
         "checks": [
-            ("UX Audit", ".agent/skills/frontend-design/scripts/ux_audit.py", False),
-            ("Accessibility Check", ".agent/skills/frontend-design/scripts/accessibility_checker.py", False),
+            ("UX Audit", ".agents/skills/frontend-design/scripts/ux_audit.py", False),
+            ("Accessibility Check", ".agents/skills/frontend-design/scripts/accessibility_checker.py", False),
         ]
     },
     
@@ -142,7 +142,7 @@ VERIFICATION_SUITE = [
     {
         "category": "Internationalization",
         "checks": [
-            ("i18n Check", ".agent/skills/i18n-localization/scripts/i18n_checker.py", False),
+            ("i18n Check", ".agents/skills/i18n-localization/scripts/i18n_checker.py", False),
         ]
     },
 ]

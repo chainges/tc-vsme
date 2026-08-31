@@ -1,0 +1,10 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "mcp": {
+    "google-maps-platform-code-assist": {
+      "type": "local",
+      "command": ["npx", "-y", "@googlemaps/code-assist-mcp@latest"],
+      "enabled": false
+    }
+  }
+}

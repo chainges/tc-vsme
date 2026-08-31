@@ -44,15 +44,15 @@ Specialist AI personas for different domains.
 | `devops-engineer`        | CI/CD, Docker              | deployment-procedures, docker-expert                     |
 | `security-auditor`       | Security compliance        | vulnerability-scanner, red-team-tactics                  |
 | `penetration-tester`     | Offensive security         | red-team-tactics                                         |
-| `test-engineer`          | Testing strategies         | testing-patterns, tdd-workflow, webapp-testing           |
-| `debugger`               | Root cause analysis        | systematic-debugging                                     |
+| `test-engineer`          | Testing strategies         | testing-patterns, tdd, webapp-testing           |
+| `debugger`               | Root cause analysis        | diagnosing-bugs                                     |
 | `performance-optimizer`  | Speed, Web Vitals          | performance-profiling                                    |
 | `seo-specialist`         | Ranking, visibility        | seo-fundamentals, geo-fundamentals                       |
 | `documentation-writer`   | Manuals, docs              | documentation-templates                                  |
 | `product-manager`        | Requirements, user stories | plan-writing, brainstorming                              |
 | `product-owner`          | Strategy, backlog, MVP     | plan-writing, brainstorming                              |
 | `qa-automation-engineer` | E2E testing, CI pipelines  | webapp-testing, testing-patterns                         |
-| `code-archaeologist`     | Legacy code, refactoring   | clean-code, code-review-checklist                        |
+| `code-archaeologist`     | Legacy code, refactoring   | clean-code, code-review                        |
 | `explorer-agent`         | Codebase analysis          | -                                                        |
 
 ---
@@ -107,8 +107,8 @@ Modular knowledge domains that agents can load on-demand. based on task context.
 | ----------------------- | ------------------------ |
 | `testing-patterns`      | Jest, Vitest, strategies |
 | `webapp-testing`        | E2E, Playwright          |
-| `tdd-workflow`          | Test-driven development  |
-| `code-review-checklist` | Code review standards    |
+| `tdd`          | Test-driven development  |
+| `code-review` | Code review standards    |
 | `lint-and-validate`     | Linting, validation      |
 
 ### Security
@@ -164,7 +164,7 @@ Modular knowledge domains that agents can load on-demand. based on task context.
 | `documentation-templates` | Doc formats               |
 | `i18n-localization`       | Internationalization      |
 | `performance-profiling`   | Web Vitals, optimization  |
-| `systematic-debugging`    | Troubleshooting           |
+| `diagnosing-bugs`    | Troubleshooting           |
 
 ---
 
@@ -284,5 +284,5 @@ For details, see [scripts/README.md](scripts/README.md)
 | Database | `database-architect`  | database-design, prisma-expert        |
 | Security | `security-auditor`    | vulnerability-scanner                 |
 | Testing  | `test-engineer`       | testing-patterns, webapp-testing      |
-| Debug    | `debugger`            | systematic-debugging                  |
+| Debug    | `debugger`            | diagnosing-bugs                  |
 | Plan     | `project-planner`     | brainstorming, plan-writing           |
