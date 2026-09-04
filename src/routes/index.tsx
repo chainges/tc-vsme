@@ -1,4 +1,9 @@
-import { Show, useAuth, useOrganization, useUser } from '@clerk/tanstack-react-start';
+import {
+	Show,
+	useAuth,
+	useOrganization,
+	useUser,
+} from '@clerk/tanstack-react-start'
 import { createFileRoute } from '@tanstack/react-router'
 import { useConvexAuth, useQuery } from 'convex/react'
 import Header from '@/components/Header'
@@ -9,7 +14,7 @@ export const Route = createFileRoute('/')({
 	component: RouteComponent,
 })
 
-function AuthStatus() {
+export function AuthStatus() {
 	const { user, isLoaded: userLoaded } = useUser()
 	const { organization, isLoaded: orgLoaded } = useOrganization()
 	const { isLoaded: authLoaded } = useAuth()
@@ -41,8 +46,8 @@ function AuthStatus() {
 			clerkVsmeDb !== convexOrgFlags.exists)
 
 	return (
-        <div className="w-full bg-muted/80 border-b text-xs font-mono px-4 py-1.5 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-muted-foreground z-40">
-            <span>
+		<div className="w-full bg-muted/80 border-b text-xs font-mono px-4 py-1.5 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-muted-foreground z-40">
+			<span>
 				<span className="font-semibold text-foreground">Auth:</span>{' '}
 				{loaded ? (
 					<>
@@ -61,10 +66,10 @@ function AuthStatus() {
 					<span className="animate-pulse">Loading...</span>
 				)}
 			</span>
-            <Show when="signed-in">
+			<Show when="signed-in">
 				<span>
 					<span className="font-semibold text-foreground">Clerk:</span>{' '}
-					{clerkHasVsme ? 'user✓' : 'user✗'}
+					{clerkHasVsme ? 'userhasVsme: ✓' : 'userhasVsme: ✗'}
 					{' | '}
 					{clerkOrgHasVsme ? 'org✓' : 'org✗'}
 					{' | '}
@@ -110,8 +115,8 @@ function AuthStatus() {
 								: 'Unknown'}
 				</span>
 			</Show>
-        </div>
-    );
+		</div>
+	)
 }
 
 function RouteComponent() {

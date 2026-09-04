@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import * as React from 'react'
 import {
 	Card,
@@ -15,36 +14,21 @@ interface GlowingCardProps extends React.ComponentProps<typeof Card> {
 }
 
 const GlowingCard = React.forwardRef<HTMLDivElement, GlowingCardProps>(
-	({ className, glowColor = 'sky', children, ...props }, ref) => {
+	({ className, glowColor = 'sky', style, children, ...props }, ref) => {
 		return (
-			<motion.div
-				whileHover={{ scale: 1.02 }}
-				transition={{ duration: 0.2 }}
-				className="h-full"
+			<Card
+				ref={ref}
+				style={
+					{ ...style, '--glow': `var(--${glowColor})` } as React.CSSProperties
+				}
+				className={cn(
+					'glowing-card h-full border-2 bg-card/90 backdrop-blur-xs',
+					className,
+				)}
+				{...props}
 			>
-				<Card
-					ref={ref}
-					className={cn(
-						'h-full transition-all duration-300 border-2 border-transparent',
-						glowColor === 'sky' &&
-							'hover:shadow-[0_0_20px_-5px_var(--sky)] hover:border-(--sky)',
-						glowColor === 'teal' &&
-							'hover:shadow-[0_0_20px_-5px_var(--teal)] hover:border-(--teal)',
-						glowColor === 'rose' &&
-							'hover:shadow-[0_0_20px_-5px_var(--rose)] hover:border-(--rose)',
-						glowColor === 'amber' &&
-							'hover:shadow-[0_0_20px_-5px_var(--amber)] hover:border-(--amber)',
-						glowColor === 'pink' &&
-							'hover:shadow-[0_0_20px_-5px_var(--pink)] hover:border-(--pink)',
-						glowColor === 'copper' &&
-							'hover:shadow-[0_0_20px_-5px_var(--copper)] hover:border-(--copper)',
-						className,
-					)}
-					{...props}
-				>
-					{children}
-				</Card>
-			</motion.div>
+				{children}
+			</Card>
 		)
 	},
 )
