@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TC-VSME · Dashboard concept prototype</title>
+<style>
+*{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%}
+body{font:14px/1.45 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#f4f6f8;color:#0f172a;padding:0 0 48px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px 24px;background:#fff;border-bottom:1px solid #e2e8f0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
+.brand small{color:#64748b;font-weight:500}
+.mock{font-size:10px;font-weight:700;letter-spacing:.08em;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;padding:2px 8px;border-radius:999px;text-transform:uppercase}
+.co-switch{display:flex;gap:8px;flex-wrap:wrap}
+.co-btn{display:flex;flex-direction:column;align-items:flex-start;gap:1px;border:1px solid #e2e8f0;background:#fff;border-radius:10px;padding:7px 14px;cursor:pointer;font:inherit;text-align:left}
+.co-btn b{font-size:13px}
+.co-btn span{font-size:11px;color:#94a3b8}
+.co-btn.on{border-color:#0f172a;background:#f8fafc}
+.co-btn.on span{color:#475569}
+main{max-width:1180px;margin:0 auto;padding:20px 24px 0;display:flex;flex-direction:column;gap:16px}
+.controls{display:flex;gap:22px;align-items:flex-end;flex-wrap:wrap;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px 16px}
+.ctrl>label{display:block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#64748b;margin-bottom:6px}
+.seg{display:inline-flex;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden}
+.seg button{border:0;background:#fff;padding:6px 12px;font-size:13px;cursor:pointer;color:#334155;border-left:1px solid #e2e8f0;font-family:inherit}
+.seg button:first-child{border-left:0}
+.seg button.on{background:#0f172a;color:#fff}
+.seg.disabled{opacity:.45}
+.coverage{margin-left:auto;font-size:12.5px;color:#475569;background:#f8fafc;border:1px solid #e2e8f0;border-radius:999px;padding:6px 12px}
+.coverage b{color:#0f172a}
+.sect{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;margin:8px 0 -8px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px}
+.card h3{font-size:14px;font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.cardhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.cardhead .legend{margin-left:auto}
+.legend{display:flex;gap:14px;font-size:12px;color:#64748b;align-items:center;flex-wrap:wrap}
+.sw{display:inline-block;width:18px;border-top:3px solid #0f172a;vertical-align:middle;margin-right:5px;border-radius:2px}
+.sw.dash{border-top-style:dashed;border-top-color:#94a3b8}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.chip{font-size:12px;font-weight:600;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.chip.good{background:#ecfdf5;color:#047857}
+.chip.warn{background:#fffbeb;color:#b45309}
+.chip.neutral{background:#f1f5f9;color:#64748b}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.kpi .lbl{font-size:12px;color:#64748b;font-weight:600}
+.kpi .val{font-size:25px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px}
+.kpi .unit{font-size:12px;color:#94a3b8;font-weight:500;margin-left:4px}
+.delta{display:inline-block;font-size:12px;font-weight:600;border-radius:6px;padding:2px 7px;margin-top:6px}
+.delta em{font-style:normal;font-weight:500;opacity:.75}
+.delta.good{background:#ecfdf5;color:#047857}
+.delta.bad{background:#fef2f2;color:#b91c1c}
+.pill{display:inline-block;font-size:11.5px;background:#f1f5f9;color:#64748b;border-radius:6px;padding:3px 8px;margin-top:6px}
+.spark{margin-top:8px;display:block}
+.note{font-size:12px;color:#94a3b8;margin-top:-8px}
+.band{display:grid;grid-template-columns:1.08fr 1fr;gap:16px}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.tsub{font-size:12px;color:#64748b;margin-top:2px}
+.btrack{position:relative;height:10px;background:#eef2f6;border-radius:999px;margin:14px 0 8px}
+.btrack i{position:absolute;top:0;bottom:0;left:0;background:#0f766e;border-radius:999px}
+.btrack b{position:absolute;top:-4px;bottom:-4px;width:2px;background:#0f172a}
+.bmeta{display:flex;justify-content:space-between;font-size:12px;color:#64748b}
+.bmeta b{color:#0f172a;font-variant-numeric:tabular-nums}
+.hb{display:grid;grid-template-columns:minmax(140px,190px) 1fr 52px;gap:10px;align-items:center;padding:4.5px 0;font-size:12.5px}
+.hbl{color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hbt{background:#eef2f6;border-radius:4px;height:14px;position:relative}
+.hbt i{position:absolute;top:0;bottom:0;left:0;background:#0f766e;border-radius:4px}
+.hbv{text-align:right;font-variant-numeric:tabular-nums;color:#0f172a;font-weight:600}
+.crow{font-size:12.5px;margin-top:11px}
+.crow .t{display:flex;justify-content:space-between;color:#334155;margin-bottom:5px}
+.crow .t b{font-variant-numeric:tabular-nums}
+.crow .bar{height:8px;background:#eef2f6;border-radius:999px;position:relative}
+.crow .bar i{position:absolute;top:0;bottom:0;left:0;border-radius:999px}
+.cta{color:#0f766e;font-weight:600;text-decoration:none;border-bottom:1px dashed currentColor;white-space:nowrap}
+.hint{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:10px;padding:12px 14px;font-size:13px;color:#475569;margin-top:12px;line-height:1.5}
+footer{max-width:1180px;margin:4px auto 0;padding:0 24px;font-size:12px;color:#94a3b8;line-height:1.6}
+@media(max-width:1080px){.kpis{grid-template-columns:repeat(3,1fr)}.band,.tgrid{grid-template-columns:1fr}.coverage{margin-left:0}}
+@media(max-width:640px){.kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">TC-VSME <small>· Dashboard concept</small> <span class="mock">mock data</span></div>
+  <div class="co-switch">
+    <button class="co-btn" data-act="co" data-val="fjellheim"><b>Fjellheim Bygg AS</b><span>3 years of data</span></button>
+    <button class="co-btn" data-act="co" data-val="solstrale"><b>Solstråle Kafé AS</b><span>1 year of data</span></button>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<footer>
+  Static prototype · mock data only · same layout, two data-maturity cases. Target pathway is drawn linearly from base year to target year;
+  trajectory and reduction tracking use location-based Scope 2; Scope 2 KPI and composition follow the basis toggle. No dependencies — hand-rolled SVG.
+</footer>
+
+<script>
+"use strict";
+
+const S3 = [
+  ["C1", "Purchased goods & services"],
+  ["C2", "Capital goods"],
+  ["C3", "Fuel- & energy-related"],
+  ["C4", "Upstream transport"],
+  ["C5", "Waste generated"],
+  ["C6", "Business travel"],
+  ["C7", "Employee commuting"],
+  ["C11", "Use of sold products"],
+  ["C12", "End-of-life of products"],
+  ["C15", "Investments"],
+];
+
+const COMPANIES = {
+  fjellheim: {
+    name: "Fjellheim Bygg AS",
+    years: [2023, 2024, 2025],
+    revenue: { 2023: 48, 2024: 52, 2025: 55 }, // MNOK
+    emissions: { // tCO2e, s2loc = location-based, s2mkt = market-based
+      2023: { s1: 140, s2loc: 180, s2mkt: 195, s3: 200 },
+      2024: { s1: 128, s2loc: 152, s2mkt: 160, s3: 185 },
+      2025: { s1: 118, s2loc: 140, s2mkt: 145, s3: 190 },
+    },
+    target: { baseYear: 2023, baseEmissions: 520, targetYear: 2030, reductionPct: 30 },
+    goals: { renewable: 60, wasteDiversion: 75 }, // % goals for 2030
+    energy: { 2023: { renew: 34, waste: 61 }, 2024: { renew: 41, waste: 66 }, 2025: { renew: 48, waste: 70 } },
+    scope3: {
+      2023: [65, 19, 9, 22, 7, 12, 15, 27, 13, 11],
+      2024: [60, 17, 9, 20, 7, 11, 14, 25, 12, 10],
+      2025: [62, 18, 9, 21, 7, 11, 14, 26, 12, 10],
+    },
+    completeness: { general: [3, 3], environmental: [7, 7], social: [6, 8], governance: [3, 3] },
+    updated: "31 Aug 2026",
+  },
+  solstrale: {
+    name: "Solstråle Kafé AS",
+    years: [2025],
+    revenue: { 2025: 3.2 },
+    emissions: { 2025: { s1: 12, s2loc: 31, s2mkt: 24, s3: 43 } },
+    target: null,
+    goals: { renewable: null, wasteDiversion: null },
+    energy: { 2025: { renew: 72, waste: 55 } },
+    scope3: { 2025: [18, 0, 4, 5, 3, 2, 4, 5, 2, 0] },
+    completeness: { general: [3, 3], environmental: [2, 7], social: [1, 8], governance: [0, 3] },
+    updated: "28 Aug 2026",
+  },
+};
+
+let state = { co: "fjellheim", year: 2025, cmp: "prior", s2: "loc" };
+
+const fmt = n => Math.round(n).toLocaleString("en-US");
+const fmt1 = n => (Math.round(n * 10) / 10).toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+function niceScale(maxV) {
+  for (const s of [10, 20, 25, 50, 100, 200, 250, 500, 1000]) if (maxV <= 4 * s) return { step: s, top: Math.ceil(maxV / s) * s };
+  return { step: 2000, top: Math.ceil(maxV / 2000) * 2000 };
+}
+
+function totalFor(c, y, s2) {
+  const e = c.emissions[y];
+  const v = s2 === "mkt" ? e.s2mkt : e.s2loc;
+  return { s1: e.s1, s2: v, s3: e.s3, total: e.s1 + v + e.s3 };
+}
+
+function series(c, metric, s2) {
+  return c.years.map(y => {
+    const t = totalFor(c, y, s2);
+    if (metric === "total") return t.total;
+    if (metric === "intensity") return t.total / c.revenue[y];
+    return t[metric];
+  });
+}
+
+function pathwayAt(t, y) {
+  const frac = (y - t.baseYear) / (t.targetYear - t.baseYear);
+  return t.baseEmissions * (1 - (t.reductionPct / 100) * frac);
+}
+
+function deltaChip(curV, cmpV, cmpLabel, pillText) {
+  if (cmpLabel == null) return `<span class="pill">${pillText}</span>`;
+  const d = (curV - cmpV) / cmpV;
+  const cls = d < 0 ? "good" : "bad";
+  const pct = (Math.abs(d) * 100).toFixed(1);
+  return `<span class="delta ${cls}" title="Lower emissions are better">${d < 0 ? "▼ −" : "▲ +"}${pct}% <em>vs ${cmpLabel}</em></span>`;
+}
+
+function sparkSVG(c, metric, s2) {
+  const ys = c.years;
+  const vals = series(c, metric, s2);
+  const W = 132, H = 34, n = ys.length;
+  const max = Math.max(...vals, 1);
+  const slot = W / n, bw = Math.min(24, slot * 0.55), sel = ys.indexOf(state.year);
+  let bars = "";
+  ys.forEach((yy, i) => {
+    const h = Math.max(3, vals[i] / max * (H - 6));
+    const x = i * slot + (slot - bw) / 2;
+    const fill = (n > 1 && i === sel) ? "#0f172a" : "#cbd5e1";
+    bars += `<rect x="${x.toFixed(1)}" y="${(H - h).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${fill}"><title>${yy}: ${fmt1(vals[i])}</title></rect>`;
+  });
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="trend sparkline">${bars}</svg>`;
+}
+
+function kpiCards(c, y, cmpLabel, pillText, multi) {
+  const defs = [
+    { k: "total", label: "Total emissions", unit: "tCO₂e" },
+    { k: "s1", label: "Scope 1", unit: "tCO₂e" },
+    { k: "s2", label: "Scope 2", unit: "tCO₂e" },
+    { k: "s3", label: "Scope 3", unit: "tCO₂e" },
+    { k: "intensity", label: "Emissions intensity", unit: "tCO₂e / MNOK", tip: "Total tCO₂e ÷ revenue (MNOK) — VSME B3 datapoint requested by banks. Lower is better." },
+  ];
+  return defs.map(d => {
+    const cur = series(c, d.k, state.s2)[c.years.indexOf(y)];
+    let cmpV = null;
+    if (cmpLabel != null) cmpV = series(c, d.k, state.s2)[c.years.indexOf(cmpLabel)];
+    const val = d.k === "intensity" ? fmt1(cur) : fmt(cur);
+    return `<div class="card kpi">
+      <div class="lbl"${d.tip ? ` title="${d.tip}"` : ""}>${d.label}</div>
+      <div class="val">${val}<span class="unit">${d.unit}</span></div>
+      ${deltaChip(cur, cmpV, cmpLabel, pillText)}
+      ${sparkSVG(c, d.k, state.s2)}
+    </div>`;
+  }).join("");
+}
+
+function statusChip(c) {
+  if (!c.target) return `<span class="chip neutral">No target set</span>`;
+  const ys = c.years, last = ys[ys.length - 1];
+  const a = totalFor(c, last, "loc").total;
+  const pw = pathwayAt(c.target, last);
+  const diff = (pw - a) / pw;
+  return diff >= 0
+    ? `<span class="chip good">● On track · ${last} is ${(diff * 100).toFixed(1)}% below pathway</span>`
+    : `<span class="chip warn">● At risk · ${last} is ${(-diff * 100).toFixed(1)}% above pathway</span>`;
+}
+
+function heroSVG(c) {
+  const ys = c.years, W = 720, H = 250, L = 46, R = 118, T = 18, B = 30;
+  const iw = W - L - R, ih = H - T - B;
+  const vals = ys.map(y => totalFor(c, y, "loc").total);
+  const tgt = c.target;
+  let x0 = tgt ? Math.min(tgt.baseYear, ys[0]) : ys[0];
+  let x1 = tgt ? tgt.targetYear : ys[ys.length - 1];
+  if (x1 === x0) { x0 -= 0.5; x1 += 0.5; } // single point: center it, avoid zero-width domain
+  const span = x1 - x0;
+  const maxVal = Math.max(...vals, tgt ? tgt.baseEmissions : 0);
+  const { step, top } = niceScale(maxVal);
+  const X = yy => L + (yy - x0) / span * iw;
+  const Y = v => T + ih - v / top * ih;
+  let g = "";
+  for (let v = 0; v <= top; v += step) {
+    g += `<line x1="${L}" y1="${Y(v).toFixed(1)}" x2="${W - R}" y2="${Y(v).toFixed(1)}" stroke="#eef2f6"/>`;
+    g += `<text x="${L - 8}" y="${(Y(v) + 3.5).toFixed(1)}" text-anchor="end" font-size="10.5" fill="#94a3b8">${fmt(v)}</text>`;
+  }
+  let xlab = "";
+  for (let yy = Math.ceil(x0); yy <= x1; yy++) {
+    const skip = span > 12 && yy % 2 !== 0;
+    if (!skip) xlab += `<text x="${X(yy).toFixed(1)}" y="${H - 8}" text-anchor="middle" font-size="10.5" fill="#94a3b8">${yy}</text>`;
+  }
+  let path = "";
+  if (tgt && x1 > x0) {
+    const ty = tgt.baseEmissions * (1 - tgt.reductionPct / 100);
+    path += `<line x1="${X(tgt.baseYear).toFixed(1)}" y1="${Y(tgt.baseEmissions).toFixed(1)}" x2="${X(x1).toFixed(1)}" y2="${Y(ty).toFixed(1)}" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 5"/>`;
+    path += `<circle cx="${X(x1).toFixed(1)}" cy="${Y(ty).toFixed(1)}" r="4" fill="#64748b"/>`;
+    path += `<text x="${(X(x1) + 10).toFixed(1)}" y="${(Y(ty) - 8).toFixed(1)}" font-size="11" fill="#475569" font-weight="600">Target ${x1}</text>`;
+    path += `<text x="${(X(x1) + 10).toFixed(1)}" y="${(Y(ty) + 7).toFixed(1)}" font-size="11" fill="#64748b">−${tgt.reductionPct}% · ${fmt(ty)} t</text>`;
+    const last = ys[ys.length - 1];
+    if (last > tgt.baseYear && last < x1) {
+      path += `<line x1="${X(last).toFixed(1)}" y1="${T}" x2="${X(last).toFixed(1)}" y2="${T + ih}" stroke="#e2e8f0" stroke-dasharray="3 3"/>`;
+      path += `<circle cx="${X(last).toFixed(1)}" cy="${Y(pathwayAt(tgt, last)).toFixed(1)}" r="4" fill="#fff" stroke="#94a3b8" stroke-width="1.5"/>`;
+    }
+  }
+  let act = "";
+  if (ys.length > 1) {
+    act += `<polyline points="${ys.map((y, i) => `${X(y).toFixed(1)},${Y(vals[i]).toFixed(1)}`).join(" ")}" fill="none" stroke="#0f172a" stroke-width="2.5"/>`;
+  }
+  ys.forEach((y, i) => {
+    act += `<circle cx="${X(y).toFixed(1)}" cy="${Y(vals[i]).toFixed(1)}" r="3.5" fill="#0f172a" stroke="#fff" stroke-width="1.5"><title>${y}: ${fmt(vals[i])} tCO₂e</title></circle>`;
+    const lbl = (tgt && y === tgt.baseYear) ? `${fmt(vals[i])} · base` : fmt(vals[i]);
+    act += `<text x="${X(y).toFixed(1)}" y="${(Y(vals[i]) - 10).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">${lbl}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Emissions trajectory chart" style="display:block;margin-top:8px">${g}${xlab}${path}${act}</svg>`;
+}
+
+function stackSVG(c, s2) {
+  const ys = c.years, W = 460, H = 212, L = 40, R = 8, T = 24, B = 26;
+  const iw = W - L - R, ih = H - T - B;
+  const tops = ys.map(y => totalFor(c, y, s2).total);
+  const { step, top } = niceScale(Math.max(...tops) * 1.05);
+  const Y = v => T + ih - v / top * ih;
+  let g = "";
+  for (let v = 0; v <= top; v += step) {
+    g += `<line x1="${L}" y1="${Y(v).toFixed(1)}" x2="${W - R}" y2="${Y(v).toFixed(1)}" stroke="#eef2f6"/>`;
+    g += `<text x="${L - 6}" y="${(Y(v) + 3.5).toFixed(1)}" text-anchor="end" font-size="10" fill="#94a3b8">${fmt(v)}</text>`;
+  }
+  const slot = iw / ys.length, bw = Math.min(64, slot * 0.55);
+  const cols = { s1: "#1e3a5f", s2: "#6b9ac4", s3: "#c9d9e8" };
+  let bars = "";
+  ys.forEach((y, i) => {
+    const t = totalFor(c, y, s2);
+    const x = L + i * slot + (slot - bw) / 2;
+    let acc = 0;
+    for (const k of ["s1", "s2", "s3"]) {
+      const h = t[k] / top * ih;
+      acc += h;
+      bars += `<rect x="${x.toFixed(1)}" y="${(T + ih - acc).toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" fill="${cols[k]}"><title>${y} · ${k.toUpperCase()}: ${fmt(t[k])} tCO₂e</title></rect>`;
+    }
+    const sel = y === state.year && ys.length > 1;
+    bars += `<text x="${(x + bw / 2).toFixed(1)}" y="${(T + ih - acc - 6).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="${sel ? "700" : "600"}" fill="#334155">${fmt(t.total)}</text>`;
+    bars += `<text x="${(x + bw / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle" font-size="10.5" fill="${sel ? "#0f172a" : "#94a3b8"}" font-weight="${sel ? "700" : "400"}">${y}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Emissions by scope" style="display:block;margin-top:8px">${g}${bars}</svg>`;
+}
+
+function scope3Rows(c, y) {
+  const arr = c.scope3[y];
+  let items = S3.map((n, i) => ({ code: n[0], name: n[1], v: arr[i] })).filter(x => x.v > 0).sort((a, b) => b.v - a.v);
+  const MAX = 8;
+  const rest = items.slice(MAX);
+  let shown = items.slice(0, MAX);
+  if (rest.length) shown = shown.concat([{ code: "", name: `Other (${rest.length} categories)`, v: rest.reduce((s, x) => s + x.v, 0) }]);
+  const max = Math.max(...shown.map(x => x.v));
+  return shown.map(x =>
+    `<div class="hb"><span class="hbl" title="${x.code ? x.code + " · " : ""}${x.name}">${x.code ? x.code + " · " : ""}${x.name}</span><span class="hbt"><i style="width:${(x.v / max * 100).toFixed(1)}%"></i></span><span class="hbv">${fmt(x.v)}</span></div>`
+  ).join("");
+}
+
+function shareBullet(v, goal, unitNow, goalText) {
+  const tick = goal ? `<b style="left:${goal}%" title="Goal: ${goal}%"></b>` : "";
+  const meta = goal ? `<span>${goalText}</span>` : `<span>no goal set</span>`;
+  return `<div class="btrack"><i style="width:${v}%"></i>${tick}</div>
+  <div class="bmeta"><span><b>${v}%</b> ${unitNow}</span>${meta}</div>`;
+}
+
+function reductionBullet(c) {
+  if (!c.target) {
+    return `<div class="hint" style="margin-top:10px">No emissions target set yet. <a class="cta" href="#" title="Prototype link">Set a target →</a><br>The progress bar and “on track / at risk” status unlock once a base year, target year and reduction % exist.</div>`;
+  }
+  const ys = c.years, last = ys[ys.length - 1], t = c.target;
+  const committed = t.baseEmissions * t.reductionPct / 100;
+  const achieved = Math.max(0, t.baseEmissions - totalFor(c, last, "loc").total);
+  const pct = achieved / committed * 100;
+  const pathFrac = (last - t.baseYear) / (t.targetYear - t.baseYear) * 100;
+  return `<div class="btrack"><i style="width:${pct.toFixed(1)}%"></i><b style="left:${pathFrac.toFixed(1)}%" title="Linear pathway today: ${pathFrac.toFixed(0)}%"></b></div>
+  <div class="bmeta"><span><b>${pct.toFixed(0)}%</b> of −${t.reductionPct}% by ${t.targetYear}</span><span>pathway: ${pathFrac.toFixed(0)}%</span></div>`;
+}
+
+function completenessRows(c) {
+  const rows = [
+    ["General", "B1–B2", "general"],
+    ["Environmental", "B3–B7", "environmental"],
+    ["Social", "B8–B10", "social"],
+    ["Governance", "B11 · C8–C9", "governance"],
+  ];
+  return rows.map(([name, ref, key]) => {
+    const [done, tot] = c.completeness[key];
+    const pct = done / tot * 100;
+    const col = pct >= 80 ? "#059669" : pct >= 40 ? "#0f766e" : pct > 0 ? "#d97706" : "#cbd5e1";
+    const link = done === 0 ? ` <a class="cta" href="#" title="Prototype link">Start here</a>` : (pct < 100 ? ` <a class="cta" href="#" title="Prototype link">Continue</a>` : "");
+    return `<div class="crow"><div class="t"><span>${name} <span style="color:#94a3b8">(${ref})</span></span><span>${done}/${tot}${link}</span></div><div class="bar"><i style="width:${pct}%;background:${col}"></i></div></div>`;
+  }).join("");
+}
+
+function segButton(act, val, label, on, extra) {
+  return `<button data-act="${act}" data-val="${val}" class="${on ? "on" : ""}"${extra || ""}>${label}</button>`;
+}
+
+function render() {
+  const c = COMPANIES[state.co];
+  const ys = c.years, multi = ys.length > 1, base = ys[0];
+  const y = state.year, latest = ys[ys.length - 1];
+  const s2Word = state.s2 === "mkt" ? "market-based" : "location-based";
+
+  let cmpLabel = null;
+  if (multi && state.cmp === "prior" && ys.indexOf(y) > 0) cmpLabel = ys[ys.indexOf(y) - 1];
+  if (multi && state.cmp === "base" && y !== base) cmpLabel = base;
+  const pillText = !multi ? "First reported year" : (state.cmp === "base" && y === base ? "Base year" : "First reported year");
+
+  const done = Object.values(c.completeness).reduce((s, r) => s + r[0], 0);
+  const tot = Object.values(c.completeness).reduce((s, r) => s + r[1], 0);
+
+  const yearSeg = ys.map(yy => segButton("year", yy, yy, yy === y, multi ? "" : ` title="Only ${latest} reported"`)).join("");
+  const cmpSeg = segButton("cmp", "prior", "Prior year", state.cmp === "prior", multi ? "" : ` title="Only one year reported"`)
+    + segButton("cmp", "base", "Base year", state.cmp === "base", multi ? "" : ` title="Only one year reported"`);
+  const s2Seg = segButton("s2", "loc", "Location", state.s2 === "loc") + segButton("s2", "mkt", "Market", state.s2 === "mkt");
+
+  const app = document.getElementById("app");
+  app.innerHTML = `
+  <div class="controls">
+    <div class="ctrl"><label>Reporting year</label><div class="seg">${yearSeg}</div></div>
+    <div class="ctrl"><label>Compare to</label><div class="seg${multi ? "" : " disabled"}">${cmpSeg}</div></div>
+    <div class="ctrl"><label>Scope 2 basis</label><div class="seg">${s2Seg}</div></div>
+    <div class="coverage"><b>${done}/${tot}</b> sections submitted · updated ${c.updated}</div>
+  </div>
+
+  <div class="sect">Key metrics · ${y}</div>
+  <div class="kpis">${kpiCards(c, y, cmpLabel, pillText, multi)}</div>
+  <p class="note">▲▼ change vs ${multi ? (state.cmp === "prior" ? "prior reported year" : `base year (${base})`) : "— single year reported"} · green = emissions fell (lower is better) · sparkline: all reported years</p>
+
+  <div class="sect">Emissions trajectory</div>
+  <div class="card">
+    <div class="cardhead">
+      <h3>Total emissions vs reduction target</h3>
+      ${statusChip(c)}
+      ${c.target ? `<div class="legend"><span><i class="sw"></i>Actual</span><span><i class="sw dash"></i>Target pathway (−${c.target.reductionPct}% by ${c.target.targetYear})</span></div>` : ""}
+    </div>
+    ${heroSVG(c)}
+    ${!c.target ? `<div class="hint">${c.name} has reported <b>${ys.length} year${ys.length > 1 ? "s" : ""}</b> and has no reduction target yet. The trajectory view — actual line against a dashed target pathway with an “on track / at risk” status — unlocks once a target exists on the <b>Targets</b> page${multi ? "" : ", and year-over-year deltas appear once a second year is reported"}. Scope 3 hotspots and completeness below already work with this data.</div>` : ""}
+  </div>
+
+  <div class="sect">Composition · ${y}</div>
+  <div class="band">
+    <div class="card">
+      <div class="cardhead">
+        <h3>Emissions by scope</h3>
+        <div class="legend">
+          <span><i class="dot" style="background:#1e3a5f"></i>Scope 1</span>
+          <span><i class="dot" style="background:#6b9ac4"></i>Scope 2 (${s2Word})</span>
+          <span><i class="dot" style="background:#c9d9e8"></i>Scope 3</span>
+        </div>
+      </div>
+      ${stackSVG(c, state.s2)}
+    </div>
+    <div class="card">
+      <div class="cardhead"><h3>Scope 3 categories · ${y}</h3></div>
+      <p class="note" style="margin:2px 0 6px">Sorted by size · top 8 shown, remainder grouped · VSME B3 requires significant categories</p>
+      ${scope3Rows(c, y)}
+    </div>
+  </div>
+
+  <div class="sect">Targets &amp; goals</div>
+  <div class="tgrid">
+    <div class="card">
+      <h3>Emissions reduction</h3>
+      <p class="tsub">Progress along the reduction pathway${c.target ? ` · ${c.target.baseYear} → ${c.target.targetYear}` : ""}</p>
+      ${reductionBullet(c)}
+    </div>
+    <div class="card">
+      <h3>Renewable electricity share</h3>
+      <p class="tsub">Share of electricity consumption · ${y}</p>
+      ${shareBullet(c.energy[y].renew, c.goals.renewable, "now", `goal ${c.goals.renewable}% by 2030`)}
+    </div>
+    <div class="card">
+      <h3>Waste diverted from landfill</h3>
+      <p class="tsub">Recycling + energy recovery · ${y}</p>
+      ${shareBullet(c.energy[y].waste, c.goals.wasteDiversion, "now", `goal ${c.goals.wasteDiversion}%`)}
+    </div>
+  </div>
+
+  <div class="sect">Reporting completeness</div>
+  <div class="card">
+    <div class="cardhead"><h3>VSME disclosure coverage</h3><span class="chip ${done / tot >= 0.8 ? "good" : "warn"}">${done}/${tot} sections · ${Math.round(done / tot * 100)}%</span></div>
+    ${completenessRows(c)}
+  </div>`;
+
+  document.querySelectorAll(".co-btn").forEach(b => b.classList.toggle("on", b.dataset.val === state.co));
+}
+
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]");
+  if (!b || b.disabled) return;
+  if (b.tagName === "A") return;
+  const { act, val } = b.dataset;
+  if (act === "co") {
+    state.co = val;
+    const ys = COMPANIES[val].years;
+    state.year = ys[ys.length - 1];
+    state.cmp = "prior";
+    state.s2 = "loc";
+  } else if (act === "year") state.year = +val;
+  else if (act === "cmp") { if (COMPANIES[state.co].years.length > 1) state.cmp = val; }
+  else if (act === "s2") state.s2 = val;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
