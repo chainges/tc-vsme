@@ -106,7 +106,7 @@ const data = {
 				},
 				{
 					title: 'Dobbel vesentlighet',
-					url: '#',
+					url: '/app/materiality',
 				},
 				{
 					title: 'Korrupsjonsrisikoanalyse',

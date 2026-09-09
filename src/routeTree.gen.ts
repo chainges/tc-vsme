@@ -37,6 +37,7 @@ import { Route as DemoLayoutDemoAiStructuredRouteImport } from './routes/_demoLa
 import { Route as DemoLayoutDemoAiImageRouteImport } from './routes/_demoLayout/demo/ai-image'
 import { Route as DemoLayoutDemoAiChatRouteImport } from './routes/_demoLayout/demo/ai-chat'
 import { Route as AppLayoutAppOrderRouteImport } from './routes/_appLayout/app/order'
+import { Route as AppLayoutAppMaterialityRouteImport } from './routes/_appLayout/app/materiality'
 import { Route as AppLayoutAppEmissionsRouteImport } from './routes/_appLayout/app/emissions'
 import { Route as DemoLayoutDemoGuitarsIndexRouteImport } from './routes/_demoLayout/demo/guitars/index'
 import { Route as AppLayoutAppTargetsIndexRouteImport } from './routes/_appLayout/app/targets/index'
@@ -202,6 +203,11 @@ const DemoLayoutDemoAiChatRoute = DemoLayoutDemoAiChatRouteImport.update({
 const AppLayoutAppOrderRoute = AppLayoutAppOrderRouteImport.update({
   id: '/app/order',
   path: '/app/order',
+  getParentRoute: () => AppLayoutRouteRoute,
+} as any)
+const AppLayoutAppMaterialityRoute = AppLayoutAppMaterialityRouteImport.update({
+  id: '/app/materiality',
+  path: '/app/materiality',
   getParentRoute: () => AppLayoutRouteRoute,
 } as any)
 const AppLayoutAppEmissionsRoute = AppLayoutAppEmissionsRouteImport.update({
@@ -372,6 +378,7 @@ export interface FileRoutesByFullPath {
   '/speakers/': typeof SpeakersIndexRoute
   '/talks/': typeof TalksIndexRoute
   '/app/emissions': typeof AppLayoutAppEmissionsRoute
+  '/app/materiality': typeof AppLayoutAppMaterialityRoute
   '/app/order': typeof AppLayoutAppOrderRoute
   '/demo/ai-chat': typeof DemoLayoutDemoAiChatRoute
   '/demo/ai-image': typeof DemoLayoutDemoAiImageRoute
@@ -426,6 +433,7 @@ export interface FileRoutesByTo {
   '/speakers': typeof SpeakersIndexRoute
   '/talks': typeof TalksIndexRoute
   '/app/emissions': typeof AppLayoutAppEmissionsRoute
+  '/app/materiality': typeof AppLayoutAppMaterialityRoute
   '/app/order': typeof AppLayoutAppOrderRoute
   '/demo/ai-chat': typeof DemoLayoutDemoAiChatRoute
   '/demo/ai-image': typeof DemoLayoutDemoAiImageRoute
@@ -483,6 +491,7 @@ export interface FileRoutesById {
   '/speakers/': typeof SpeakersIndexRoute
   '/talks/': typeof TalksIndexRoute
   '/_appLayout/app/emissions': typeof AppLayoutAppEmissionsRoute
+  '/_appLayout/app/materiality': typeof AppLayoutAppMaterialityRoute
   '/_appLayout/app/order': typeof AppLayoutAppOrderRoute
   '/_demoLayout/demo/ai-chat': typeof DemoLayoutDemoAiChatRoute
   '/_demoLayout/demo/ai-image': typeof DemoLayoutDemoAiImageRoute
@@ -539,6 +548,7 @@ export interface FileRouteTypes {
     | '/speakers/'
     | '/talks/'
     | '/app/emissions'
+    | '/app/materiality'
     | '/app/order'
     | '/demo/ai-chat'
     | '/demo/ai-image'
@@ -593,6 +603,7 @@ export interface FileRouteTypes {
     | '/speakers'
     | '/talks'
     | '/app/emissions'
+    | '/app/materiality'
     | '/app/order'
     | '/demo/ai-chat'
     | '/demo/ai-image'
@@ -649,6 +660,7 @@ export interface FileRouteTypes {
     | '/speakers/'
     | '/talks/'
     | '/_appLayout/app/emissions'
+    | '/_appLayout/app/materiality'
     | '/_appLayout/app/order'
     | '/_demoLayout/demo/ai-chat'
     | '/_demoLayout/demo/ai-image'
@@ -904,6 +916,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLayoutAppOrderRouteImport
       parentRoute: typeof AppLayoutRouteRoute
     }
+    '/_appLayout/app/materiality': {
+      id: '/_appLayout/app/materiality'
+      path: '/app/materiality'
+      fullPath: '/app/materiality'
+      preLoaderRoute: typeof AppLayoutAppMaterialityRouteImport
+      parentRoute: typeof AppLayoutRouteRoute
+    }
     '/_appLayout/app/emissions': {
       id: '/_appLayout/app/emissions'
       path: '/app/emissions'
@@ -1091,6 +1110,7 @@ declare module '@tanstack/react-router' {
 
 interface AppLayoutRouteRouteChildren {
   AppLayoutAppEmissionsRoute: typeof AppLayoutAppEmissionsRoute
+  AppLayoutAppMaterialityRoute: typeof AppLayoutAppMaterialityRoute
   AppLayoutAppOrderRoute: typeof AppLayoutAppOrderRoute
   AppLayoutAppIndexRoute: typeof AppLayoutAppIndexRoute
   AppLayoutAppEnvironmentalIndexRoute: typeof AppLayoutAppEnvironmentalIndexRoute
@@ -1103,6 +1123,7 @@ interface AppLayoutRouteRouteChildren {
 
 const AppLayoutRouteRouteChildren: AppLayoutRouteRouteChildren = {
   AppLayoutAppEmissionsRoute: AppLayoutAppEmissionsRoute,
+  AppLayoutAppMaterialityRoute: AppLayoutAppMaterialityRoute,
   AppLayoutAppOrderRoute: AppLayoutAppOrderRoute,
   AppLayoutAppIndexRoute: AppLayoutAppIndexRoute,
   AppLayoutAppEnvironmentalIndexRoute: AppLayoutAppEnvironmentalIndexRoute,

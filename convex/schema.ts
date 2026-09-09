@@ -582,4 +582,165 @@ export default defineSchema({
     lastModifiedAt: v.number(),
   })
     .index("by_organizationId", ["organizationId"]),
+
+  // ---------------------------------------------------------------
+  // Double Materiality Assessment
+  // ---------------------------------------------------------------
+  materialityAssessments: defineTable({
+    organizationId: v.string(),
+    assessedAt: v.optional(v.string()),
+    validUntil: v.optional(v.string()),
+    validityMonths: v.number(),
+    status: v.union(
+      v.literal("draft"),
+      v.literal("screening"),
+      v.literal("scoring"),
+      v.literal("valid"),
+      v.literal("expired"),
+      v.literal("superseded"),
+    ),
+    threshold: v.number(),
+    taxonomy: v.string(),
+    methodVersion: v.string(),
+    anchorSetId: v.optional(v.string()),
+    prefillProvider: v.string(),
+    prefillVersion: v.optional(v.string()),
+    seedNaceCode: v.optional(v.string()),
+    intake: v.optional(
+      v.array(
+        v.object({
+          key: v.string(),
+          answer: v.union(v.literal("yes"), v.literal("no"), v.literal("unsure")),
+        })
+      )
+    ),
+    financialBasis: v.union(
+      v.literal("revenue"),
+      v.literal("operatingProfit"),
+      v.literal("totalAssets"),
+    ),
+    completedAt: v.optional(v.number()),
+    signedOffBy: v.optional(v.string()),
+    signedOffRole: v.optional(v.string()),
+    copiedFromId: v.optional(v.id("materialityAssessments")),
+  })
+    .index("by_org", ["organizationId"])
+    .index("by_org_status", ["organizationId", "status"]),
+
+  materialityTopics: defineTable({
+    assessmentId: v.id("materialityAssessments"),
+    topicKey: v.string(),
+    customLabel: v.optional(v.string()),
+    sortOrder: v.number(),
+    screening: v.union(
+      v.literal("relevant"),
+      v.literal("notRelevant"),
+      v.literal("notSure"),
+      v.literal("unanswered"),
+    ),
+    skipReason: v.optional(v.string()),
+    skipReasonSource: v.optional(
+      v.union(v.literal("suggested"), v.literal("custom")),
+    ),
+    subtopics: v.array(v.string()),
+    valueChain: v.array(
+      v.union(v.literal("own"), v.literal("upstream"), v.literal("downstream")),
+    ),
+    impactOccurrence: v.optional(
+      v.union(v.literal("actual"), v.literal("potential")),
+    ),
+    impactSeverity: v.optional(v.number()),
+    impactLikelihood: v.optional(v.number()),
+    impactScore: v.optional(
+      v.object({
+        computed: v.optional(v.number()),
+        override: v.optional(v.number()),
+        overrideReason: v.optional(v.string()),
+        effective: v.number(),
+      })
+    ),
+    financialMagnitude: v.optional(v.number()),
+    financialLikelihood: v.optional(v.number()),
+    financialScore: v.optional(
+      v.object({
+        computed: v.optional(v.number()),
+        override: v.optional(v.number()),
+        overrideReason: v.optional(v.string()),
+        effective: v.number(),
+      })
+    ),
+    severeHumanRightsFlag: v.boolean(),
+    legalObligationFlag: v.boolean(),
+    isMaterial: v.boolean(),
+    materialOn: v.array(
+      v.union(v.literal("impact"), v.literal("financial")),
+    ),
+    materialityBasis: v.optional(
+      v.union(
+        v.literal("threshold"),
+        v.literal("severeHumanRights"),
+        v.literal("legalObligation"),
+        v.literal("manual"),
+      )
+    ),
+    notes: v.optional(v.string()),
+    prefillSource: v.optional(
+      v.union(
+        v.literal("sector"),
+        v.literal("answers"),
+        v.literal("report"),
+        v.literal("agent"),
+        v.literal("check"),
+        v.literal("none"),
+      )
+    ),
+    prefillNote: v.optional(v.string()),
+    prefillConfidence: v.optional(v.number()),
+    seedSuggestion: v.optional(v.any()),
+  })
+    .index("by_assessment", ["assessmentId"])
+    .index("by_assessment_topic", ["assessmentId", "topicKey"]),
+
+  materialityStakeholders: defineTable({
+    assessmentId: v.id("materialityAssessments"),
+    group: v.string(),
+    customLabel: v.optional(v.string()),
+    engaged: v.boolean(),
+    method: v.optional(v.string()),
+    whatTheySaid: v.optional(v.string()),
+    engagedAt: v.optional(v.string()),
+  }).index("by_assessment", ["assessmentId"]),
+
+  materialityIros: defineTable({
+    assessmentId: v.id("materialityAssessments"),
+    topicRowId: v.id("materialityTopics"),
+    kind: v.optional(v.string()),
+    title: v.optional(v.string()),
+    note: v.optional(v.string()),
+    source: v.string(),
+  })
+    .index("by_topic", ["topicRowId"])
+    .index("by_assessment", ["assessmentId"]),
+
+  materialityEvents: defineTable({
+    assessmentId: v.id("materialityAssessments"),
+    at: v.number(),
+    userId: v.optional(v.string()),
+    kind: v.string(),
+    topicRowId: v.optional(v.id("materialityTopics")),
+    before: v.optional(v.any()),
+    after: v.optional(v.any()),
+    reason: v.optional(v.string()),
+  }).index("by_assessment", ["assessmentId", "at"]),
+
+  reportTopicStatus: defineTable({
+    orgId: v.string(),
+    reportingYear: v.number(),
+    topicKey: v.string(),
+    addressed: v.boolean(),
+    whatWeDo: v.optional(v.string()),
+    narrativeSlot: v.optional(v.string()),
+  })
+    .index("by_org_year", ["orgId", "reportingYear"])
+    .index("by_org_year_topic", ["orgId", "reportingYear", "topicKey"]),
 })
