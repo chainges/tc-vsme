@@ -1,7 +1,10 @@
+import { useStore } from '@tanstack/react-form'
 import { useStore as useYearStore } from '@tanstack/react-store'
+import { useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
+import type { PropertyLocation } from '@/lib/forms/schemas/b1-general-schema'
 import {
 	type B5BiodiversityFormValues,
 	b5BiodiversitySchema,
@@ -9,8 +12,21 @@ import {
 import { yearStore } from '@/lib/year-store'
 import { m } from '@/paraglide/messages'
 
-export function B5BiodiversityForm() {
+type B5BiodiversityFormProps = {
+	properties: PropertyLocation[]
+}
+
+export function B5BiodiversityForm({ properties }: B5BiodiversityFormProps) {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
+	const siteDefaults = properties.map((property) => ({
+		propertyId: property.id,
+		siteLocation: [property.country, property.city, property.streetAddress]
+			.filter(Boolean)
+			.join(' '),
+		areaSquareMeters: undefined,
+		isInSensitiveBiodiversityArea: false,
+		isNearSensitiveBiodiversityArea: false,
+	}))
 
 	const { form, status, isSaving, isLoading, saveDraft, submit, reopen } =
 		useFormSubmission<B5BiodiversityFormValues>({
@@ -21,13 +37,36 @@ export function B5BiodiversityForm() {
 			defaultValues: {
 				reportingYear: reportingYear.toString(),
 				hasSensitiveBiodiversityAreas: false,
-				totalAreaHectares: undefined,
-				protectedAreaHectares: undefined,
-				nonProtectedAreaHectares: undefined,
+				sites: siteDefaults,
+				totalSealedAreaSquareMeters: undefined,
+				totalNatureOrientedAreaOnSiteSquareMeters: undefined,
+				totalNatureOrientedAreaOffSiteSquareMeters: undefined,
+				totalLandUsedSquareMeters: undefined,
 				protectedSpeciesCount: '',
 				redListedSpeciesCount: '',
 			} as B5BiodiversityFormValues,
 		})
+	const sites = useStore(form.store, (state) => state.values.sites) ?? []
+
+	useEffect(() => {
+		const sitesByPropertyId = new Map(
+			sites.map((site) => [site.propertyId, site]),
+		)
+		const synchronizedSites = siteDefaults.map((site) => ({
+			...site,
+			...sitesByPropertyId.get(site.propertyId),
+		}))
+
+		const alreadySynchronized =
+			sites.length === synchronizedSites.length &&
+			sites.every(
+				(site, index) => site.propertyId === synchronizedSites[index]?.propertyId,
+			)
+
+		if (!alreadySynchronized) {
+			form.setFieldValue('sites', synchronizedSites)
+		}
+	}, [form, siteDefaults, sites])
 
 	if (isLoading) {
 		return (
@@ -59,27 +98,7 @@ export function B5BiodiversityForm() {
 
 					<Card>
 						<CardContent className="space-y-6">
-							<form.AppField
-								name="hasSensitiveBiodiversityAreas"
-								listeners={{
-									onChange: ({ value, fieldApi }) => {
-										if (!value) {
-											fieldApi.form.setFieldValue(
-												'totalAreaHectares',
-												undefined,
-											)
-											fieldApi.form.setFieldValue(
-												'protectedAreaHectares',
-												undefined,
-											)
-											fieldApi.form.setFieldValue(
-												'nonProtectedAreaHectares',
-												undefined,
-											)
-										}
-									},
-								}}
-							>
+							<form.AppField name="hasSensitiveBiodiversityAreas">
 								{(field) => (
 									<field.SwitchField label={m["environmental.B5.label"]()} />
 								)}
@@ -90,53 +109,75 @@ export function B5BiodiversityForm() {
 							>
 								{(hasSensitiveBiodiversityAreas) =>
 									hasSensitiveBiodiversityAreas ? (
-										<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-											<form.AppField name="totalAreaHectares">
-												{(field) => (
-													<field.NumberField
-														label={m["environmental.B5.totalAreaHectaresLabel"]()}
-														unit={m["environmental.B5.unit"]()}
-													/>
-												)}
-											</form.AppField>
-
-											<form.AppField name="protectedAreaHectares">
-												{(field) => (
-													<field.NumberField
-														label={m["environmental.B5.protectedAreaHectares"]()}
-														unit={m["environmental.B5.unit"]()}
-													/>
-												)}
-											</form.AppField>
-
-											<form.AppField name="nonProtectedAreaHectares">
-												{(field) => (
-													<field.NumberField
-														label={m["environmental.B5.nonProtectedAreaHectares"]()}
-														unit={m["environmental.B5.unit"]()}
-													/>
-												)}
-											</form.AppField>
-										</div>
+										<form.Subscribe selector={(state) => state.values.sites}>
+											{(sites) => (
+												<div className="space-y-6">
+													{sites?.map((site, index) => (
+														<Card key={site.propertyId}>
+															<CardContent className="space-y-6">
+																<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+																	<form.AppField name={`sites[${index}].siteLocation`}>
+																		{(field) => <field.TextField label={m["environmental.B5.siteLocation"]()} />}
+																	</form.AppField>
+																	<form.AppField name={`sites[${index}].areaSquareMeters`}>
+																		{(field) => <field.NumberField label={m["environmental.B5.areaSquareMeters"]()} unit="m²" />}
+																	</form.AppField>
+																</div>
+																<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+																	<form.AppField name={`sites[${index}].isInSensitiveBiodiversityArea`}>
+																		{(field) => <field.SwitchField label={m["environmental.B5.isInSensitiveBiodiversityArea"]()} />}
+																	</form.AppField>
+																	<form.AppField name={`sites[${index}].isNearSensitiveBiodiversityArea`}>
+																		{(field) => <field.SwitchField label={m["environmental.B5.isNearSensitiveBiodiversityArea"]()} />}
+																	</form.AppField>
+																</div>
+															</CardContent>
+														</Card>
+													))}
+												</div>
+											)}
+										</form.Subscribe>
 									) : null
 								}
 							</form.Subscribe>
+						</CardContent>
+					</Card>
 
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<form.AppField name="protectedSpeciesCount">
+					<Card>
+						<CardContent className="space-y-6">
+							<h3 className="text-base font-medium">
+								{m["environmental.B5.landInformation"]()}
+							</h3>
+							<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+								<form.AppField name="totalSealedAreaSquareMeters">
 									{(field) => (
-										<field.TextField
-											label={m["environmental.B5.protectedSpeciesCountLabel"]()}
-											description={m["environmental.B5.protectedSpeciesCountDescription"]()}
+										<field.NumberField
+											label={m["environmental.B5.totalSealedArea"]()}
+											unit="m²"
 										/>
 									)}
 								</form.AppField>
-
-								<form.AppField name="redListedSpeciesCount">
+								<form.AppField name="totalNatureOrientedAreaOnSiteSquareMeters">
 									{(field) => (
-										<field.TextField
-											label={m["environmental.B5.redListedSpeciesCountLabel"]()}
-											description={m["environmental.B5.redListedSpeciesCountDescription"]()}
+										<field.NumberField
+											label={m["environmental.B5.totalNatureOrientedAreaOnSite"]()}
+											unit="m²"
+										/>
+									)}
+								</form.AppField>
+								<form.AppField name="totalNatureOrientedAreaOffSiteSquareMeters">
+									{(field) => (
+										<field.NumberField
+											label={m["environmental.B5.totalNatureOrientedAreaOffSite"]()}
+											unit="m²"
+										/>
+									)}
+								</form.AppField>
+								<form.AppField name="totalLandUsedSquareMeters">
+									{(field) => (
+										<field.NumberField
+											label={m["environmental.B5.totalLandUsed"]()}
+											unit="m²"
 										/>
 									)}
 								</form.AppField>

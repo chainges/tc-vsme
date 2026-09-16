@@ -3,46 +3,17 @@ import { z } from 'zod'
 export const c8SectorInvolvementSchema = z
 	.object({
 		reportingYear: z.string().regex(/^\d{4}$/, 'År må være 4 siffer'),
-		controversialWeapons: z.boolean().default(false),
 		controversialWeaponsRevenue: z.number().min(0, 'Må være 0 eller mer').optional(),
-		fossilFuels: z.boolean().default(false),
-		fossilFuelRevenue: z.number().min(0, 'Må være 0 eller mer').optional(),
-		fossilFuelsBreakdown: z.string().optional(),
-		agriculturalChemicals: z.boolean().default(false),
-		agriculturalChemicalsRevenue: z.number().min(0, 'Må være 0 eller mer').optional(),
+		tobaccoRevenue: z.number().min(0, 'Må være 0 eller mer').optional(),
+		coalRevenue: z.number().min(0, 'Må være 0 eller mer').optional(),
+		gasRevenue: z.number().min(0, 'Må være 0 eller mer').optional(),
+		oilRevenue: z.number().min(0, 'Må være 0 eller mer').optional(),
+		chemicalProductionRevenue: z.number().min(0, 'Må være 0 eller mer').optional(),
+		pabCoalThreshold: z.boolean().default(false),
+		pabOilThreshold: z.boolean().default(false),
+		pabGasThreshold: z.boolean().default(false),
+		pabElectricityThreshold: z.boolean().default(false),
 		euBenchmarksExclusion: z.boolean().default(false),
-	})
-	.superRefine((values, ctx) => {
-		if (values.controversialWeapons && values.controversialWeaponsRevenue === undefined) {
-			ctx.addIssue({
-				code: 'custom',
-				path: ['controversialWeaponsRevenue'],
-				message: 'Feltet er påkrevd',
-			})
-		}
-		if (values.fossilFuels) {
-			if (values.fossilFuelRevenue === undefined) {
-				ctx.addIssue({
-					code: 'custom',
-					path: ['fossilFuelRevenue'],
-					message: 'Feltet er påkrevd',
-				})
-			}
-			if (!values.fossilFuelsBreakdown) {
-				ctx.addIssue({
-					code: 'custom',
-					path: ['fossilFuelsBreakdown'],
-					message: 'Feltet er påkrevd',
-				})
-			}
-		}
-		if (values.agriculturalChemicals && values.agriculturalChemicalsRevenue === undefined) {
-			ctx.addIssue({
-				code: 'custom',
-				path: ['agriculturalChemicalsRevenue'],
-				message: 'Feltet er påkrevd',
-			})
-		}
 	})
 
 export type C8SectorInvolvementValues = z.infer<typeof c8SectorInvolvementSchema>

@@ -11,15 +11,11 @@ export const employeePerCountrySchema = z.object({
 
 export const b8WorkforceSchema = z.object({
 	reportingYear: z.string().regex(/^\d{4}$/, 'Year must be 4 digits'),
-	fullTimeEmployees: z
+	permanentContractEmployees: z
 		.number({ message: 'Dette feltet er påkrevd' })
 		.int('Må være et heltall')
 		.min(0, 'Må være 0 eller mer'),
-	partTimeEmployees: z
-		.number({ message: 'Dette feltet er påkrevd' })
-		.int('Må være et heltall')
-		.min(0, 'Må være 0 eller mer'),
-	temporaryEmployees: z
+	temporaryContractEmployees: z
 		.number({ message: 'Dette feltet er påkrevd' })
 		.int('Må være et heltall')
 		.min(0, 'Må være 0 eller mer'),
@@ -32,6 +28,10 @@ export const b8WorkforceSchema = z.object({
 		.int('Må være et heltall')
 		.min(0, 'Må være 0 eller mer'),
 	other: z
+		.number({ message: 'Dette feltet er påkrevd' })
+		.int('Må være et heltall')
+		.min(0, 'Må være 0 eller mer'),
+	notReported: z
 		.number({ message: 'Dette feltet er påkrevd' })
 		.int('Må være et heltall')
 		.min(0, 'Må være 0 eller mer'),

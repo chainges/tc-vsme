@@ -54,6 +54,8 @@ export function useFormSubmission<TData>({
 		},
 		onSubmitInvalid: ({ formApi }) => {
 			focusFirstError(formApi)
+			 console.log('FORM ERRORS:', formApi.state.errors)
+			console.log('FORM STATE:', formApi.state)
 			toast.error('Skjemaet inneholder feil. Vennligst rett dem og prøv igjen.')
 		},
 		onSubmit: async ({ value }) => {

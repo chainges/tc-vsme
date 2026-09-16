@@ -6,19 +6,16 @@ export const b9HealthSafetySchema = z.object({
 		.number({ message: 'Dette feltet er påkrevd' })
 		.int('Må være et heltall')
 		.min(0, 'Må være 0 eller mer'),
-	sicknessAbsencePercentage: z
-		.number({ message: 'Dette feltet er påkrevd' })
-		.min(0, 'Må være 0 eller mer')
-		.max(100, 'Kan ikke overstige 100 %'),
-	hmsTraining: z
-		.number({ message: 'Dette feltet er påkrevd' })
-		.int('Må være et heltall')
-		.min(0, 'Må være 0 eller mer'),
 	deceased: z
 		.number({ message: 'Dette feltet er påkrevd' })
 		.int('Må være et heltall')
 		.min(0, 'Må være 0 eller mer'),
-	anyAdditionalInfo: z.string().optional(),
+	rateOfWorkAccidents: z.number().min(0).optional(),
+	knowExactHoursWorked: z.boolean().default(false),
+	totalHoursWorked: z
+		.number()
+		.min(0, 'Må være 0 eller mer')
+		.optional(),
 })
 
 export type B9HealthSafetyFormValues = z.infer<typeof b9HealthSafetySchema>

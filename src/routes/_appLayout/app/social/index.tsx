@@ -120,7 +120,7 @@ function SocialPage() {
 						: undefined
 				}
 			>
-				<B9HealthSafetyForm />
+				<B9HealthSafetyForm totalEmployees={totalEmployees} />
 			</FormCard>
 
 			<FormCard

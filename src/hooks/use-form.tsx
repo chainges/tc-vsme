@@ -20,6 +20,8 @@ export function focusFirstError(formApi: any) {
 	const fieldMeta = formApi.state.fieldMeta
 	let firstErrorName: string | undefined
 
+	console.log("fieldMeta:", fieldMeta)
+
 	if (Array.isArray(fieldMeta)) {
 		const field = fieldMeta.find((f: any) => f.errors?.length > 0)
 		if (field) firstErrorName = field.name

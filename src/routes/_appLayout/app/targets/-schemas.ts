@@ -21,6 +21,21 @@ export const targetsFormSchema = z.object({
 		.max(100, 'Target reduction cannot exceed 100%'),
 	longTermTargetYear: z.number().optional(),
 	longTermTargetReduction: z.number().min(0).max(100).optional(),
+	keyActionsToReachTargets: z.string().optional(),
+	climateTransitionPlanStatus: z.enum(['yes', 'no']).optional(),
+	climateTransitionPlanDescription: z.string().optional(),
+	futureClimateTransitionPlanStatus: z.enum(['yes', 'no']).optional(),
+	plannedClimateTransitionPlanAdoptionYear: z.number().optional(),
+}).superRefine((values, context) => {
+	if (values.climateTransitionPlanStatus === 'yes' && !values.climateTransitionPlanDescription?.trim()) {
+		context.addIssue({ code: 'custom', path: ['climateTransitionPlanDescription'], message: 'Please describe the climate transition plan.' })
+	}
+	if (values.climateTransitionPlanStatus === 'no' && !values.futureClimateTransitionPlanStatus) {
+		context.addIssue({ code: 'custom', path: ['futureClimateTransitionPlanStatus'], message: 'Please indicate whether you plan to adopt a climate transition plan.' })
+	}
+	if (values.futureClimateTransitionPlanStatus === 'yes' && (values.plannedClimateTransitionPlanAdoptionYear === undefined || values.plannedClimateTransitionPlanAdoptionYear < currentYear)) {
+		context.addIssue({ code: 'custom', path: ['plannedClimateTransitionPlanAdoptionYear'], message: `Adoption year must be at least ${currentYear}.` })
+	}
 })
 
 export type TargetsFormValues = z.infer<typeof targetsFormSchema>

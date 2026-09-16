@@ -7,6 +7,7 @@ import { B1GeneralForm } from '@/components/forms/b1-general-form'
 import { B2SustainabilityInitiativesForm } from '@/components/forms/b2-sustainability-initiatives-form'
 
 import { C1BusinessModelForm } from '@/components/forms/c1-business-model-form'
+import { C2DescriptionPracticesPoliciesForm } from '@/components/forms/c2-description-paractices-policies-form'
 import { HelpSheet } from '@/components/sheet'
 import {
 	FormCard,
@@ -44,7 +45,7 @@ function GeneralPage() {
 	const formSections = useQuery(
 		api.forms.get.getFormAllSectionsWithContributors,
 		skipQuery || {
-			table: 'formGeneral',
+			table: "formGeneral",
 			reportingYear,
 		},
 	)
@@ -53,6 +54,8 @@ function GeneralPage() {
 	const companyInfo = formSections?.companyInfo
 	const sustainability = formSections?.sustainabilityInitiatives
 	const businessModel = formSections?.businessModel
+
+	const descriptionOfPracticesPolicies = formSections?.descriptionOfPracticesPolicies
 
 	// Show loading state
 	if (isOrgLoading || formSections === undefined) {
@@ -120,6 +123,23 @@ function GeneralPage() {
 				}
 			>
 				<C1BusinessModelForm />
+			</FormCard>
+
+			<FormCard
+				title={m["environmental.C2.title"]()}
+				updatedDate={formatDate(descriptionOfPracticesPolicies?.lastModifiedAt)}
+				toolTip={m["environmental.C2.tooltip"]()}
+				status={(descriptionOfPracticesPolicies?.status ?? "not_started") as FormStatus}
+				contributor={descriptionOfPracticesPolicies?.contributor || { name: "Unknown" }}
+				code='C2'
+				module='Comprehensive Module'
+				version={
+					descriptionOfPracticesPolicies?.versions?.length
+						? descriptionOfPracticesPolicies.versions[descriptionOfPracticesPolicies.versions.length - 1]?.version
+						: undefined
+				}
+			>
+				<C2DescriptionPracticesPoliciesForm />
 			</FormCard>
 		</div>
 	)

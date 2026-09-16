@@ -10,7 +10,7 @@ export const getCompleteReportData = action({
     // All 4 queries fire at the SAME TIME
     // log the orgId and reportingYear for debugging
     console.log(`Fetching report data for orgId: ${orgId}, reportingYear: ${reportingYear}`);
-    const [general, environmental, social, governance,organization] = await Promise.all([
+    const [general, environmental, social, governance, organization, targets] = await Promise.all([
       ctx.runQuery(
         internal.general.getGeneralFormByOrgIdInternal,
         { orgId, reportingYear }
@@ -30,7 +30,11 @@ export const getCompleteReportData = action({
       ctx.runQuery(
             internal.organizations.getByClerkOrgIdInternal,
             { orgId }
-        )
+        ),
+      ctx.runQuery(
+        internal.getTargets.getTargetsInternal,
+        { orgId, reportingYear }
+      )
     ]);
 
     // Single combined payload
@@ -39,7 +43,8 @@ export const getCompleteReportData = action({
   formEnvironmental: environmental,
   formSocial: social,
   formGovernance: governance,
-  organization: organization
+  organization: organization,
+  targets: targets
 };
   },
 });

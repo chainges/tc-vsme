@@ -9,6 +9,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table'
+import { m } from '@/paraglide/messages'
 
 // ============================================================================
 // Types
@@ -32,6 +33,11 @@ interface TargetsData {
 	projections?: Projection[]
 	lastModifiedAt?: number
 	contributor?: { name: string }
+	keyActionsToReachTargets?: string
+	climateTransitionPlanStatus?: 'yes' | 'no'
+	climateTransitionPlanDescription?: string
+	futureClimateTransitionPlanStatus?: 'yes' | 'no'
+	plannedClimateTransitionPlanAdoptionYear?: number
 }
 
 // ============================================================================
@@ -190,10 +196,10 @@ function TargetsContent({ targets }: TargetsContentProps) {
 	const hasLongTermData = baseYearProjection && longTermProjection
 
 	return (
-		<div className="space-y-6">
+		<div className='space-y-6'>
 			{hasTargetYearData && (
 				<EmissionTargetTable
-					title="Target Year"
+					title='Target Year'
 					targetYear={targets.targetYear}
 					baseYearProjection={baseYearProjection}
 					targetProjection={targetYearProjection}
@@ -202,7 +208,7 @@ function TargetsContent({ targets }: TargetsContentProps) {
 
 			{hasLongTermData && (
 				<EmissionTargetTable
-					title="Long Term Targets"
+					title='Long Term Targets'
 					targetYear={targets.longTermTargetYear ?? targets.targetYear}
 					baseYearProjection={baseYearProjection}
 					targetProjection={longTermProjection}
@@ -210,18 +216,20 @@ function TargetsContent({ targets }: TargetsContentProps) {
 			)}
 
 			{!hasTargetYearData && !hasLongTermData && (
-				<div className="text-center py-4 text-muted-foreground">
+				<div className='text-center py-4 text-muted-foreground'>
 					<p>Incomplete target data. Please update your targets.</p>
 				</div>
 			)}
 
-			<div className="flex justify-end pt-2">
-				<Button
-					variant="outline"
-					onClick={() => navigate({ to: '/app/targets' })}
-				>
+			<div className="space-y-4 border-t pt-4">
+				{targets.keyActionsToReachTargets && <div><h4 className="text-sm font-semibold">{m["environmental.C3.keyActionsLabel"]()}</h4><p className="text-sm text-muted-foreground whitespace-pre-wrap">{targets.keyActionsToReachTargets}</p></div>}
+				{targets.climateTransitionPlanStatus && <div><h4 className="text-sm font-semibold">{m["environmental.C3.summaryTitle"]()}</h4><p className="text-sm text-muted-foreground">{targets.climateTransitionPlanStatus === 'yes' ? m["environmental.C3.adopted"]() : m["environmental.C3.notAdopted"]()}{targets.climateTransitionPlanDescription ? `: ${targets.climateTransitionPlanDescription}` : ''}{targets.climateTransitionPlanStatus === 'no' && targets.futureClimateTransitionPlanStatus ? `; ${m["environmental.C3.futureAdoption"]()}: ${targets.futureClimateTransitionPlanStatus === 'yes' ? m["environmental.C3.yes"]() : m["environmental.C3.no"]()}` : ''}{targets.futureClimateTransitionPlanStatus === 'yes' && targets.plannedClimateTransitionPlanAdoptionYear ? ` (${targets.plannedClimateTransitionPlanAdoptionYear})` : ''}</p></div>}
+			</div>
+
+			<div className='flex justify-end pt-2'>
+				<Button variant='outline' onClick={() => navigate({ to: "/app/targets" })}>
 					Edit Targets
-					<ArrowRightIcon className="ml-2 h-4 w-4" />
+					<ArrowRightIcon className='ml-2 h-4 w-4' />
 				</Button>
 			</div>
 		</div>

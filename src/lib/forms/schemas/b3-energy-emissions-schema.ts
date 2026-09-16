@@ -38,6 +38,54 @@ export const b3EnergyEmissionsSchema = z.object({
 	totalEnergyConsumption: z
 		.number({ message: 'Dette feltet er påkrevd' })
 		.min(0, 'Må være 0 eller mer'),
+	totalScope3Emissions: z
+		.number({ message: 'Dette feltet er påkrevd' })
+		.min(0, 'Må være 0 eller mer'),
+	category1: z
+		.number({ message: 'Dette feltet er påkrevd' })
+		.min(0, 'Må være 0 eller mer'),
+	category2: z
+		.number({ message: 'Dette feltet er påkrevd' })
+		.min(0, 'Må være 0 eller mer'),
+	category3: z
+		.number({ message: 'Dette feltet er påkrevd' })
+		.min(0, 'Må være 0 eller mer'),
+	category4: z
+		.number({ message: 'Dette feltet er påkrevd' })
+		.min(0, 'Må være 0 eller mer'),
+	category5: z
+		.number({ message: 'Dette feltet er påkrevd' })
+		.min(0, 'Må være 0 eller mer'),
+	category6: z
+		.number({ message: 'Dette feltet er påkrevd' })
+		.min(0, 'Må være 0 eller mer'),
+	category7: z
+		.number({ message: 'Dette feltet er påkrevd' })
+		.min(0, 'Må være 0 eller mer'),
+	category8: z
+		.number({ message: 'Dette feltet er påkrevd' })
+		.min(0, 'Må være 0 eller mer'),
+	category9: z
+		.number({ message: 'Dette feltet er påkrevd' })
+		.min(0, 'Må være 0 eller mer'),
+	category10: z
+		.number({ message: 'Dette feltet er påkrevd' })
+		.min(0, 'Må være 0 eller mer'),
+	category11: z
+		.number({ message: 'Dette feltet er påkrevd' })
+		.min(0, 'Må være 0 eller mer'),
+	category12: z
+		.number({ message: 'Dette feltet er påkrevd' })
+		.min(0, 'Må være 0 eller mer'),
+	category13: z
+		.number({ message: 'Dette feltet er påkrevd' })
+		.min(0, 'Må være 0 eller mer'),
+	category14: z
+		.number({ message: 'Dette feltet er påkrevd' })
+		.min(0, 'Må være 0 eller mer'),
+	category15: z
+		.number({ message: 'Dette feltet er påkrevd' })
+		.min(0, 'Må være 0 eller mer'),
 	climateDataCollectionMethod: z
 		.string({ message: 'Dette feltet er påkrevd' })
 		.min(10, 'Beskrivelsen må være på minst 10 tegn'),

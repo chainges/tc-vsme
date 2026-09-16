@@ -8,7 +8,7 @@ import { B4PollutionForm } from '@/components/forms/b4-pollution-form'
 import { B5BiodiversityForm } from '@/components/forms/b5-biodiversity-form'
 import { B6WaterManagementForm } from '@/components/forms/b6-water-form'
 import { B7ResourceUseCircularEconomyForm } from '@/components/forms/b7-resource-use-circular-economy-form'
-import { C2Scope3EmissionsForm } from '@/components/forms/c2-scope3-emissions-form'
+//import { C2Scope3EmissionsForm } from '@/components/forms/c2-scope3-emissions-form'
 import { C4ClimateRiskForm } from '@/components/forms/c4-climate-risk-form'
 import { HelpSheet } from '@/components/sheet'
 import {
@@ -64,17 +64,36 @@ function EnvironmentalPage() {
 	// Fetch targets data for C3 card
 	const targetsData = useQuery(api.targets.getTargets, skipQuery ? 'skip' : {})
 
+	// Fetch property locations from the General Form's company information.
+	const generalCompanyInfo = useQuery(
+		api.forms.get.getForm,
+		skipQuery
+			? 'skip'
+			: {
+					table: 'formGeneral',
+					reportingYear,
+					section: 'companyInfo',
+				},
+	)
+	const generalCompanyInfoData =
+		generalCompanyInfo?.draftData ?? generalCompanyInfo?.data
+	const properties = generalCompanyInfoData?.properties ?? []
+
 	// Extract section-specific data with contributor already resolved
 	const energyEmissions = formSections?.energyEmissions
 	const pollution = formSections?.pollution
 	const biodiversity = formSections?.biodiversity
 	const waterManagement = formSections?.waterManagement
 	const resourceUseCircularEconomy = formSections?.resourceUseCircularEconomy
-	const scope3Emissions = formSections?.scope3Emissions
+	//const scope3Emissions = formSections?.scope3Emissions
 	const climateRiskAnalysis = formSections?.climateRiskAnalysis
 
 	// Show loading state
-	if (isOrgLoading || formSections === undefined) {
+	if (
+		isOrgLoading ||
+		formSections === undefined ||
+		generalCompanyInfo === undefined
+	) {
 		return <div>Loading...</div>
 	}
 
@@ -137,7 +156,7 @@ function EnvironmentalPage() {
 						: undefined
 				}
 			>
-				<B5BiodiversityForm />
+				<B5BiodiversityForm properties={properties} />
 			</FormCard>
 
 			<FormCard
@@ -230,23 +249,6 @@ function EnvironmentalPage() {
 				<BiodiversityHelp />
 			</HelpSheet>
 
-			<FormCard
-				title={m["environmental.C2.title"]()}
-				updatedDate={formatDate(scope3Emissions?.lastModifiedAt)}
-				toolTip={m["environmental.C2.tooltip"]()}
-				status={(scope3Emissions?.status ?? 'not_started') as FormStatus}
-				contributor={scope3Emissions?.contributor || { name: 'Unknown' }}
-				code="C2"
-				module="Comprehensive Module"
-				version={
-					scope3Emissions?.versions?.length
-						? scope3Emissions.versions[scope3Emissions.versions.length - 1]
-								?.version
-						: undefined
-				}
-			>
-				<C2Scope3EmissionsForm />
-			</FormCard>
 
 			<FormCard
 				title={m["environmental.C3.title"]()}

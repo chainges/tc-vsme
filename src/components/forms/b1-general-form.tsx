@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { useMemo } from 'react'
 import { Button } from '@/components/ui/button'
+import { NACE_DATA } from '@/data/NACE'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
 import { useOrgGuard } from '@/hooks/use-org-guard'
@@ -58,6 +59,23 @@ export function B1GeneralForm() {
 		api.organizations.getByClerkOrgId,
 		skipQuery || { clerkOrgId: organization?.id ?? '' },
 	)
+
+	// get actuall nace value from NACE_DATA based on orgData?.naceCode
+	// if nace code's length is greater then 5 we will slice it to 5 and then get the value from NACE_DATA
+
+	console.log('Org NACE Code:', orgData?.naceCode)
+
+	const naceCode = useMemo(() => {
+		if (!orgData?.naceCode) return ''
+		
+		const codeToUse = orgData.naceCode.length > 5 ? orgData.naceCode.slice(0, 5) : orgData.naceCode
+		const naceDataMap = NACE_DATA as Record<string, { label?: string }>
+		const naceValue = naceDataMap[codeToUse]?.label ?? ''
+
+		return naceValue
+	}, [orgData?.naceCode])
+
+	console.log('Mapped NACE Code:', naceCode)
 
 	// Fetch MongoDB emissions data with TanStack Query for caching
 	const getEmissions = useAction(api.emissions.getEmissionsByOrgId)

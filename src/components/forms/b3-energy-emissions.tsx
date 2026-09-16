@@ -11,6 +11,7 @@ import {
 	type B3EnergyEmissionsFormValues,
 	b3EnergyEmissionsSchema,
 } from '@/lib/forms/schemas/b3-energy-emissions-schema'
+import { SCOPE_3_CATEGORIES } from '@/lib/forms/schemas/c2-scope3-emissions-schema'
 import { yearStore } from '@/lib/year-store'
 import { m } from '@/paraglide/messages'
 import { api } from '../../../convex/_generated/api'
@@ -41,6 +42,25 @@ type MongoEmissionsData = {
 	Scope1?: number
 	locationBased?: number
 	marketBased?: number
+	Scope3?: number
+	scope3Categories?: {
+		cat1?: number
+		cat2?: number
+		cat3?: number
+		cat4?: number
+		cat5?: number
+		cat6?: number
+		cat7?: number
+		cat8?: number
+		cat9?: number
+		cat10?: number
+		cat11?: number
+		cat12?: number
+		cat13?: number
+		cat14?: number
+		cat15?: number
+		[key: string]: unknown
+	}
 	[key: string]: unknown
 }
 
@@ -73,6 +93,7 @@ export function B3EnergyEmissionsForm() {
 				if (result.success && result.data) {
 					// Map MongoDB fields to form fields
 					const emissionsData = result.data as MongoEmissionsData
+					const scope3Categories = emissionsData.scope3Categories || {}
 					setMongoDefaults({
 						renewableElectricity: emissionsData.renewable || 0,
 						nonRenewableElectricity: emissionsData['non-renewable'] || 0,
@@ -85,6 +106,22 @@ export function B3EnergyEmissionsForm() {
 						scope1Emissions: emissionsData.Scope1 || 0,
 						scope2EmissionsLocationBased: emissionsData.locationBased || 0,
 						scope2EmissionsMarketBased: emissionsData.marketBased || 0,
+						totalScope3Emissions: emissionsData.Scope3 || 0,
+						category1: scope3Categories.cat1 || 0,
+						category2: scope3Categories.cat2 || 0,
+						category3: scope3Categories.cat3 || 0,
+						category4: scope3Categories.cat4 || 0,
+						category5: scope3Categories.cat5 || 0,
+						category6: scope3Categories.cat6 || 0,
+						category7: scope3Categories.cat7 || 0,
+						category8: scope3Categories.cat8 || 0,
+						category9: scope3Categories.cat9 || 0,
+						category10: scope3Categories.cat10 || 0,
+						category11: scope3Categories.cat11 || 0,
+						category12: scope3Categories.cat12 || 0,
+						category13: scope3Categories.cat13 || 0,
+						category14: scope3Categories.cat14 || 0,
+						category15: scope3Categories.cat15 || 0,
 					})
 				}
 			} catch (error) {
@@ -128,6 +165,22 @@ export function B3EnergyEmissionsForm() {
 			scope2EmissionsLocationBased:
 				mongoDefaults.scope2EmissionsLocationBased || 0,
 			scope2EmissionsMarketBased: mongoDefaults.scope2EmissionsMarketBased || 0,
+			totalScope3Emissions: mongoDefaults.totalScope3Emissions || 0,
+			category1: mongoDefaults.category1 || 0,
+			category2: mongoDefaults.category2 || 0,
+			category3: mongoDefaults.category3 || 0,
+			category4: mongoDefaults.category4 || 0,
+			category5: mongoDefaults.category5 || 0,
+			category6: mongoDefaults.category6 || 0,
+			category7: mongoDefaults.category7 || 0,
+			category8: mongoDefaults.category8 || 0,
+			category9: mongoDefaults.category9 || 0,
+			category10: mongoDefaults.category10 || 0,
+			category11: mongoDefaults.category11 || 0,
+			category12: mongoDefaults.category12 || 0,
+			category13: mongoDefaults.category13 || 0,
+			category14: mongoDefaults.category14 || 0,
+			category15: mongoDefaults.category15 || 0,
 			climateDataCollectionMethod: '',
 			dataUncertainty: '',
 		} as B3EnergyEmissionsFormValues,
@@ -186,6 +239,15 @@ export function B3EnergyEmissionsForm() {
 					'scope2EmissionsMarketBased',
 					mongoDefaults.scope2EmissionsMarketBased,
 				)
+			if (mongoDefaults.totalScope3Emissions !== undefined)
+				form.setFieldValue('totalScope3Emissions', mongoDefaults.totalScope3Emissions)
+			for (const category of SCOPE_3_CATEGORIES) {
+				const fieldName = `category${category.number}` as const
+				const value = mongoDefaults[fieldName]
+				if (value !== undefined) {
+					form.setFieldValue(fieldName, value)
+				}
+			}
 		}
 	}, [mongoFetched, mongoDefaults, existingData, form])
 
@@ -206,6 +268,18 @@ export function B3EnergyEmissionsForm() {
 						'totalEnergyConsumption',
 						mongoDefaults.totalEnergyConsumption ?? 0,
 					)
+				}
+				if (typedData.totalScope3Emissions === undefined) {
+					form.setFieldValue(
+						'totalScope3Emissions',
+						mongoDefaults.totalScope3Emissions ?? 0,
+					)
+				}
+				for (const category of SCOPE_3_CATEGORIES) {
+					const fieldName = `category${category.number}` as const
+					if (typedData[fieldName] === undefined) {
+						form.setFieldValue(fieldName, mongoDefaults[fieldName] ?? 0)
+					}
 				}
 			}
 		}
@@ -395,7 +469,37 @@ export function B3EnergyEmissionsForm() {
 								</div>
 
 								<div className="grid grid-cols-1 gap-6">
-									<form.AppField name="climateDataCollectionMethod">
+<div className="space-y-6">
+											<div>
+												<h3 className="text-lg font-medium">Scope 3 categories breakdown</h3>
+											</div>
+
+											<form.AppField name="totalScope3Emissions">
+												{(field) => (
+													<field.NumberField
+														label="Total Scope 3 emissions"
+														unit="tCO₂e"
+														description="Total indirect emissions in the value chain."
+													/>
+												)}
+											</form.AppField>
+
+											<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+												{SCOPE_3_CATEGORIES.map((category) => (
+													<form.AppField key={category.number} name={`category${category.number}`}>
+														{(field) => (
+															<field.NumberField
+																label={`${category.name} (Cat. ${category.number})`}
+																unit="tCO₂e"
+																description={`Emissions from ${category.name.toLowerCase()}`}
+															/>
+														)}
+													</form.AppField>
+												))}
+											</div>
+										</div>
+
+										<form.AppField name="climateDataCollectionMethod">
 										{(field) => (
 											<field.TextareaField
 												label={m["environmental.B3.climateDataCollectionMethodLabel"]()}

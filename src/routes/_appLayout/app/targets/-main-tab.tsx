@@ -5,6 +5,7 @@ import { EmissionsChart } from '@/components/emissions-chart'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { m } from '@/paraglide/messages'
 import { itemVariants } from './-animations'
 import type { useTargetsForm } from './-hooks'
 import type { BaseYearEmissionsData, EmissionRow } from './-schemas'
@@ -184,6 +185,35 @@ export function MainTab({
 										/>
 									)}
 								</AppField>
+							</div>
+
+							<div className="space-y-6 border-t pt-6">
+								<AppField name="keyActionsToReachTargets">
+									{(field) => <field.TextareaField label={m["environmental.C3.keyActionsLabel"]()} placeholder={m["environmental.C3.keyActionsPlaceholder"]()} rows={5} />}
+								</AppField>
+								<AppField name="climateTransitionPlanStatus">
+									{(field) => <field.RadioGroupField label={m["environmental.C3.transitionPlanAdoptedLabel"]()} options={[{ label: m["environmental.C3.yes"](), value: 'yes' }, { label: m["environmental.C3.no"](), value: 'no' }]} />}
+								</AppField>
+								<form.Subscribe selector={(state) => state.values.climateTransitionPlanStatus}>
+									{(status) => status === 'yes' ? (
+										<AppField name="climateTransitionPlanDescription">
+											{(field) => <field.TextareaField label={m["environmental.C3.transitionPlanDescriptionLabel"]()} rows={5} />}
+										</AppField>
+									) : status === 'no' ? (
+										<div className="space-y-6">
+											<AppField name="futureClimateTransitionPlanStatus">
+												{(field) => <field.RadioGroupField label={m["environmental.C3.futureTransitionPlanLabel"]()} options={[{ label: m["environmental.C3.yes"](), value: 'yes' }, { label: m["environmental.C3.no"](), value: 'no' }]} />}
+											</AppField>
+											<form.Subscribe selector={(state) => state.values.futureClimateTransitionPlanStatus}>
+												{(futureStatus) => futureStatus === 'yes' ? (
+													<AppField name="plannedClimateTransitionPlanAdoptionYear">
+														{(field) => <field.NumberField label={m["environmental.C3.adoptionYearLabel"]()} placeholder="e.g., 2028" min={new Date().getFullYear()} />}
+													</AppField>
+												) : null}
+											</form.Subscribe>
+										</div>
+									) : null}
+								</form.Subscribe>
 							</div>
 
 							<div className="flex justify-end">

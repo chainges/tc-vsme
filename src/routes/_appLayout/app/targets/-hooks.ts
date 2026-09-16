@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from 'convex/react'
-import { useMemo, useRef, useState, useEffect } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import type { useAppForm } from '@/hooks/tanstack-form'
 import { useOrgGuard } from '@/hooks/use-org-guard'
@@ -20,8 +20,8 @@ import {
 	targetsFormSchema,
 } from './-schemas'
 import {
-	calculateTotalEmissions,
 	calculateOverallReductions,
+	calculateTotalEmissions,
 	generateEmissionRows,
 	getScope3CategoryProportions,
 	updateScope1Projections,
@@ -122,6 +122,11 @@ export function useTargetsForm(
 				targetReduction: existingTargets.targetReduction,
 				longTermTargetYear: existingTargets.longTermTargetYear,
 				longTermTargetReduction: existingTargets.longTermTargetReduction,
+				keyActionsToReachTargets: existingTargets.keyActionsToReachTargets,
+				climateTransitionPlanStatus: existingTargets.climateTransitionPlanStatus,
+				climateTransitionPlanDescription: existingTargets.climateTransitionPlanDescription,
+				futureClimateTransitionPlanStatus: existingTargets.futureClimateTransitionPlanStatus,
+				plannedClimateTransitionPlanAdoptionYear: existingTargets.plannedClimateTransitionPlanAdoptionYear,
 			}
 		}
 		return {
@@ -131,6 +136,11 @@ export function useTargetsForm(
 			targetReduction: undefined as number | undefined,
 			longTermTargetYear: undefined as number | undefined,
 			longTermTargetReduction: undefined as number | undefined,
+			keyActionsToReachTargets: undefined as string | undefined,
+			climateTransitionPlanStatus: undefined as 'yes' | 'no' | undefined,
+			climateTransitionPlanDescription: undefined as string | undefined,
+			futureClimateTransitionPlanStatus: undefined as 'yes' | 'no' | undefined,
+			plannedClimateTransitionPlanAdoptionYear: undefined as number | undefined,
 		}
 	}, [existingTargets])
 
@@ -180,6 +190,11 @@ export function useTargetsForm(
 					targetReduction: value.targetReduction,
 					longTermTargetYear: value.longTermTargetYear,
 					longTermTargetReduction: value.longTermTargetReduction,
+					keyActionsToReachTargets: value.keyActionsToReachTargets?.trim() || undefined,
+					climateTransitionPlanStatus: value.climateTransitionPlanStatus,
+					climateTransitionPlanDescription: value.climateTransitionPlanDescription?.trim() || undefined,
+					futureClimateTransitionPlanStatus: value.futureClimateTransitionPlanStatus,
+					plannedClimateTransitionPlanAdoptionYear: value.plannedClimateTransitionPlanAdoptionYear,
 					hasScopeSpecificTargets: {
 						scope1: false,
 						scope2: false,

@@ -34,20 +34,23 @@ interface EmployeeCountAlertProps {
 
 function EmployeeCountAlert({ form, totalEmployees }: EmployeeCountAlertProps) {
 	const employeeSum = useStore(form.store, (state) => {
-		const h = state.values.fullTimeEmployees ?? 0
-		const m = state.values.temporaryEmployees ?? 0
-		return h + m
+		const perm = state.values.permanentContractEmployees ?? 0
+		const temp = state.values.temporaryContractEmployees ?? 0
+		return perm + temp
 	})
 	const matches = employeeSum === totalEmployees
 
 	return (
-		<Alert variant={matches ? 'info' : 'warning'} className="mb-6 border-l-4">
+		<Alert variant={matches ? 'info' : 'destructive'} className="mb-6 border-l-4">
 			{matches ? <Info /> : <AlertTriangle />}
-			<AlertTitle>Employee count</AlertTitle>
+			<AlertTitle>{m["social.B8.employeeCountAlertTitle"]()}</AlertTitle>
 			<AlertDescription>
 				{matches
-					? 'Fulltime employees and temporary employees are linked to information in B1.'
-					: `Fulltime + temporary (${employeeSum}) does not match total employees from B1 (${totalEmployees}).`}
+					? m["social.B8.employeeCountAlertSuccess"]()
+					: m["social.B8.employeeCountAlertMismatch"]({
+							employeeSum,
+							totalEmployees,
+						})}
 			</AlertDescription>
 		</Alert>
 	)
@@ -58,18 +61,22 @@ function GenderCountAlert({ form, totalEmployees }: EmployeeCountAlertProps) {
 		const men = state.values.men ?? 0
 		const women = state.values.women ?? 0
 		const other = state.values.other ?? 0
-		return men + women + other
+		const notReported = state.values.notReported ?? 0
+		return men + women + other + notReported
 	})
 	const matches = genderSum === totalEmployees
 
 	return (
-		<Alert variant={matches ? 'info' : 'warning'} className="mb-6 border-l-4">
+		<Alert variant={matches ? 'info' : 'destructive'} className="mb-6 border-l-4">
 			{matches ? <Info /> : <AlertTriangle />}
-			<AlertTitle>Gender count</AlertTitle>
+			<AlertTitle>{m["social.B8.genderCountAlertTitle"]()}</AlertTitle>
 			<AlertDescription>
 				{matches
-					? 'Gender distribution is linked to information in B1.'
-					: `Men + women + other (${genderSum}) does not match total employees from B1 (${totalEmployees}).`}
+					? m["social.B8.genderCountAlertSuccess"]()
+					: m["social.B8.genderCountAlertMismatch"]({
+							genderSum,
+							totalEmployees,
+						})}
 			</AlertDescription>
 		</Alert>
 	)
@@ -112,12 +119,12 @@ export function B8WorkforceForm({
 			schema: b8WorkforceSchema,
 			defaultValues: {
 				reportingYear: reportingYear.toString(),
-				fullTimeEmployees: totalEmployees,
-				partTimeEmployees: 0,
-				temporaryEmployees: 0,
+				permanentContractEmployees: totalEmployees,
+				temporaryContractEmployees: 0,
 				men: 0,
 				women: 0,
 				other: 0,
+				notReported: 0,
 				employeesPerCountry: defaultEmployeesByCountry,
 				anyAdditionalInfo: '',
 			} as B8WorkforceFormValues,
@@ -134,15 +141,16 @@ export function B8WorkforceForm({
 		})
 
 	const employeeSum = useStore(form.store, (state) => {
-		const h = state.values.fullTimeEmployees ?? 0
-		const m = state.values.temporaryEmployees ?? 0
-		return h + m
+		const perm = state.values.permanentContractEmployees ?? 0
+		const temp = state.values.temporaryContractEmployees ?? 0
+		return perm + temp
 	})
 	const genderSum = useStore(form.store, (state) => {
 		const men = state.values.men ?? 0
 		const women = state.values.women ?? 0
 		const other = state.values.other ?? 0
-		return men + women + other
+		const notReported = state.values.notReported ?? 0
+		return men + women + other + notReported
 	})
 
 	const employeesLeft = useStore(
@@ -174,7 +182,7 @@ export function B8WorkforceForm({
 	const submitDisabledReasons: string[] = []
 	if (!employeeMatches) {
 		submitDisabledReasons.push(
-			`Employee types (${employeeSum}) must match total from B1 (${totalEmployees})`,
+			`Employee contract types (${employeeSum}) must match total from B1 (${totalEmployees})`,
 		)
 	}
 	if (!genderMatches) {
@@ -427,40 +435,37 @@ export function B8WorkforceForm({
 							</p>
 						</CardHeader>
 						<CardContent className="space-y-6">
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<form.AppField name="fullTimeEmployees">
+							<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+								<form.AppField name="permanentContractEmployees">
 									{(field) => (
 										<field.NumberField
-											label={m["social.B8.fullTimeLabel"]()}
-											description={m["social.B8.fullTimeDescription"]()}
+											label={m["social.B8.permanentContractLabel"]()}
+											description={m["social.B8.permanentContractDescription"]()}
 										/>
 									)}
 								</form.AppField>
 
-								<form.AppField name="partTimeEmployees">
+								<form.AppField name="temporaryContractEmployees">
 									{(field) => (
 										<field.NumberField
-											label={m["social.B8.partTimeLabel"]()}
-											description={m["social.B8.partTimeDescription"]()}
+											label={m["social.B8.temporaryContractLabel"]()}
+											description={m["social.B8.temporaryContractDescription"]()}
 										/>
 									)}
 								</form.AppField>
-							</div>
 
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<form.AppField name="temporaryEmployees">
-									{(field) => (
-										<field.NumberField
-											label={m["social.B8.temporaryLabel"]()}
-											description={m["social.B8.temporaryDescription"]()}
-										/>
-									)}
-								</form.AppField>
-								<EmployeeCountAlert
-									form={form}
-									totalEmployees={totalEmployees}
+								<NumberFieldReadOnly
+									label={m["social.B8.totalEmployeesLabel"]()}
+									value={employeeSum}
+									description={m["social.B8.totalEmployeesDescription"]()}
+									placeholder="0"
 								/>
 							</div>
+
+							<EmployeeCountAlert
+								form={form}
+								totalEmployees={totalEmployees}
+							/>
 						</CardContent>
 					</Card>
 
@@ -473,7 +478,7 @@ export function B8WorkforceForm({
 							</p>
 						</CardHeader>
 						<CardContent className="space-y-6">
-							<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+							<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
 								<form.AppField name="men">
 									{(field) => <field.NumberField label={m["social.B8.maleLabel"]()} />}
 								</form.AppField>
@@ -485,6 +490,17 @@ export function B8WorkforceForm({
 								<form.AppField name="other">
 									{(field) => <field.NumberField label={m["social.B8.otherLabel"]()} />}
 								</form.AppField>
+
+								<form.AppField name="notReported">
+									{(field) => <field.NumberField label={m["social.B8.notReportedLabel"]()} />}
+								</form.AppField>
+
+								<NumberFieldReadOnly
+									label={m["social.B8.totalEmployeesLabel"]()}
+									value={genderSum}
+									description={m["social.B8.totalEmployeesDescription"]()}
+									placeholder="0"
+								/>
 							</div>
 
 							<GenderCountAlert form={form} totalEmployees={totalEmployees} />

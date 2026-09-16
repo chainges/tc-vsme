@@ -1,20 +1,99 @@
 import { useStore as useYearStore } from '@tanstack/react-store'
-import { Info, Plus, Trash2 } from 'lucide-react'
+import { ChevronDown, ChevronRight, Info } from 'lucide-react'
+import { useState } from 'react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { sustainabilityIssues } from '@/data/initiatives'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
 import {
-	PREDEFINED_TITLES,
 	type SustainabilityInitiativesFormValues,
 	sustainabilityInitiativesSchema,
 } from '@/lib/forms/schemas/b2-sustainability-initiatives-schema'
 import { yearStore } from '@/lib/year-store'
 import { m } from '@/paraglide/messages'
 
+type SustainabilityTopic = {
+	label: string
+	subtopics?: Array<string | SustainabilityTopic>
+}
+
+type MainSustainabilityTopic = {
+	id: string
+	label: string
+	value: string
+	subtopics: Array<string | SustainabilityTopic>
+}
+
+function TopicChildren({
+	topics,
+	path,
+	depth,
+	expandedTopics,
+	onToggle,
+}: {
+	topics: Array<string | SustainabilityTopic>
+	path: string
+	depth: number
+	expandedTopics: Set<string>
+	onToggle: (topicPath: string) => void
+}) {
+	return (
+		<div className="space-y-2" style={{ marginLeft: `${depth * 1.25}rem` }}>
+			{topics.map((topic, index) => {
+				const item = typeof topic === 'string' ? { label: topic } : topic
+				const topicPath = `${path}-${index}`
+				const hasChildren = (item.subtopics?.length ?? 0) > 0
+				const isExpanded = expandedTopics.has(topicPath)
+
+				return (
+					<div key={topicPath}>
+						<div className="flex items-start gap-1.5">
+							{hasChildren ? (
+								<Button
+									type="button"
+									variant="ghost"
+									size="icon-sm"
+									onClick={() => onToggle(topicPath)}
+									aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${item.label}`}
+									aria-expanded={isExpanded}
+								>
+									{isExpanded ? <ChevronDown /> : <ChevronRight />}
+								</Button>
+							) : (
+								<div className="size-8 shrink-0" aria-hidden="true" />
+							)}
+							<span className="pt-1.5 text-sm leading-5">{item.label}</span>
+						</div>
+						{hasChildren && isExpanded && item.subtopics && (
+							<TopicChildren
+								topics={item.subtopics}
+								path={topicPath}
+								depth={1}
+								expandedTopics={expandedTopics}
+								onToggle={onToggle}
+							/>
+						)}
+					</div>
+				)
+			})}
+		</div>
+	)
+}
+
 export function B2SustainabilityInitiativesForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
+	const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set())
+	const toggleTopic = (topicPath: string) => {
+		setExpandedTopics((current) => {
+			const next = new Set(current)
+			if (next.has(topicPath)) next.delete(topicPath)
+			else next.add(topicPath)
+			return next
+		})
+	}
 
 	const { form, status, isSaving, isLoading, saveDraft, submit, reopen } =
 		useFormSubmission<SustainabilityInitiativesFormValues>({
@@ -24,7 +103,10 @@ export function B2SustainabilityInitiativesForm() {
 			schema: sustainabilityInitiativesSchema,
 			defaultValues: {
 				reportingYear: reportingYear.toString(),
-				initiatives: [],
+				hasSustainabilityPractices: false,
+				arePracticesPubliclyAvailable: false,
+				policiesHaveTargets: false,
+				selectedSustainabilityIssueValues: [],
 			} as SustainabilityInitiativesFormValues,
 		})
 
@@ -67,128 +149,106 @@ export function B2SustainabilityInitiativesForm() {
 							{(field) => <field.TextField label={m["general.reportingYear"]()} placeholder={"YYYY"} hidden />}
 						</form.AppField>
 
-						{/* Publicly available switch */}
-
-						{/* Initiatives array */}
-						<form.AppField name='initiatives'>
-							{(field) => (
-								<div className='space-y-4'>
-									{field.state.value?.length === 0 && (
-										<Card className='bg-muted/30'>
-											<CardContent className='pt-6 text-center'>
-												<div className='text-4xl mb-2'>📋</div>
-												<h3 className='font-medium mb-2'>{m["general.B2.noInitiativesAdded"]()}</h3>
-												<p className='text-sm text-muted-foreground mb-4'>
-													{m["general.B2.noInitiativesAddedDescription"]()}
-												</p>
-											</CardContent>
-										</Card>
+						<Card>
+							<CardContent className="space-y-6">
+								<form.AppField name="hasSustainabilityPractices">
+									{(field) => (
+										<field.SwitchField
+											label={m["general.B2.hasSustainabilityPractices"]()}
+										/>
 									)}
+								</form.AppField>
+								<form.Subscribe selector={(state) => state.values.hasSustainabilityPractices}>
+									{(hasSustainabilityPractices) =>
+										hasSustainabilityPractices && (
+											<form.AppField name="arePracticesPubliclyAvailable">
+												{(field) => (
+													<field.SwitchField
+														label={m["general.B2.arePracticesPubliclyAvailable"]()}
+													/>
+												)}
+											</form.AppField>
+										)
+									}
+								</form.Subscribe>
+								<form.AppField name="policiesHaveTargets">
+									{(field) => (
+										<field.SwitchField label={m["general.B2.policiesHaveTargets"]()} />
+									)}
+								</form.AppField>
+							</CardContent>
+						</Card>
 
-									{field.state.value?.map((item, i) => (
-										<Card key={item.id} className='relative'>
-											<CardContent className='space-y-4'>
-												<div className='grid grid-cols-1 sm:grid-cols-2 gap-6 items-end'>
-													<form.AppField name={`initiatives[${i}].title`}>
-														{(f) => (
-															<f.ComboboxField
-																label={m["general.B2.initiativeTitle"]()}
-																options={PREDEFINED_TITLES}
-																placeholder={m["general.B2.initiativePlaceholder"]()}
-																helperText={m["general.B2.initiativeHelperText"]()}
-															/>
-														)}
-													</form.AppField>
-													<form.AppField name={`initiatives[${i}].publiclyAvailable`}>
-														{(field) => <field.SwitchField label={m["general.B2.availablity"]()} />}
-													</form.AppField>
-												</div>
+						<form.Subscribe>
+							{
+									<form.AppField name="selectedSustainabilityIssueValues">
+										{(field) => (
+											<div className="space-y-4">
+												{sustainabilityIssues.map((topic) => {
+													const mainTopic = topic as MainSustainabilityTopic
+													const isSelected = field.state.value?.includes(mainTopic.value)
+													const isExpanded = expandedTopics?.has(mainTopic.id) ?? false
+													const subtopics = mainTopic?.subtopics
+													const hasChildren = subtopics?.length > 0
 
-												<form.AppField name={`initiatives[${i}].description`}>
-													{(f) => (
-														<f.TextareaField label={m["general.B2.initiativeDescriptionLabel"]()} placeholder={m["general.B2.initiativeDescriptionPlaceholder"]()} rows={3} />
-													)}
-												</form.AppField>
+													return (
+														<Card key={mainTopic.id}>
+															<CardContent className="space-y-3">
+																<div className="flex items-center gap-2">
+																	<Checkbox
+																		id={mainTopic.id}
+																		checked={isSelected}
+																		onCheckedChange={(checked) => {
 
-												<form.AppField name={`initiatives[${i}].goals`}>
-													{(f) => (
-														<f.TextareaField
-															label={m["general.B2.initiativeGoalsLabel"]()}
-															placeholder={m["general.B2.initiativeGoalsPlaceholder"]()}
-															rows={3}
-														/>
-													)}
-												</form.AppField>
+																			const selectedValues = field.state.value ?? []
 
-												<div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
-													<form.AppField name={`initiatives[${i}].responsiblePerson`}>
-														{(f) => (
-															<f.TextField
-																label={m["general.B2.initiativeResponsibleLabel"]()}
-																placeholder={m["general.B2.initiativeResponsiblePlaceholder"]()}
-															/>
-														)}
-													</form.AppField>
+																			if(selectedValues === undefined) {
+																				//selectedValues = []
+																				return
+																			}
 
-													<form.AppField name={`initiatives[${i}].status`}>
-														{(f) => (
-															<f.SelectField
-																label={m["general.B2.initiativeStatusLabel"]()}
-																options={[
-																	{
-																		label: `${m["general.B2.initiativeStatusNotStarted"]()}`,
-																		value: "not_started",
-																	},
-																	{
-																		label: `${m["general.B2.initiativeStatusInProgress"]()}`,
-																		value: "in_progress",
-																	},
-																	{ label: `${m["general.B2.initiativeStatusCompleted"]()}`, value: "completed" },
-																]}
-															/>
-														)}
-													</form.AppField>
-												</div>
-												<div className='flex justify-end'>
-													<Button
-														type='button'
-														variant='outline'
-														size='sm'
-														className='text-destructive border-destructive/20 hover:bg-destructive/10'
-														onClick={() => field.removeValue(i)}
-														disabled={status === "submitted"}
-													>
-														<Trash2 className='h-4 w-4' />
-														{m["general.B2.Remove"]()}
-													</Button>
-												</div>
-											</CardContent>
-										</Card>
-									))}
-
-									<Button
-										type='button'
-										variant='outline'
-										className='w-full'
-										onClick={() =>
-											field.pushValue({
-												id: crypto.randomUUID(),
-												title: "",
-												description: "",
-												goals: "",
-												responsiblePerson: "",
-												status: "not_started",
-												publiclyAvailable: false,
-											})
-										}
-										disabled={status === "submitted"}
-									>
-										<Plus className='h-4 w-4 mr-2' />
-										{m["general.B2.addInitiative"]()}
-									</Button>
-								</div>
-							)}
-						</form.AppField>
+																			field.handleChange(
+																				checked === true
+																					? [...selectedValues, mainTopic.value]
+																					: selectedValues.filter((value) => value !== mainTopic.value),
+																			)
+																		}}
+																	/>
+																	<label htmlFor={mainTopic.id} className="flex-1 cursor-pointer font-medium leading-5">
+																		{mainTopic.label}
+																	</label>
+																	{hasChildren && (
+																		<Button
+																			type="button"
+																			variant="ghost"
+																			size="icon-sm"
+																			onClick={() => toggleTopic(mainTopic.id)}
+																			aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${mainTopic.label}`}
+																			aria-expanded={isExpanded}
+																		>
+																			{isExpanded ? <ChevronDown /> : <ChevronRight />}
+																		</Button>
+																	)}
+																</div>
+																{hasChildren && isExpanded && (
+																	<TopicChildren
+																		topics={subtopics}
+																		path={mainTopic.id}
+																		depth={1}
+																		expandedTopics={expandedTopics}
+																		onToggle={toggleTopic}
+																	/>
+																)}
+															</CardContent>
+														</Card>
+													)
+												})}
+											</div>
+										)}
+									</form.AppField>
+								
+							}
+						</form.Subscribe>
 					</fieldset>
 
 					<FormButtons

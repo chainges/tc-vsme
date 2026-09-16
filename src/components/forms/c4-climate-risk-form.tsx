@@ -12,17 +12,17 @@ import { m } from '@/paraglide/messages'
 export function C4ClimateRiskForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
 
-	const { form, status, isSaving, isLoading, saveDraft, submit, reopen } =
-		useFormSubmission<C4ClimateRiskFormValues>({
-			table: 'formEnvironmental',
-			reportingYear,
-			section: 'climateRiskAnalysis',
-			schema: c4ClimateRiskSchema,
-			defaultValues: {
-				reportingYear: reportingYear.toString(),
-				climateRiskDescription: '',
-			} as C4ClimateRiskFormValues,
-		})
+	const { form, status, isSaving, isLoading, saveDraft, submit, reopen } = useFormSubmission<C4ClimateRiskFormValues>({
+		table: "formEnvironmental",
+		reportingYear,
+		section: "climateRiskAnalysis",
+		schema: c4ClimateRiskSchema,
+		defaultValues: {
+			reportingYear: reportingYear.toString(),
+			climateRiskDescription: "",
+			hasIdentifiedClimateRelatedHazardious: false,
+		} as C4ClimateRiskFormValues,
+	})
 
 	if (isLoading) {
 		return (
@@ -41,35 +41,85 @@ export function C4ClimateRiskForm() {
 					form.handleSubmit()
 				}}
 			>
-				<fieldset disabled={status === 'submitted'} className="space-y-6">
-					<form.AppField name="reportingYear">
+				<fieldset disabled={status === "submitted"} className='space-y-6'>
+					<form.AppField name='reportingYear'>
 						{(field) => (
-							<field.TextField
-								label={m["environmental.C4.reportingYearLabel"]()}
-								placeholder="YYYY"
-								hidden
-							/>
+							<field.TextField label={m["environmental.C4.reportingYearLabel"]()} placeholder='YYYY' hidden />
 						)}
 					</form.AppField>
 
 					<Card>
-						<CardContent className="space-y-6">
-							<form.AppField name="climateRiskDescription">
+						<CardContent className='space-y-6'>
+							<form.AppField name='hasIdentifiedClimateRelatedHazardious'>
 								{(field) => (
-									<field.TextareaField
-										label={m["environmental.C4.climateRiskDescriptionLabel"]()}
-										placeholder={m["environmental.C4.climateRiskDescriptionPlaceholder"]()}
-										rows={8}
-										description={m["environmental.C4.climateRiskDescriptionDescription"]()}
-									/>
+									<field.SwitchField label={m["environmental.C4.hasIdentifiedClimateRelatedHazardiousLabel"]()} />
 								)}
 							</form.AppField>
+
+							<form.Subscribe selector={(state) => state.values.hasIdentifiedClimateRelatedHazardious}>
+								{(status) =>
+									status && (
+										<>
+											<form.AppField name='climateRiskDescription'>
+												{(field) => (
+													<field.TextareaField
+														label={m["environmental.C4.climateRiskDescriptionLabel"]()}
+														placeholder={m["environmental.C4.climateRiskDescriptionPlaceholder"]()}
+														rows={8}
+														description={m["environmental.C4.climateRiskDescriptionDescription"]()}
+													/>
+												)}
+											</form.AppField>
+
+											<form.AppField name='exposureAndSensitivityAssessment'>
+												{(field) => (
+													<field.TextareaField
+														label={m["environmental.C4.exposureAndSensitivityAssessmentLabel"]()}
+														placeholder={m["environmental.C4.exposureAndSensitivityAssessmentPlaceholder"]()}
+														rows={8}
+													/>
+												)}
+											</form.AppField>
+
+											<form.AppField name='timeHorizonsIdentified'>
+												{(field) => (
+													<field.TextareaField
+														label={m["environmental.C4.timeHorizonsIdentifiedLabel"]()}
+														placeholder={m["environmental.C4.timeHorizonsIdentifiedPlaceholder"]()}
+														rows={8}
+													/>
+												)}
+											</form.AppField>
+
+											<form.AppField name='climateAdaptationActions'>
+												{(field) => (
+													<field.SwitchField label={m["environmental.C4.climateAdaptationActionsLabel"]()} />
+												)}
+											</form.AppField>
+
+											<form.AppField name='potentialAdverseEffectsAndRiskRating'>
+												{(field) => (
+													<field.TextareaField
+														label={m["environmental.C4.potentialAdverseEffectsAndRiskRatingLabel"]()}
+														placeholder={m["environmental.C4.potentialAdverseEffectsAndRiskRatingPlaceholder"]()}
+														rows={8}
+													/>
+												)}
+											</form.AppField>
+										</>
+									)
+								}
+							</form.Subscribe>
+
+							
+
+							
 						</CardContent>
 					</Card>
 				</fieldset>
 
 				<FormButtons
-					status={status as 'not_started' | 'draft' | 'submitted'}
+					status={status as "not_started" | "draft" | "submitted"}
 					isSaving={isSaving}
 					onSaveDraft={saveDraft}
 					onSubmit={submit}

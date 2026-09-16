@@ -1,6 +1,8 @@
 import { useStore } from '@tanstack/react-form'
 import { useStore as useYearStore } from '@tanstack/react-store'
+import { Info } from 'lucide-react'
 import { useEffect } from 'react'
+import { Alert, AlertDescription, AlertTitle,  } from '@/components/ui/alert'
 import { Card, CardContent } from '@/components/ui/card'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
@@ -13,6 +15,16 @@ import { m } from '@/paraglide/messages'
 
 interface B10CompensationFormProps {
 	totalEmployees: number
+}
+
+const PayGapInfoBox = ()=>{
+	return (
+		<Alert variant='info' className='mb-8 border-l-4'>
+			<Info />
+			<AlertTitle className='text-base font-semibold'>{m["social.B10.hourlyPayLabel"]()}</AlertTitle>
+			<AlertDescription>{m["social.B10.genderGapDescription"]()}</AlertDescription>
+		</Alert>
+	)
 }
 
 export function B10CompensationForm({
@@ -49,7 +61,7 @@ export function B10CompensationForm({
 			},
 			defaultValues: {
 				reportingYear: reportingYear.toString(),
-				minimumWageLiability: false,
+				minimumWageLiability: true,
 			} as B10CompensationFormValues,
 		})
 
@@ -96,14 +108,13 @@ export function B10CompensationForm({
 					form.handleSubmit()
 				}}
 			>
-				<Card>
-					<CardContent>
-						<fieldset disabled={status === "submitted"} className='space-y-6'>
-							{/* Hidden reporting year */}
-							<form.AppField name='reportingYear'>
-								{(field) => <field.TextField label={m["social.B10.reportingYearLabel"]()} placeholder='YYYY' hidden />}
-							</form.AppField>
-							{/* Minstelønnsansvar */}
+				<fieldset disabled={status === "submitted"} className='space-y-6'>
+					{/* Hidden reporting year */}
+					<form.AppField name='reportingYear'>
+						{(field) => <field.TextField label={m["social.B10.reportingYearLabel"]()} placeholder='YYYY' hidden />}
+					</form.AppField>
+					<Card className='mb-4'>
+						<CardContent>
 							<div className='flex flex-col items-start gap-3'>
 								<h3 className='text-base font-semibold'>{m["social.B10.minimumWageLiabilityLabel"]()}</h3>
 								<form.AppField name='minimumWageLiability'>
@@ -113,14 +124,18 @@ export function B10CompensationForm({
 								</form.AppField>
 								<span className='text-sm'>{minimumWageLiability ? m["social.B10.yes"]() : m["social.B10.no"]()}</span>
 							</div>
+						</CardContent>
+					</Card>
 
-							{/* Hourly Pay */}
+					<Card>
+						<CardContent>
+							<PayGapInfoBox/>
 							<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
 								<form.AppField name='hourlyPayMale'>
 									{(field) => (
 										<field.NumberField
 											label={m["social.B10.hourlyPayMaleLabel"]()}
-											description={m["social.B10.hourlyPayMaleDescription"]()}
+											// description={m["social.B10.hourlyPayMaleDescription"]()}
 											step='0.1'
 											min='0'
 											unit='EUR'
@@ -131,14 +146,20 @@ export function B10CompensationForm({
 									{(field) => (
 										<field.NumberField
 											label={m["social.B10.hourlyPayFemaleLabel"]()}
-											description={m["social.B10.hourlyPayFemaleDescription"]()}
+											// description={m["social.B10.hourlyPayFemaleDescription"]()}
 											unit='EUR'
 											step='0.1'
 											min='0'
 										/>
 									)}
 								</form.AppField>
+							</div>
+						</CardContent>
+					</Card>
 
+					<Card>
+						<CardContent>
+							<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
 								{/* Training Hours */}
 								<form.AppField name='trainingHoursMale'>
 									{(field) => (
@@ -187,17 +208,17 @@ export function B10CompensationForm({
 									)}
 								</form.AppField>
 							</div>
-						</fieldset>
-					</CardContent>
-				</Card>
+						</CardContent>
+					</Card>
 
-				<FormButtons
-					status={status as "not_started" | "draft" | "submitted"}
-					isSaving={isSaving}
-					onSaveDraft={saveDraft}
-					onSubmit={submit}
-					onReopen={reopen}
-				/>
+					<FormButtons
+						status={status as "not_started" | "draft" | "submitted"}
+						isSaving={isSaving}
+						onSaveDraft={saveDraft}
+						onSubmit={submit}
+						onReopen={reopen}
+					/>
+				</fieldset>
 			</form>
 		</form.AppForm>
 	)

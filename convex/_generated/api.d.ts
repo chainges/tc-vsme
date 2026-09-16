@@ -22,6 +22,7 @@ import type * as forms_rollback from "../forms/rollback.js";
 import type * as forms_save from "../forms/save.js";
 import type * as forms_submit from "../forms/submit.js";
 import type * as general from "../general.js";
+import type * as getTargets from "../getTargets.js";
 import type * as governance from "../governance.js";
 import type * as mongodb_client from "../mongodb/client.js";
 import type * as mongodb_queries from "../mongodb/queries.js";
@@ -53,6 +54,7 @@ declare const fullApi: ApiFromModules<{
   "forms/save": typeof forms_save;
   "forms/submit": typeof forms_submit;
   general: typeof general;
+  getTargets: typeof getTargets;
   governance: typeof governance;
   "mongodb/client": typeof mongodb_client;
   "mongodb/queries": typeof mongodb_queries;

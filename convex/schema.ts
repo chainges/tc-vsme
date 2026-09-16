@@ -5,6 +5,7 @@ import { v } from 'convex/values'
 const formSectionValidator = v.union(
   v.literal("companyInfo"),
   v.literal("sustainabilityInitiatives"),
+  v.literal("descriptionOfPracticesPolicies"),
   v.literal("businessModel"),
   v.literal("energyEmissions"),
   v.literal("pollution"),
@@ -81,17 +82,17 @@ const companyInfoDataValidator = v.object({
 
 const sustainabilityInitiativesDataValidator = v.object({
   reportingYear: v.string(),
-  initiatives: v.array(
-    v.object({
-      id: v.string(),
-      title: v.string(),
-      description: v.string(),
-      goals: v.string(),
-      responsiblePerson: v.string(),
-      status: v.string(),
-      publiclyAvailable: v.optional(v.boolean()),
-    })
-  ),
+  hasSustainabilityPractices: v.boolean(),
+  arePracticesPubliclyAvailable: v.boolean(),
+  policiesHaveTargets: v.boolean(),
+  selectedSustainabilityIssueValues: v.array(v.string()),
+})
+
+const descriptionOfPracticesPoliciesDataValidator = v.object({
+  reportingYear: v.string(),
+  c2_sustainability_practice_description: v.optional(v.string()),
+  c2_monitoring_targets_description: v.optional(v.string()),
+  c2_accountable_role_or_person: v.optional(v.string()),
 })
 
 const businessModelDataValidator = v.object({
@@ -106,6 +107,7 @@ const businessModelDataValidator = v.object({
 const formGeneralDataValidator = v.union(
   companyInfoDataValidator,
   sustainabilityInitiativesDataValidator,
+  descriptionOfPracticesPoliciesDataValidator,
   businessModelDataValidator,
 )
 
@@ -124,6 +126,22 @@ const energyEmissionsDataValidator = v.object({
   scope2EmissionsMarketBased: v.number(),
   selfGeneratedEnergy: v.number(),
   totalEnergyConsumption: v.number(),
+  totalScope3Emissions: v.number(),
+  category1: v.number(),
+  category2: v.number(),
+  category3: v.number(),
+  category4: v.number(),
+  category5: v.number(),
+  category6: v.number(),
+  category7: v.number(),
+  category8: v.number(),
+  category9: v.number(),
+  category10: v.number(),
+  category11: v.number(),
+  category12: v.number(),
+  category13: v.number(),
+  category14: v.number(),
+  category15: v.number(),
   climateDataCollectionMethod: v.string(),
   dataUncertainty: v.string(),
 })
@@ -136,10 +154,11 @@ const pollutionDataValidator = v.object({
   pollutants: v.array(
     v.object({
       id: v.string(),
-      pollutionType: v.string(),
-      emissionType: v.union(v.literal('Air'), v.literal('Water'), v.literal('Soil')),
-      amount: v.number(),
-      unit: v.string(),
+      pollutantCode: v.string(),
+      amountOfEmissionToAir: v.number(),
+      amountOfEmissionToWater: v.number(),
+      amountOfEmissionToSoil: v.number(),
+      unitCode: v.string(),
     })
   ),
 })
@@ -147,9 +166,19 @@ const pollutionDataValidator = v.object({
 const biodiversityDataValidator = v.object({
   reportingYear: v.string(),
   hasSensitiveBiodiversityAreas: v.boolean(),
-  totalAreaHectares: v.optional(v.number()),
-  protectedAreaHectares: v.optional(v.number()),
-  nonProtectedAreaHectares: v.optional(v.number()),
+  sites: v.array(
+    v.object({
+      propertyId: v.string(),
+      siteLocation: v.string(),
+      areaSquareMeters: v.optional(v.number()),
+      isInSensitiveBiodiversityArea: v.boolean(),
+      isNearSensitiveBiodiversityArea: v.boolean(),
+    }),
+  ),
+  totalSealedAreaSquareMeters: v.optional(v.number()),
+  totalNatureOrientedAreaOnSiteSquareMeters: v.optional(v.number()),
+  totalNatureOrientedAreaOffSiteSquareMeters: v.optional(v.number()),
+  totalLandUsedSquareMeters: v.optional(v.number()),
   protectedSpeciesCount: v.optional(v.string()),
   redListedSpeciesCount: v.optional(v.string()),
 })
@@ -168,6 +197,20 @@ const resourceUseCircularEconomyDataValidator = v.object({
   applyCircularEconomyPrinciples: v.optional(v.boolean()),
   circularEconomyDescription: v.optional(v.string()),
   significantMaterialFlows: v.optional(v.boolean()),
+  onlyHouseholdWaste: v.optional(v.boolean()),
+  wasteInformation: v.optional(
+    v.array(
+      v.object({
+        id: v.string(),
+        name: v.string(),
+        hazardous: v.boolean(),
+        unit: v.union(v.literal('tonn'), v.literal('kg'), v.literal('m³')),
+        wasteDivertedToRecycle: v.number(),
+        wasteDirectedToDisposal: v.number(),
+        total: v.number(),
+      })
+    )
+  ),
   annualMassFlows: v.optional(
     v.array(
       v.object({
@@ -233,12 +276,12 @@ const formEnvironmentalDataValidator = v.union(
 // Social form data validators
 const workforceDataValidator = v.object({
   reportingYear: v.string(),
-  fullTimeEmployees: v.number(),
-  partTimeEmployees: v.number(),
-  temporaryEmployees: v.number(),
+  permanentContractEmployees: v.number(),
+  temporaryContractEmployees: v.number(),
   men: v.number(),
   women: v.number(),
   other: v.number(),
+  notReported: v.number(),
   employeesPerCountry: v.array(
     v.object({
       id: v.string(),
@@ -256,9 +299,12 @@ const workforceDataValidator = v.object({
 const healthSafetyDataValidator = v.object({
   reportingYear: v.string(),
   workAccidents: v.number(),
-  sicknessAbsencePercentage: v.number(),
-  hmsTraining: v.number(),
   deceased: v.number(),
+  rateOfWorkAccidents: v.optional(v.number()),
+  knowExactHoursWorked: v.optional(v.boolean()),
+  totalHoursWorked: v.optional(v.number()),
+  sicknessAbsencePercentage: v.optional(v.number()),
+  hmsTraining: v.optional(v.number()),
   anyAdditionalInfo: v.optional(v.string()),
 })
 
@@ -373,13 +419,16 @@ const finesPenaltiesDataValidator = v.object({
 
 const sectorInvolvementDataValidator = v.object({
   reportingYear: v.string(),
-  controversialWeapons: v.boolean(),
   controversialWeaponsRevenue: v.optional(v.number()),
-  fossilFuels: v.boolean(),
-  fossilFuelRevenue: v.optional(v.number()),
-  fossilFuelsBreakdown: v.optional(v.string()),
-  agriculturalChemicals: v.boolean(),
-  agriculturalChemicalsRevenue: v.optional(v.number()),
+  tobaccoRevenue: v.optional(v.number()),
+  coalRevenue: v.optional(v.number()),
+  gasRevenue: v.optional(v.number()),
+  oilRevenue: v.optional(v.number()),
+  chemicalProductionRevenue: v.optional(v.number()),
+  pabCoalThreshold: v.boolean(),
+  pabOilThreshold: v.boolean(),
+  pabGasThreshold: v.boolean(),
+  pabElectricityThreshold: v.boolean(),
   euBenchmarksExclusion: v.boolean(),
 })
 
@@ -539,6 +588,11 @@ export default defineSchema({
     targetReduction: v.number(),
     longTermTargetYear: v.optional(v.number()),
     longTermTargetReduction: v.optional(v.number()),
+    keyActionsToReachTargets: v.optional(v.string()),
+    climateTransitionPlanStatus: v.optional(v.union(v.literal("yes"), v.literal("no"))),
+    climateTransitionPlanDescription: v.optional(v.string()),
+    futureClimateTransitionPlanStatus: v.optional(v.union(v.literal("yes"), v.literal("no"))),
+    plannedClimateTransitionPlanAdoptionYear: v.optional(v.number()),
     hasScopeSpecificTargets: v.optional(
       v.object({
         scope1: v.boolean(),

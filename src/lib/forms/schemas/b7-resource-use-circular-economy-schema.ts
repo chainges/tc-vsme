@@ -24,12 +24,24 @@ const annualMassFlowSchema = z.object({
 	unit: z.enum(RECYCLED_MATERIAL_UNITS),
 })
 
+const wasteInformationSchema = z.object({
+	id: z.string(),
+	hazardous: z.boolean(),
+	name: z.string().min(1, 'Dette feltet er påkrevd'),
+	unit: z.enum(RECYCLED_MATERIAL_UNITS),
+	wasteDivertedToRecycle: z.number().min(0, 'Må være 0 eller mer'),
+	wasteDirectedToDisposal: z.number().min(0, 'Må være 0 eller mer'),
+	total: z.number().min(0, 'Må være 0 eller mer'),
+})
+
 export const b7ResourceUseCircularEconomySchema = z.object({
 	reportingYear: z.string().regex(/^\d{4}$/, 'Year must be 4 digits'),
 	applyCircularEconomyPrinciples: z.boolean().default(false),
 	circularEconomyDescription: z.string().optional(),
 	significantMaterialFlows: z.boolean().default(false),
 	annualMassFlows: z.array(annualMassFlowSchema).default([]),
+	onlyHouseholdWaste: z.boolean().default(true),
+	wasteInformation: z.array(wasteInformationSchema).default([]),
 	totalWaste: z
 		.number({ message: 'Dette feltet er påkrevd' })
 		.min(0, 'Må være 0 eller mer'),
@@ -55,3 +67,4 @@ export type B7ResourceUseCircularEconomyFormValues = z.infer<
 	typeof b7ResourceUseCircularEconomySchema
 >
 export type RecycledMaterialEntry = z.infer<typeof recycledMaterialSchema>
+export type WasteInformationEntry = z.infer<typeof wasteInformationSchema>

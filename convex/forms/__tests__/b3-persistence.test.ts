@@ -39,6 +39,22 @@ describe('B3 Energy Emissions Form Schema Persistence', () => {
       scope1Emissions: 10.5,
       scope2EmissionsLocationBased: 5.2,
       scope2EmissionsMarketBased: 4.8,
+      totalScope3Emissions: 120.5,
+      category1: 10,
+      category2: 12,
+      category3: 14,
+      category4: 8,
+      category5: 9,
+      category6: 7,
+      category7: 6,
+      category8: 5,
+      category9: 9,
+      category10: 8,
+      category11: 7,
+      category12: 6,
+      category13: 5,
+      category14: 4,
+      category15: 10,
       climateDataCollectionMethod: "Detailed measurements from all facilities.",
       dataUncertainty: "Minor uncertainty due to one missing meter in Q3."
     }
@@ -68,6 +84,8 @@ describe('B3 Energy Emissions Form Schema Persistence', () => {
     expect(form?.draftData.mobileCombustion).toBe(400)
     expect(form?.draftData.renewableFuels).toBe(500)
     expect(form?.draftData.otherEnergySources).toBe(600)
+    expect(form?.draftData.totalScope3Emissions).toBe(120.5)
+    expect(form?.draftData.category15).toBe(10)
   })
 
   it('should track changes for new fields', async () => {
@@ -83,6 +101,22 @@ describe('B3 Energy Emissions Form Schema Persistence', () => {
       scope1Emissions: 10.0,
       scope2EmissionsLocationBased: 5.0,
       scope2EmissionsMarketBased: 4.0,
+      totalScope3Emissions: 120,
+      category1: 10,
+      category2: 9,
+      category3: 8,
+      category4: 7,
+      category5: 6,
+      category6: 5,
+      category7: 4,
+      category8: 3,
+      category9: 2,
+      category10: 1,
+      category11: 1,
+      category12: 1,
+      category13: 1,
+      category14: 1,
+      category15: 1,
       climateDataCollectionMethod: "Initial collection method.",
       dataUncertainty: "No uncertainty recorded."
     }

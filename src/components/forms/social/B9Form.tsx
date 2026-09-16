@@ -1,4 +1,7 @@
+import { useStore } from '@tanstack/react-form'
 import { useStore as useYearStore } from '@tanstack/react-store'
+import { useMemo } from 'react'
+import { NumberFieldReadOnly } from '@/components/form-fields/NumberFieldReadOnly'
 import { Card, CardContent } from '@/components/ui/card'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
@@ -9,7 +12,11 @@ import {
 import { yearStore } from '@/lib/year-store'
 import { m } from '@/paraglide/messages'
 
-export function B9HealthSafetyForm() {
+interface B9HealthSafetyFormProps {
+	totalEmployees?: number
+}
+
+export function B9HealthSafetyForm({ totalEmployees = 0 }: B9HealthSafetyFormProps) {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
 
 	const { form, status, isSaving, isLoading, saveDraft, submit, reopen } =
@@ -20,9 +27,47 @@ export function B9HealthSafetyForm() {
 			schema: b9HealthSafetySchema,
 			defaultValues: {
 				reportingYear: reportingYear.toString(),
-				anyAdditionalInfo: '',
+				workAccidents: 0,
+				deceased: 0,
+				rateOfWorkAccidents: 0,
+				knowExactHoursWorked: false,
+				totalHoursWorked: 0,
 			} as B9HealthSafetyFormValues,
+			transformBeforeSave: (values) => {
+				const hours = values.knowExactHoursWorked
+					? (values.totalHoursWorked ?? 0)
+					: (totalEmployees ?? 0) * 2000
+				const rateOfWorkAccidents =
+					hours > 0
+						? Number((((values.workAccidents ?? 0) / hours) * 200000).toFixed(2))
+						: 0
+				return {
+					...values,
+					rateOfWorkAccidents,
+				}
+			},
 		})
+
+	const workAccidents = useStore(
+		form.store,
+		(state) => state.values.workAccidents ?? 0,
+	)
+	const knowExactHoursWorked = useStore(
+		form.store,
+		(state) => state.values.knowExactHoursWorked ?? false,
+	)
+	const totalHoursWorked = useStore(
+		form.store,
+		(state) => state.values.totalHoursWorked,
+	)
+
+	const calculatedRate = useMemo(() => {
+		const hours = knowExactHoursWorked
+			? (totalHoursWorked ?? 0)
+			: (totalEmployees ?? 0) * 2000
+		if (hours <= 0) return 0
+		return Number(((workAccidents / hours) * 200000).toFixed(2))
+	}, [workAccidents, knowExactHoursWorked, totalHoursWorked, totalEmployees])
 
 	if (isLoading) {
 		return (
@@ -55,38 +100,13 @@ export function B9HealthSafetyForm() {
 								)}
 							</form.AppField>
 
-							{/* Arbeidsulykker + Sykefravær */}
+							{/* Work accidents + Fatalities */}
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 								<form.AppField name="workAccidents">
 									{(field) => (
 										<field.NumberField
 											label={m["social.B9.workAccidentsLabel"]()}
 											description={m["social.B9.workAccidentsDescription"]()}
-										/>
-									)}
-								</form.AppField>
-
-								<form.AppField name="sicknessAbsencePercentage">
-									{(field) => (
-										<field.NumberField
-											label={m["social.B9.sickLeaveLabel"]()}
-											description={m["social.B9.sickLeaveDescription"]()}
-											unit="%"
-											step="0.1"
-											min="0"
-											max="100"
-										/>
-									)}
-								</form.AppField>
-							</div>
-
-							{/* HMS-opplæring + Omkomne */}
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<form.AppField name="hmsTraining">
-									{(field) => (
-										<field.NumberField
-											label={m["social.B9.hseTrainingLabel"]()}
-											description={m["social.B9.hseTrainingDescription"]()}
 										/>
 									)}
 								</form.AppField>
@@ -101,16 +121,44 @@ export function B9HealthSafetyForm() {
 								</form.AppField>
 							</div>
 
-							{/* Eventuell utfyllende info */}
-							<form.AppField name="anyAdditionalInfo">
-								{(field) => (
-									<field.TextareaField
-										label={m["social.B9.additionalInfoLabel"]()}
-										placeholder={m["social.B9.additionalInfoPlaceholder"]()}
-										description={m["social.B9.additionalInfoDescription"]()}
-									/>
-								)}
-							</form.AppField>
+							{/* Toggle for exact hours worked */}
+							<div className="space-y-4 pt-2">
+								<form.AppField name="knowExactHoursWorked">
+									{(field) => (
+										<field.SwitchField
+											label={m["social.B9.knowExactHoursWorkedLabel"]()}
+										/>
+									)}
+								</form.AppField>
+
+								<form.Subscribe selector={(state) => state.values.knowExactHoursWorked}>
+									{(knowExact) =>
+										knowExact ? (
+											<div className="max-w-md">
+												<form.AppField name="totalHoursWorked">
+													{(field) => (
+														<field.NumberField
+															label={m["social.B9.totalHoursWorkedLabel"]()}
+															description={m["social.B9.totalHoursWorkedDescription"]()}
+															min="0"
+														/>
+													)}
+												</form.AppField>
+											</div>
+										) : null
+									}
+								</form.Subscribe>
+							</div>
+
+							{/* Rate of work-related accidents */}
+							<div className="max-w-md">
+								<NumberFieldReadOnly
+									label={m["social.B9.rateOfWorkAccidentsLabel"]()}
+									value={calculatedRate}
+									description={m["social.B9.rateOfWorkAccidentsDescription"]()}
+									placeholder="0"
+								/>
+							</div>
 						</fieldset>
 					</CardContent>
 				</Card>
