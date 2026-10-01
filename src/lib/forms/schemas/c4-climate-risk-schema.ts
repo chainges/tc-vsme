@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 export const c4ClimateRiskSchema = z.object({
 	reportingYear: z.string().regex(/^\d{4}$/, 'Year must be 4 digits'),
+	isC4Confidential: z.boolean(),
 	climateRiskDescription: z
 		.string()
 		.trim()

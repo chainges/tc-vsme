@@ -75,9 +75,37 @@ function EnvironmentalPage() {
 					section: 'companyInfo',
 				},
 	)
+
+		const basicInformation = useQuery(
+			api.forms.get.getForm,
+			skipQuery
+				? "skip"
+				: {
+						table: "formGeneral",
+						reportingYear,
+						section: "basicModule",
+					},
+		)
+
+			const showComprehensiveModule = !(
+				basicInformation?.data &&	
+				basicInformation.data.moduleScope === "vsme:OptionABasicModuleOnlyMember"
+			)
+
+			const numberOfEmployees =
+				generalCompanyInfo?.data && "employees" in generalCompanyInfo.data
+					? (generalCompanyInfo?.data.employees ?? 0)
+					: 0
+
+			const isMicroUnderTaking = numberOfEmployees <= 10
+
 	const generalCompanyInfoData =
 		generalCompanyInfo?.draftData ?? generalCompanyInfo?.data
 	const properties = generalCompanyInfoData?.properties ?? []
+
+		
+
+
 
 	// Extract section-specific data with contributor already resolved
 	const energyEmissions = formSections?.energyEmissions
@@ -98,24 +126,22 @@ function EnvironmentalPage() {
 	}
 
 	return (
-		<div className="flex flex-col gap-4 md:grid-cols-1 mt-4 max-w-6xl w-full mx-auto">
-			<h1 className="text-2xl font-bold">{m["environmental.title"]()}</h1>
-			<h3 className="text-lg text-muted-foreground">
-				{m["environmental.description"]()}
-			</h3>
+		<div className='flex flex-col gap-4 md:grid-cols-1 mt-4 max-w-6xl w-full mx-auto'>
+			<h1 className='text-2xl font-bold'>{m["environmental.title"]()}</h1>
+			<h3 className='text-lg text-muted-foreground'>{m["environmental.description"]()}</h3>
 			<FormCard
 				title={m["environmental.B3.title"]()}
 				updatedDate={formatDate(energyEmissions?.lastModifiedAt)}
 				toolTip={m["environmental.B3.tooltip"]()}
-				status={(energyEmissions?.status ?? 'not_started') as FormStatus}
-				contributor={energyEmissions?.contributor || { name: 'Unknown' }}
-				code="B3"
+				status={(energyEmissions?.status ?? "not_started") as FormStatus}
+				contributor={energyEmissions?.contributor || { name: "Unknown" }}
+				code='B3'
+				isVolunteer={isMicroUnderTaking}
 				buttonText={m["environmental.B3.buttonText"]()}
 				onClick={() => setEnergyHelpOpen(true)}
 				version={
 					energyEmissions?.versions?.length
-						? energyEmissions.versions[energyEmissions.versions.length - 1]
-								?.version
+						? energyEmissions.versions[energyEmissions.versions.length - 1]?.version
 						: undefined
 				}
 			>
@@ -126,16 +152,12 @@ function EnvironmentalPage() {
 				title={m["environmental.B4.title"]()}
 				updatedDate={formatDate(pollution?.lastModifiedAt)}
 				toolTip={m["environmental.B4.tooltip"]()}
-				status={(pollution?.status ?? 'not_started') as FormStatus}
-				contributor={pollution?.contributor || { name: 'Unknown' }}
-				code="B4"
+				status={(pollution?.status ?? "not_started") as FormStatus}
+				contributor={pollution?.contributor || { name: "Unknown" }}
+				code='B4'
 				buttonText={m["environmental.B4.buttonText"]()}
 				onClick={() => setPollutionHelpOpen(true)}
-				version={
-					pollution?.versions?.length
-						? pollution.versions[pollution.versions.length - 1]?.version
-						: undefined
-				}
+				version={pollution?.versions?.length ? pollution.versions[pollution.versions.length - 1]?.version : undefined}
 			>
 				<B4PollutionForm />
 			</FormCard>
@@ -144,16 +166,14 @@ function EnvironmentalPage() {
 				title={m["environmental.B5.title"]()}
 				updatedDate={formatDate(biodiversity?.lastModifiedAt)}
 				toolTip={m["environmental.B5.tooltip"]()}
-				status={(biodiversity?.status ?? 'not_started') as FormStatus}
-				contributor={biodiversity?.contributor || { name: 'Unknown' }}
-				code="B5"
-				module="Basic Module"
+				status={(biodiversity?.status ?? "not_started") as FormStatus}
+				contributor={biodiversity?.contributor || { name: "Unknown" }}
+				code='B5'
+				module='Basic Module'
 				buttonText={m["environmental.B5.buttonText"]()}
 				onClick={() => setBiodiversityHelpOpen(true)}
 				version={
-					biodiversity?.versions?.length
-						? biodiversity.versions[biodiversity.versions.length - 1]?.version
-						: undefined
+					biodiversity?.versions?.length ? biodiversity.versions[biodiversity.versions.length - 1]?.version : undefined
 				}
 			>
 				<B5BiodiversityForm properties={properties} />
@@ -163,16 +183,16 @@ function EnvironmentalPage() {
 				title={m["environmental.B6.title"]()}
 				updatedDate={formatDate(waterManagement?.lastModifiedAt)}
 				toolTip={m["environmental.B6.tooltip"]()}
-				status={(waterManagement?.status ?? 'not_started') as FormStatus}
-				contributor={waterManagement?.contributor || { name: 'Unknown' }}
-				code="B6"
-				module="Basic Module"
+				isVolunteer={isMicroUnderTaking}
+				status={(waterManagement?.status ?? "not_started") as FormStatus}
+				contributor={waterManagement?.contributor || { name: "Unknown" }}
+				code='B6'
+				module='Basic Module'
 				buttonText={m["environmental.B6.buttonText"]()}
 				onClick={() => setWaterHelpOpen(true)}
 				version={
 					waterManagement?.versions?.length
-						? waterManagement.versions[waterManagement.versions.length - 1]
-								?.version
+						? waterManagement.versions[waterManagement.versions.length - 1]?.version
 						: undefined
 				}
 			>
@@ -183,21 +203,16 @@ function EnvironmentalPage() {
 				title={m["environmental.B7.title"]()}
 				updatedDate={formatDate(resourceUseCircularEconomy?.lastModifiedAt)}
 				toolTip={m["environmental.B7.tooltip"]()}
-				status={
-					(resourceUseCircularEconomy?.status ?? 'not_started') as FormStatus
-				}
-				contributor={
-					resourceUseCircularEconomy?.contributor || { name: 'Unknown' }
-				}
-				code="B7"
-				module="Basic Module"
+				status={(resourceUseCircularEconomy?.status ?? "not_started") as FormStatus}
+				isVolunteer={isMicroUnderTaking}
+				contributor={resourceUseCircularEconomy?.contributor || { name: "Unknown" }}
+				code='B7'
+				module='Basic Module'
 				buttonText={m["environmental.B7.buttonText"]()}
 				onClick={() => setCircularHelpOpen(true)}
 				version={
 					resourceUseCircularEconomy?.versions?.length
-						? resourceUseCircularEconomy.versions[
-								resourceUseCircularEconomy.versions.length - 1
-							]?.version
+						? resourceUseCircularEconomy.versions[resourceUseCircularEconomy.versions.length - 1]?.version
 						: undefined
 				}
 			>
@@ -207,8 +222,8 @@ function EnvironmentalPage() {
 			<HelpSheet
 				open={isCircularHelpOpen}
 				onOpenChange={setCircularHelpOpen}
-				title="Veiledning for sirkulærøkonomi"
-				description="Informasjon om sirkulærøkonomiske prinsipper og praktisk veiledning for avfallshåndtering."
+				title='Veiledning for sirkulærøkonomi'
+				description='Informasjon om sirkulærøkonomiske prinsipper og praktisk veiledning for avfallshåndtering.'
 			>
 				<CircularHelp />
 			</HelpSheet>
@@ -216,8 +231,8 @@ function EnvironmentalPage() {
 			<HelpSheet
 				open={isEnergyHelpOpen}
 				onOpenChange={setEnergyHelpOpen}
-				title="Veiledning for energiforbruk og utslipp"
-				description="Informasjon om energiforbruk, utslippsberegninger og energikilder."
+				title='Veiledning for energiforbruk og utslipp'
+				description='Informasjon om energiforbruk, utslippsberegninger og energikilder.'
 			>
 				<EnergyHelp />
 			</HelpSheet>
@@ -225,8 +240,8 @@ function EnvironmentalPage() {
 			<HelpSheet
 				open={isPollutionHelpOpen}
 				onOpenChange={setPollutionHelpOpen}
-				title="Veiledning for forurensningsrapportering"
-				description="Informasjon om rapporteringsplikt for forurensende stoffer."
+				title='Veiledning for forurensningsrapportering'
+				description='Informasjon om rapporteringsplikt for forurensende stoffer.'
 			>
 				<PollutionHelp />
 			</HelpSheet>
@@ -234,8 +249,8 @@ function EnvironmentalPage() {
 			<HelpSheet
 				open={isWaterHelpOpen}
 				onOpenChange={setWaterHelpOpen}
-				title="Veiledning for vannforvaltning"
-				description="Informasjon om vannforvaltning og praktisk veiledning for vannuttak og utslipp."
+				title='Veiledning for vannforvaltning'
+				description='Informasjon om vannforvaltning og praktisk veiledning for vannuttak og utslipp.'
 			>
 				<WaterHelp />
 			</HelpSheet>
@@ -243,46 +258,46 @@ function EnvironmentalPage() {
 			<HelpSheet
 				open={isBiodiversityHelpOpen}
 				onOpenChange={setBiodiversityHelpOpen}
-				title="Veiledning for arealbeslag og biologisk mangfold"
-				description="Informasjon om arealbeslag, forseglet areal og naturmangfold."
+				title='Veiledning for arealbeslag og biologisk mangfold'
+				description='Informasjon om arealbeslag, forseglet areal og naturmangfold.'
 			>
 				<BiodiversityHelp />
 			</HelpSheet>
 
+			{showComprehensiveModule && (
+				<>
+					<FormCard
+						title={m["environmental.C3.title"]()}
+						updatedDate={formatDate(targetsData?.lastModifiedAt)}
+						toolTip={m["environmental.C3.tooltip"]()}
+						status={targetsData ? "submitted" : "not_started"}
+						contributor={targetsData?.contributor || { name: "Unknown" }}
+						isVolunteer={isMicroUnderTaking}
+						code='C3'
+						module='Comprehensive Module'
+					>
+						<C3TargetsForm targets={targetsData} isLoading={targetsData === undefined} />
+					</FormCard>
 
-			<FormCard
-				title={m["environmental.C3.title"]()}
-				updatedDate={formatDate(targetsData?.lastModifiedAt)}
-				toolTip={m["environmental.C3.tooltip"]()}
-				status={targetsData ? 'submitted' : 'not_started'}
-				contributor={targetsData?.contributor || { name: 'Unknown' }}
-				code="C3"
-				module="Comprehensive Module"
-			>
-				<C3TargetsForm
-					targets={targetsData}
-					isLoading={targetsData === undefined}
-				/>
-			</FormCard>
-
-			<FormCard
-				title={m["environmental.C4.title"]()}
-				updatedDate={formatDate(climateRiskAnalysis?.lastModifiedAt)}
-				toolTip={m["environmental.C4.tooltip"]()}
-				status={(climateRiskAnalysis?.status ?? 'not_started') as FormStatus}
-				contributor={climateRiskAnalysis?.contributor || { name: 'Unknown' }}
-				code="C4"
-				module="Comprehensive Module"
-				version={
-					climateRiskAnalysis?.versions?.length
-						? climateRiskAnalysis.versions[
-								climateRiskAnalysis.versions.length - 1
-							]?.version
-						: undefined
-				}
-			>
-				<C4ClimateRiskForm />
-			</FormCard>
+					<FormCard
+						title={m["environmental.C4.title"]()}
+						updatedDate={formatDate(climateRiskAnalysis?.lastModifiedAt)}
+						toolTip={m["environmental.C4.tooltip"]()}
+						status={(climateRiskAnalysis?.status ?? "not_started") as FormStatus}
+						contributor={climateRiskAnalysis?.contributor || { name: "Unknown" }}
+						code='C4'
+						isVolunteer={isMicroUnderTaking}
+						module='Comprehensive Module'
+						version={
+							climateRiskAnalysis?.versions?.length
+								? climateRiskAnalysis.versions[climateRiskAnalysis.versions.length - 1]?.version
+								: undefined
+						}
+					>
+						<C4ClimateRiskForm />
+					</FormCard>
+				</>
+			)}
 		</div>
 	)
 }

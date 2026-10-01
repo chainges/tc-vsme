@@ -3,9 +3,9 @@ import { useStore } from '@tanstack/react-store'
 import { api } from 'convex/_generated/api'
 import { useQuery } from 'convex/react'
 import { useState } from 'react'
+import { B1BasicForm } from '@/components/forms/b1-basic-form'
 import { B1GeneralForm } from '@/components/forms/b1-general-form'
 import { B2SustainabilityInitiativesForm } from '@/components/forms/b2-sustainability-initiatives-form'
-
 import { C1BusinessModelForm } from '@/components/forms/c1-business-model-form'
 import { C2DescriptionPracticesPoliciesForm } from '@/components/forms/c2-description-paractices-policies-form'
 import { HelpSheet } from '@/components/sheet'
@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/expandable-card-simple'
 import { useOrgGuard } from '@/hooks/use-org-guard'
 import { yearStore } from '@/lib/year-store'
-import { m } from "@/paraglide/messages"
+import { m } from '@/paraglide/messages'
 import { GeneralHelp } from './-initiatives-help'
 
 export const Route = createFileRoute('/_appLayout/app/general/')({
@@ -45,17 +45,44 @@ function GeneralPage() {
 	const formSections = useQuery(
 		api.forms.get.getFormAllSectionsWithContributors,
 		skipQuery || {
-			table: "formGeneral",
+			table: 'formGeneral',
 			reportingYear,
 		},
 	)
 
 	// Extract section-specific data
 	const companyInfo = formSections?.companyInfo
+	const basicModule = formSections?.basicModule
 	const sustainability = formSections?.sustainabilityInitiatives
 	const businessModel = formSections?.businessModel
 
-	const descriptionOfPracticesPolicies = formSections?.descriptionOfPracticesPolicies
+	const numberOfEmployees =
+		companyInfo?.data && 'employees' in companyInfo.data
+			? companyInfo.data.employees ?? 0
+			: 0
+
+	const isMicroUnderTaking = numberOfEmployees <= 10
+
+	// console.log("companyInfo=", companyInfo)
+
+	// console.log("numberOfEmployees=", numberOfEmployees)
+
+	// console.log("companyInfo=", companyInfo)
+	// console.log("basicModule=", basicModule)
+	// console.log("sustainability=", sustainability)
+	// console.log("businessModel=", businessModel)
+
+	const showComprehensiveModule =
+		!(
+			basicModule?.data &&
+			"moduleScope" in basicModule.data &&
+			basicModule.data.moduleScope === "vsme:OptionABasicModuleOnlyMember"
+		)
+		
+	//console.log("Show=", showComprehensiveModule)
+
+	const descriptionOfPracticesPolicies =
+		formSections?.descriptionOfPracticesPolicies
 
 	// Show loading state
 	if (isOrgLoading || formSections === undefined) {
@@ -66,6 +93,22 @@ function GeneralPage() {
 		<div className='flex flex-col gap-4 md:grid-cols-1 mt-4 max-w-6xl w-full mx-auto'>
 			<h1 className='text-2xl font-bold'>{m["general.generalInformation"]()}</h1>
 			<h3 className='text-lg text-muted-foreground'>{m["general.generalInformationDescription"]()}</h3>
+
+			<FormCard
+				title={m["general.B1.Basic"]()}
+				updatedDate={formatDate(basicModule?.lastModifiedAt)}
+				status={(basicModule?.status ?? "not_started") as FormStatus}
+				toolTip={m["general.B1.Basictooltip"]()}
+				contributor={basicModule?.contributor || { name: "Unknown" }}
+				code='B1'
+				module='Basic Module'
+				version={
+					basicModule?.versions?.length ? basicModule.versions[basicModule.versions.length - 1].version : undefined
+				}
+			>
+				<B1BasicForm />
+			</FormCard>
+
 			<FormCard
 				title={m["general.B1.title"]()}
 				updatedDate={formatDate(companyInfo?.lastModifiedAt)}
@@ -108,39 +151,44 @@ function GeneralPage() {
 			</HelpSheet>
 
 			<hr />
-			<FormCard
-				title={m["general.C1.title"]()}
-				updatedDate={formatDate(businessModel?.lastModifiedAt)}
-				toolTip={m["general.C1.tooltip"]()}
-				status={(businessModel?.status ?? "not_started") as FormStatus}
-				contributor={businessModel?.contributor || { name: "Unknown" }}
-				code='C1'
-				module='Comprehensive Module'
-				version={
-					businessModel?.versions?.length
-						? businessModel.versions[businessModel.versions.length - 1].version
-						: undefined
-				}
-			>
-				<C1BusinessModelForm />
-			</FormCard>
-
-			<FormCard
-				title={m["environmental.C2.title"]()}
-				updatedDate={formatDate(descriptionOfPracticesPolicies?.lastModifiedAt)}
-				toolTip={m["environmental.C2.tooltip"]()}
-				status={(descriptionOfPracticesPolicies?.status ?? "not_started") as FormStatus}
-				contributor={descriptionOfPracticesPolicies?.contributor || { name: "Unknown" }}
-				code='C2'
-				module='Comprehensive Module'
-				version={
-					descriptionOfPracticesPolicies?.versions?.length
-						? descriptionOfPracticesPolicies.versions[descriptionOfPracticesPolicies.versions.length - 1]?.version
-						: undefined
-				}
-			>
-				<C2DescriptionPracticesPoliciesForm />
-			</FormCard>
+			{showComprehensiveModule && (
+				<>
+					<FormCard
+						title={m["general.C1.title"]()}
+						updatedDate={formatDate(businessModel?.lastModifiedAt)}
+						toolTip={m["general.C1.tooltip"]()}
+						status={(businessModel?.status ?? "not_started") as FormStatus}
+						contributor={businessModel?.contributor || { name: "Unknown" }}
+						code='C1'
+						isVolunteer={isMicroUnderTaking}
+						module='Comprehensive Module'
+						version={
+							businessModel?.versions?.length
+								? businessModel.versions[businessModel.versions.length - 1].version
+								: undefined
+						}
+					>
+						<C1BusinessModelForm />
+					</FormCard>
+					<FormCard
+						title={m["environmental.C2.title"]()}
+						updatedDate={formatDate(descriptionOfPracticesPolicies?.lastModifiedAt)}
+						toolTip={m["environmental.C2.tooltip"]()}
+						isVolunteer={isMicroUnderTaking}
+						status={(descriptionOfPracticesPolicies?.status ?? "not_started") as FormStatus}
+						contributor={descriptionOfPracticesPolicies?.contributor || { name: "Unknown" }}
+						code='C2'
+						module='Comprehensive Module'
+						version={
+							descriptionOfPracticesPolicies?.versions?.length
+								? descriptionOfPracticesPolicies.versions[descriptionOfPracticesPolicies.versions.length - 1]?.version
+								: undefined
+						}
+					>
+						<C2DescriptionPracticesPoliciesForm />
+					</FormCard>
+				</>
+			)}
 		</div>
 	)
 }

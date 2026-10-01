@@ -1,3 +1,4 @@
+import { is } from 'date-fns/locale'
 import { z } from 'zod'
 
 export const propertyLocationSchema = z.object({
@@ -46,6 +47,7 @@ export const TYPE_OF_NUMBER_OF_EMPLOYEES = [
 
 export const b1GeneralSchema = z.object({
 	reportingYear: z.string().regex(/^\d{4}$/, 'Year must be 4 digits'),
+	confidentialAreas: z.array(z.string()).default([]),
 	organizationName: z.string().min(1, 'Organization name is required'),
 	organizationNumber: z.string().min(1, 'Organization number is required'),
 	naceCode: z.string().min(1, 'NACE code is required'),
@@ -72,6 +74,7 @@ export const b1GeneralSchema = z.object({
 			}),
 		)
 		.optional(),
+	isB1Confidential: z.boolean(),
 	contactPersonName: z.string().min(1, 'Contact name is required'),
 	// Allow empty string (field not filled) OR a valid email address.
 	// z.email() rejects '' which would silently block form submission.

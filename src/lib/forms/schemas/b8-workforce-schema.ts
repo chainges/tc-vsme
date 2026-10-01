@@ -11,6 +11,7 @@ export const employeePerCountrySchema = z.object({
 
 export const b8WorkforceSchema = z.object({
 	reportingYear: z.string().regex(/^\d{4}$/, 'Year must be 4 digits'),
+	isB8Confidential: z.boolean(),
 	permanentContractEmployees: z
 		.number({ message: 'Dette feltet er påkrevd' })
 		.int('Må være et heltall')
@@ -52,6 +53,7 @@ export const b8WorkforceSchema = z.object({
 		.min(0, 'Må være 0 eller mer')
 		.optional(),
 	anyAdditionalInfo: z.string().optional(),
+	confidentialAreas: z.array(z.string()).optional(),
 })
 
 export type EmployeePerCountry = z.infer<typeof employeePerCountrySchema>

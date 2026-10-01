@@ -11,6 +11,7 @@ import {
 import { yearStore } from '@/lib/year-store'
 import { m } from '@/paraglide/messages'
 import { api } from '../../../convex/_generated/api'
+import ConfidentialInfoBox from '../ConfidentialInfoBox'
 
 type B2FormData = {
 	hasSustainabilityPractices?: boolean
@@ -60,6 +61,7 @@ export function C2DescriptionPracticesPoliciesForm() {
 				c2_sustainability_practice_description: '',
 				c2_monitoring_targets_description: '',
 				c2_accountable_role_or_person: '',
+				isC2Confidential: false,
 			},
 		})
 
@@ -80,62 +82,46 @@ export function C2DescriptionPracticesPoliciesForm() {
 					form.handleSubmit()
 				}}
 			>
-				<fieldset disabled={status === 'submitted'} className="space-y-6">
-					<form.AppField name="reportingYear">
+				<fieldset disabled={status === "submitted"} className='space-y-6'>
+					<form.AppField name='reportingYear'>
 						{(field) => (
-							<field.TextField label={m["environmental.C2.reportingYearLabel"]()} placeholder="YYYY" hidden />
+							<field.TextField label={m["environmental.C2.reportingYearLabel"]()} placeholder='YYYY' hidden />
 						)}
 					</form.AppField>
 
-					<Card>
-						<CardContent className="space-y-6 pt-6">
-							{/* <h3 className="text-lg font-medium">{m["environmental.C2.title"]()}</h3> */}
-							{hasSustainabilityPractices ? (
-								<form.AppField name="c2_sustainability_practice_description">
-									{(field) => (
-										<field.TextareaField
-											label={m["environmental.C2.practiceDescription"]()}
-											rows={5}
-										/>
-									)}
-								</form.AppField>
-							) : (
-								<p className="text-muted-foreground">{m["environmental.C2.noPractices"]()}</p>
-							)}
-						</CardContent>
-					</Card>
+					<form.AppField name='isC2Confidential'>
+						{(field) => (
+							<ConfidentialInfoBox
+								value={field.state.value || false}
+								handleChange={(value) => {
+									field.setValue(value)
+								}}
+							/>
+						)}
+					</form.AppField>
 
-					{policiesHaveTargets && (
-						<Card>
-							<CardContent className="pt-6">
-								<form.AppField name="c2_monitoring_targets_description">
-									{(field) => (
-										<field.TextareaField
-											label={m["environmental.C2.monitoringTargets"]()}
-											rows={5}
-										/>
-									)}
-								</form.AppField>
-							</CardContent>
-						</Card>
+					{/* <h3 className="text-lg font-medium">{m["environmental.C2.title"]()}</h3> */}
+					{hasSustainabilityPractices ? (
+						<form.AppField name='c2_sustainability_practice_description'>
+							{(field) => <field.TextareaField label={m["environmental.C2.practiceDescription"]()} rows={5} />}
+						</form.AppField>
+					) : (
+						<p className='text-muted-foreground'>{m["environmental.C2.noPractices"]()}</p>
 					)}
 
-					<Card>
-						<CardContent className="pt-6">
-							<form.AppField name="c2_accountable_role_or_person">
-								{(field) => (
-									<field.TextareaField
-										label={m["environmental.C2.accountableRole"]()}
-										rows={4}
-									/>
-								)}
-							</form.AppField>
-						</CardContent>
-					</Card>
+					{policiesHaveTargets && (
+						<form.AppField name='c2_monitoring_targets_description'>
+							{(field) => <field.TextareaField label={m["environmental.C2.monitoringTargets"]()} rows={5} />}
+						</form.AppField>
+					)}
+
+					<form.AppField name='c2_accountable_role_or_person'>
+						{(field) => <field.TextareaField label={m["environmental.C2.accountableRole"]()} rows={4} showVolunteerBadge={true} />}
+					</form.AppField>
 				</fieldset>
 
 				<FormButtons
-					status={status as 'not_started' | 'draft' | 'submitted'}
+					status={status as "not_started" | "draft" | "submitted"}
 					isSaving={isSaving}
 					onSaveDraft={saveDraft}
 					onSubmit={submit}

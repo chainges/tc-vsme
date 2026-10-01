@@ -1,5 +1,6 @@
+import { useStore } from "@tanstack/react-form"
 import { useStore as useYearStore } from "@tanstack/react-store"
-import { AlertTriangleIcon, LeafIcon, Plus, Trash2 } from "lucide-react"
+import { AlertTriangleIcon, LeafIcon, Plus, RecycleIcon, RefreshCwIcon, Trash2, TrashIcon } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -15,9 +16,17 @@ import {
 } from "@/lib/forms/schemas/b7-resource-use-circular-economy-schema"
 import { yearStore } from "@/lib/year-store"
 import { m } from "@/paraglide/messages"
+import ConfidentialInfoBox from "../ConfidentialInfoBox"
+import SectionHeading from "../SectionHeading"
 import { Badge } from "../ui/badge"
 import { Input } from "../ui/input"
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
+
+const confidentialAreaValues={
+	descriptionOfCircularEconomy:"vsme:B7DescriptionOfCircularEconomyPrinciplesMember",
+    wasteGenerated:"vsme:B7WasteGeneratedMember",
+	annualMassFlowOfRelevantMaterialsUsed:"vsme:B7AnnualMassFlowOfRelevantMaterialsUsedMember",
+}
 
 export function B7ResourceUseCircularEconomyForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
@@ -30,6 +39,7 @@ export function B7ResourceUseCircularEconomyForm() {
 			schema: b7ResourceUseCircularEconomySchema,
 			defaultValues: {
 				reportingYear: reportingYear.toString(),
+				isB7Confidential: false,
 				applyCircularEconomyPrinciples: false,
 				circularEconomyDescription: "",
 				significantMaterialFlows: false,
@@ -41,6 +51,7 @@ export function B7ResourceUseCircularEconomyForm() {
 				hazardousWaste: 0,
 				recycledMaterials: [],
 				onlyHouseholdWaste: true,
+				confidentialAreas: [],
 				wasteInformation: [
 					{
 						id: "20 03 01",
@@ -54,6 +65,11 @@ export function B7ResourceUseCircularEconomyForm() {
 				],
 			} as unknown as B7ResourceUseCircularEconomyFormValues,
 		})
+	
+		const confidentialAreas = useStore(
+				form.store,
+				(state) => state.values.confidentialAreas ?? [],
+			)
 
 	if (isLoading) {
 		return <div className='flex items-center justify-center p-8 text-muted-foreground'>Loading...</div>
@@ -74,130 +90,162 @@ export function B7ResourceUseCircularEconomyForm() {
 							<field.TextField label={m["environmental.B7.reportingYearLabel"]()} placeholder='YYYY' hidden />
 						)}
 					</form.AppField>
+					<form.AppField name='isB7Confidential'>
+						{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
+					</form.AppField>
 
-					<Card>
-						<CardContent className='space-y-6'>
-							<form.AppField name='applyCircularEconomyPrinciples'>
-								{(field) => <field.SwitchField label={m["environmental.B7.applyCircularEconomyPrinciples"]()} />}
-							</form.AppField>
+					<form.AppField name='applyCircularEconomyPrinciples'>
+						{(field) => <field.SwitchField label={m["environmental.B7.applyCircularEconomyPrinciples"]()} />}
+					</form.AppField>
 
-							<form.Subscribe selector={(state) => state.values.applyCircularEconomyPrinciples}>
-								{(apply) =>
-									apply && (
-										<form.AppField name='circularEconomyDescription'>
-											{(field) => <field.TextareaField label={m["environmental.B7.circularEconomyDescription"]()} />}
-										</form.AppField>
-									)
-								}
-							</form.Subscribe>
-						</CardContent>
-					</Card>
+					<form.Subscribe selector={(state) => state.values.applyCircularEconomyPrinciples}>
+						{(apply) =>
+							apply && (
+								<>
+									<SectionHeading
+										title={m["environmental.B7.circularEconomy"]()}
+										description={m["environmental.B7.circularEconomyDescription"]()}
+										Icon={RecycleIcon}
+										disabled={status === "submitted"}
+										confidentialArea={confidentialAreaValues.descriptionOfCircularEconomy}
+										confidentialAreas={confidentialAreas}
+										onConfidentialChange={(areas) => form.setFieldValue("confidentialAreas", areas)}
+									/>
 
-					<Card>
-						<CardContent className='space-y-6'>
-							<form.AppField name='significantMaterialFlows'>
-								{(field) => <field.SwitchField label={m["environmental.B7.significantMaterialFlows"]()} />}
-							</form.AppField>
+									<form.AppField name='circularEconomyDescription'>
+										{(field) => (
+											<field.TextareaField
+												className='mb-0!'
+												label={m["environmental.B7.circularEconomyDescription"]()}
+											/>
+										)}
+									</form.AppField>
+								</>
+							)
+						}
+					</form.Subscribe>
 
-							<form.Subscribe selector={(state) => state.values.significantMaterialFlows}>
-								{(significant) =>
-									significant && (
-										<form.AppField name='annualMassFlows'>
-											{(field) => (
-												<div className='space-y-4'>
-													<div className='flex items-center justify-between'>
-														<h3 className='text-base font-medium'>{m["environmental.B7.annualMassFlows"]()}</h3>
-														<Button
-															type='button'
-															variant='outline'
-															size='sm'
-															onClick={() =>
-																field.pushValue({
-																	id: crypto.randomUUID(),
-																	materialType: "",
-																	volume: 0,
-																	unit: "tonn",
-																})
-															}
-															disabled={status === "submitted"}
-														>
-															<Plus className='h-4 w-4 mr-2' />
-															{m["environmental.B7.addMaterialType"]()}
-														</Button>
-													</div>
+					<hr />
 
-													{field.state.value?.map((item, i) => (
-														<Card key={item.id} className='relative'>
-															<CardContent className='space-y-4'>
-																<div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-																	<form.AppField name={`annualMassFlows[${i}].materialType`}>
-																		{(f) => (
-																			<f.TextField
-																				label={m["environmental.B7.materialType"]()}
-																				placeholder={m["environmental.B7.materialTypePlaceholder"]()}
-																			/>
-																		)}
-																	</form.AppField>
-																	<form.AppField name={`annualMassFlows[${i}].volume`}>
-																		{(f) => <f.NumberField label={m["environmental.B7.annualMassFlows"]()} />}
-																	</form.AppField>
-																	<form.AppField name={`annualMassFlows[${i}].unit`}>
-																		{(f) => (
-																			<f.SelectField
-																				label={m["environmental.B7.unit"]()}
-																				options={RECYCLED_MATERIAL_UNITS.map((unit) => ({
-																					label: unit,
-																					value: unit,
-																				}))}
-																			/>
-																		)}
-																	</form.AppField>
-																</div>
-																<div className='flex justify-end'>
-																	<Button
-																		type='button'
-																		variant='ghost'
-																		size='sm'
-																		className='text-destructive'
-																		onClick={() => field.removeValue(i)}
-																		disabled={status === "submitted"}
-																	>
-																		<Trash2 className='h-4 w-4' />
-																	</Button>
-																</div>
-															</CardContent>
-														</Card>
-													))}
+					<form.AppField name='significantMaterialFlows'>
+						{(field) => <field.SwitchField label={m["environmental.B7.significantMaterialFlows"]()} />}
+					</form.AppField>
+
+					<form.Subscribe selector={(state) => state.values.significantMaterialFlows}>
+						{(significant) =>
+							significant && (
+								<>
+									<SectionHeading
+										title={m["environmental.B7.annualMassFlowOfRelevantMaterialsUsed"]()}
+										description={m["environmental.B7.annualMassFlowOfRelevantMaterialsUsedDescription"]()}
+										Icon={RefreshCwIcon}
+										disabled={status === "submitted"}
+										confidentialArea={confidentialAreaValues.annualMassFlowOfRelevantMaterialsUsed}
+										confidentialAreas={confidentialAreas}
+										onConfidentialChange={(areas) => form.setFieldValue("confidentialAreas", areas)}
+									/>
+
+									<form.AppField name='annualMassFlows'>
+										{(field) => (
+											<div className='space-y-4'>
+												<div className='flex items-center justify-between'>
+													<h3 className='text-base font-medium'>{m["environmental.B7.annualMassFlows"]()}</h3>
+													<Button
+														type='button'
+														variant='outline'
+														size='sm'
+														onClick={() =>
+															field.pushValue({
+																id: crypto.randomUUID(),
+																materialType: "",
+																volume: 0,
+																unit: "tonn",
+															})
+														}
+														disabled={status === "submitted"}
+													>
+														<Plus className='h-4 w-4 mr-2' />
+														{m["environmental.B7.addMaterialType"]()}
+													</Button>
 												</div>
-											)}
-										</form.AppField>
-									)
-								}
-							</form.Subscribe>
-						</CardContent>
-					</Card>
 
-					<Card>
-						<CardContent className='space-y-6'>
-							<form.AppField name='onlyHouseholdWaste'>
-								{(field) => <field.SwitchField label='Do you only generate household waste?' />}
-							</form.AppField>
+												{field.state.value?.map((item, i) => (
+													<Card key={item.id} className='relative'>
+														<CardContent className='space-y-4'>
+															<div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+																<form.AppField name={`annualMassFlows[${i}].materialType`}>
+																	{(f) => (
+																		<f.TextField
+																			label={m["environmental.B7.materialType"]()}
+																			placeholder={m["environmental.B7.materialTypePlaceholder"]()}
+																		/>
+																	)}
+																</form.AppField>
+																<form.AppField name={`annualMassFlows[${i}].volume`}>
+																	{(f) => <f.NumberField label={m["environmental.B7.annualMassFlows"]()} />}
+																</form.AppField>
+																<form.AppField name={`annualMassFlows[${i}].unit`}>
+																	{(f) => (
+																		<f.SelectField
+																			label={m["environmental.B7.unit"]()}
+																			options={RECYCLED_MATERIAL_UNITS.map((unit) => ({
+																				label: unit,
+																				value: unit,
+																			}))}
+																		/>
+																	)}
+																</form.AppField>
+															</div>
+															<div className='flex justify-end'>
+																<Button
+																	type='button'
+																	variant='ghost'
+																	size='sm'
+																	className='text-destructive'
+																	onClick={() => field.removeValue(i)}
+																	disabled={status === "submitted"}
+																>
+																	<Trash2 className='h-4 w-4' />
+																</Button>
+															</div>
+														</CardContent>
+													</Card>
+												))}
+											</div>
+										)}
+									</form.AppField>
+								</>
+							)
+						}
+					</form.Subscribe>
 
-							<form.Subscribe selector={(state) => state.values.onlyHouseholdWaste}>
-								{(onlyHouseholdWaste) =>
-									onlyHouseholdWaste ? (
-										<p className='text-sm text-muted-foreground'>
-											Household waste is recorded as 20 03 01 - Non-Hazardous - Mixed municipal waste.
-										</p>
-									) : (
-										<form.AppField name='wasteInformation'>
-											{(field) => <WasteCodeSelector field={field} />}
-										</form.AppField>
-									)
-								}
-							</form.Subscribe>
-						</CardContent>
-					</Card>
+					<hr/>
+
+					<SectionHeading
+						title={"Waste Generated"}
+						description={"Information about the waste generated by the organization, including types and quantities."}
+						Icon={TrashIcon}
+						disabled={status === "submitted"}
+						confidentialArea={confidentialAreaValues.wasteGenerated}
+						confidentialAreas={confidentialAreas}
+						onConfidentialChange={(areas) => form.setFieldValue("confidentialAreas", areas)}
+					/>
+
+					<form.AppField name='onlyHouseholdWaste'>
+						{(field) => <field.SwitchField label='Do you only generate household waste?' />}
+					</form.AppField>
+
+					<form.Subscribe selector={(state) => state.values.onlyHouseholdWaste}>
+						{(onlyHouseholdWaste) =>
+							onlyHouseholdWaste ? (
+								<p className='text-sm text-muted-foreground'>
+									Household waste is recorded as 20 03 01 - Non-Hazardous - Mixed municipal waste.
+								</p>
+							) : (
+								<form.AppField name='wasteInformation'>{(field) => <WasteCodeSelector field={field} />}</form.AppField>
+							)
+						}
+					</form.Subscribe>
 				</fieldset>
 
 				<FormButtons

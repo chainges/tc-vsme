@@ -3,6 +3,7 @@ import { z } from 'zod'
 export const b5BiodiversitySchema = z
 	.object({
 		reportingYear: z.string().regex(/^\d{4}$/, 'Year must be 4 digits'),
+		isB5Confidential: z.boolean(),
 		hasSensitiveBiodiversityAreas: z.boolean(),
 		sites: z.array(
 			z.object({
@@ -31,6 +32,7 @@ export const b5BiodiversitySchema = z
 			.optional(),
 		protectedSpeciesCount: z.string().optional(),
 		redListedSpeciesCount: z.string().optional(),
+		confidentialAreas: z.array(z.string()).optional(),
 	})
 
 export type B5BiodiversityFormValues = z.infer<typeof b5BiodiversitySchema>

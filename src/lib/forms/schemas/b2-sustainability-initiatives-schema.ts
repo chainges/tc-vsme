@@ -6,6 +6,7 @@ export const sustainabilityInitiativesSchema = z.object({
 	arePracticesPubliclyAvailable: z.boolean(),
 	policiesHaveTargets: z.boolean(),
 	selectedSustainabilityIssueValues: z.array(z.string()),
+	isB2Confidential: z.boolean(),
 })
 
 export type SustainabilityInitiativesFormValues = z.infer<

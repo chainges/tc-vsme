@@ -21,6 +21,14 @@
 	"example": {
 		"message": "Welcome to your i18n app."
 	},
+	"common":{
+		"submit": "Submit",
+		"cancel": "Cancel",
+		"delete": "Delete",
+		"edit": "Edit",
+		"confidentialBoxTitle":"Mark this entire section as confidential",
+		"confidentialBoxDescription":"Enabling this will hide all data in this section from XBRL report."
+	},
 	"language": {
 		"label": "Language"
 	},
@@ -269,11 +277,13 @@
 	},
 	"general": {
 		"generalInformation": "General Information",
-		"generalInformationDescription": "Basic information about your organization",
+		"generalInformationDescription": "Legal identity, financial scale, workforce, and reporting contact",
 		"basicModule": "Basic Module",
 		"comprehensiveModule": "Comprehensive Module",
 		"reportingYear": "Reporting year",
 		"B1": {
+			"Basic": "Basic for prepration",
+			"Basictooltip": "Click to learn more about the basic preparation",
 			"module": "Basic Module",
 			"title": "Company Information",
 			"tooltip": "Click to learn more",
@@ -298,6 +308,7 @@
 			"reportType": "Consolidated report",
 			"reportTypeDescription": "Choose whether the report should be consolidated or individual.",
 			"subsidiaries": "Subsidiaries",
+			"subsidiariesDescription":"Corporate entities included in this report",
 			"nameOfSubsidiary": "Name of subsidiary",
 			"address": "Address",
 			"addSubsidiary": "Add subsidiary",
@@ -305,7 +316,7 @@
 			"certificationsAndLabelsDescription": "E.g. ISO 14001, EMAS, EU Ecolabel, Environmental Lighthouse",
 			"certification": "Certification",
 			"certificationOrLabel": "Certification/labeling scheme",
-			"certificationOrLabelDescription": "Certification/labeling scheme",
+			"certificationOrLabelDescription": "E.g. ISO 14001, EMAS, EU Ecolabel",
 			"issuer": "Issuer",
 			"issuerDescription": "Issuer",
 			"date": "Date",
@@ -314,7 +325,7 @@
 			"ratingOrScoreDescription": "Rating/score",
 			"addCertification": "Add certification",
 			"properties": "Properties",
-			"propertiesDescription": "Add addresses and geolocation for properties owned or operated by the business.",
+			"propertiesDescription": "Addresses and geolocation for owned or operated sites",
 			"property": "Property",
 			"addressDescription": "Search for the address using Google Maps",
 			"addProperty": "Add property",
@@ -499,6 +510,9 @@
 		},
 		"B7":{
 			"title": "Resource Use and Circular Economy",
+			"circularEconomy": "Circular economy",
+			"annualMassFlowOfRelevantMaterialsUsed": "Annual Mass Flow of Relevant Materials Used",
+			"annualMassFlowOfRelevantMaterialsUsedDescription": "Description of the annual mass flow of relevant materials used in operations",
 			"tooltip": "Click to expand",
 			"buttonText": "Help",
 			"helpTitle": "Guidance for circular economy",

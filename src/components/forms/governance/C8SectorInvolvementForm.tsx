@@ -1,5 +1,6 @@
 import { useStore as useYearStore } from '@tanstack/react-store'
 import { Info } from 'lucide-react'
+import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Card, CardContent } from '@/components/ui/card'
 import { FormButtons } from '@/hooks/tanstack-form'
@@ -32,6 +33,7 @@ export function C8SectorInvolvementForm() {
 				pabGasThreshold: false,
 				pabElectricityThreshold: false,
 				euBenchmarksExclusion: false,
+				isC8Confidential: false,
 			} as C8SectorInvolvementValues,
 		})
 
@@ -62,6 +64,7 @@ const syncExclusion = (value: boolean, currentField: keyof C8SectorInvolvementVa
 					<CardContent>
 						<fieldset disabled={status === 'submitted'} className="space-y-6">
 							<form.AppField name="reportingYear">{(field) => <field.TextField label={m['governance.C8.reportingYearLabel']()} placeholder="YYYY" hidden />}</form.AppField>
+							<form.AppField name="isC8Confidential">{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}</form.AppField>
 							<Alert variant="info"><Info /><AlertDescription>{m['governance.C8.revenueInfo']()}</AlertDescription></Alert>
 							<div className="font-semibold">{m['governance.C8.sectorRevenueTitle']()}</div>
 							<div className="grid grid-cols-1 gap-6 md:grid-cols-2">

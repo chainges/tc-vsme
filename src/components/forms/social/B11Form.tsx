@@ -1,4 +1,5 @@
 import { useStore as useYearStore } from '@tanstack/react-store'
+import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { Card, CardContent } from '@/components/ui/card'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
@@ -22,6 +23,7 @@ export function B11WorkLifeBalanceForm() {
 				femaleParentalLeave: 0,
 				maleParentalLeave: 0,
 				parentalLeavePolicyDescription: '',
+				isB11Confidential: false,
 			} as B11WorkLifeBalanceFormValues,
 		})
 
@@ -54,6 +56,9 @@ export function B11WorkLifeBalanceForm() {
 										hidden
 									/>
 								)}
+							</form.AppField>
+							<form.AppField name="isB11Confidential">
+								{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
 							</form.AppField>
 
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">

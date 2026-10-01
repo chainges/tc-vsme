@@ -84,3 +84,41 @@ export const saveForm = mutation({
     }
   }
 })
+
+export const updateConfidentiality = mutation({
+  args: {
+    reportingYear: v.number(),
+    section: formSectionValidator,
+    key: v.union(
+      v.literal("isB1Confidential"),
+      v.literal("isB2Confidential"),
+      v.literal("isC1Confidential"),
+      v.literal("isC2Confidential"),
+    ),
+    value: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const orgId = await requireOrgId(ctx)
+    const userId = await requireUserId(ctx)
+    const existing = await getFormRecordBySection(
+      ctx,
+      "formGeneral",
+      orgId,
+      args.reportingYear,
+      args.section,
+    )
+
+    if (!existing) {
+      throw new Error("Save the form before changing its confidentiality setting")
+    }
+
+    const update = {
+      [args.key]: args.value,
+      lastModifiedBy: userId,
+      lastModifiedAt: Date.now(),
+    }
+
+    await ctx.db.patch(existing._id, update)
+    return { _id: existing._id }
+  },
+})

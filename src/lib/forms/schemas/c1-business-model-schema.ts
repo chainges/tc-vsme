@@ -6,6 +6,7 @@ export const c1BusinessModelSchema = z.object({
 	markets: z.string().optional(),
 	businessRelationships: z.string().optional(),
 	sustainabilityStrategy: z.string().optional(),
+	isC1Confidential: z.boolean(),
 })
 
 export type C1BusinessModelFormValues = z.infer<typeof c1BusinessModelSchema>

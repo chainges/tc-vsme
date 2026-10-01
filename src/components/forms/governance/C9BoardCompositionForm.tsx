@@ -1,4 +1,5 @@
 import { useStore as useYearStore } from '@tanstack/react-store'
+import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { Card, CardContent } from '@/components/ui/card'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
@@ -24,6 +25,7 @@ export function C9BoardCompositionForm() {
 				femaleMembers: 0,
 				maleMembers: 0,
 				otherMembers: 0,
+				isC9Confidential: false,
 			} as C9BoardCompositionValues,
 		})
 
@@ -46,22 +48,22 @@ export function C9BoardCompositionForm() {
 			>
 				<Card>
 					<CardContent>
-						<fieldset disabled={status === 'submitted'} className="space-y-6">
+						<fieldset disabled={status === "submitted"} className='space-y-6'>
 							{/* Hidden reporting year */}
-							<form.AppField name="reportingYear">
+							<form.AppField name='reportingYear'>
 								{(field) => (
-									<field.TextField
-										label={m["governance.C9.reportingYearLabel"]()}
-										placeholder="YYYY"
-										hidden
-									/>
+									<field.TextField label={m["governance.C9.reportingYearLabel"]()} placeholder='YYYY' hidden />
 								)}
 							</form.AppField>
 
-							<div className="font-semibold">{m["governance.C9.boardGenderBalanceTitle"]()}</div>
+							{/* <div className='font-semibold'>{m["governance.C9.boardGenderBalanceTitle"]()}</div> */}
 
-							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-								<form.AppField name="totalMembers">
+							<form.AppField name='isC9Confidential'>
+								{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
+							</form.AppField>
+
+							<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+								<form.AppField name='totalMembers'>
 									{(field) => (
 										<field.NumberField
 											label={m["governance.C9.totalMembersLabel"]()}
@@ -70,7 +72,7 @@ export function C9BoardCompositionForm() {
 									)}
 								</form.AppField>
 
-								<form.AppField name="femaleMembers">
+								<form.AppField name='femaleMembers'>
 									{(field) => (
 										<field.NumberField
 											label={m["governance.C9.femaleMembersLabel"]()}
@@ -79,7 +81,7 @@ export function C9BoardCompositionForm() {
 									)}
 								</form.AppField>
 
-								<form.AppField name="maleMembers">
+								<form.AppField name='maleMembers'>
 									{(field) => (
 										<field.NumberField
 											label={m["governance.C9.maleMembersLabel"]()}
@@ -88,7 +90,7 @@ export function C9BoardCompositionForm() {
 									)}
 								</form.AppField>
 
-								<form.AppField name="otherMembers">
+								<form.AppField name='otherMembers'>
 									{(field) => (
 										<field.NumberField
 											label={m["governance.C9.otherMembersLabel"]()}
@@ -102,7 +104,7 @@ export function C9BoardCompositionForm() {
 				</Card>
 
 				<FormButtons
-					status={status as 'not_started' | 'draft' | 'submitted'}
+					status={status as "not_started" | "draft" | "submitted"}
 					isSaving={isSaving}
 					onSaveDraft={saveDraft}
 					onSubmit={submit}

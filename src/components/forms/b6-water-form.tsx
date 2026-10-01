@@ -10,6 +10,7 @@ import {
 } from '@/lib/forms/schemas/b6-water-schema'
 import { yearStore } from '@/lib/year-store'
 import { m } from '@/paraglide/messages'
+import ConfidentialInfoBox from '../ConfidentialInfoBox'
 
 export function B6WaterManagementForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
@@ -22,6 +23,7 @@ export function B6WaterManagementForm() {
 			schema: b6WaterSchema,
 			defaultValues: {
 				reportingYear: reportingYear.toString(),
+				isB6Confidential: false,
 				waterWithdrawal: 0,
 				waterWithdrawalStress: 0,
 				waterDischarge: 0,
@@ -70,6 +72,9 @@ export function B6WaterManagementForm() {
 								hidden
 							/>
 						)}
+					</form.AppField>
+					<form.AppField name="isB6Confidential">
+						{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
 					</form.AppField>
 
 					<Card>

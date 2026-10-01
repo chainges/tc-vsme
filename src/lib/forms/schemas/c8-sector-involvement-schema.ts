@@ -3,6 +3,7 @@ import { z } from 'zod'
 export const c8SectorInvolvementSchema = z
 	.object({
 		reportingYear: z.string().regex(/^\d{4}$/, 'År må være 4 siffer'),
+		isC8Confidential: z.boolean(),
 		controversialWeaponsRevenue: z.number().min(0, 'Må være 0 eller mer').optional(),
 		tobaccoRevenue: z.number().min(0, 'Må være 0 eller mer').optional(),
 		coalRevenue: z.number().min(0, 'Må være 0 eller mer').optional(),

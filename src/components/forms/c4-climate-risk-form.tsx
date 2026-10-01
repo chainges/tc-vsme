@@ -8,6 +8,7 @@ import {
 } from '@/lib/forms/schemas/c4-climate-risk-schema'
 import { yearStore } from '@/lib/year-store'
 import { m } from '@/paraglide/messages'
+import ConfidentialInfoBox from '../ConfidentialInfoBox'
 
 export function C4ClimateRiskForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
@@ -21,6 +22,7 @@ export function C4ClimateRiskForm() {
 			reportingYear: reportingYear.toString(),
 			climateRiskDescription: "",
 			hasIdentifiedClimateRelatedHazardious: false,
+			isC4Confidential: false,
 		} as C4ClimateRiskFormValues,
 	})
 
@@ -46,6 +48,9 @@ export function C4ClimateRiskForm() {
 						{(field) => (
 							<field.TextField label={m["environmental.C4.reportingYearLabel"]()} placeholder='YYYY' hidden />
 						)}
+					</form.AppField>
+					<form.AppField name='isC4Confidential'>
+						{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
 					</form.AppField>
 
 					<Card>

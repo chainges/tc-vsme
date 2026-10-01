@@ -1,5 +1,6 @@
 import { useStore as useYearStore } from '@tanstack/react-store'
 import { Info } from 'lucide-react'
+import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Card, CardContent } from '@/components/ui/card'
 import { FormButtons } from '@/hooks/tanstack-form'
@@ -30,6 +31,7 @@ export function C5AdditionalWorkforceForm({
 			schema: c5AdditionalWorkforceSchema,
 			defaultValues: {
 				reportingYear: reportingYear.toString(),
+					isC5Confidential: false,
 			} as C5AdditionalWorkforceValues,
 			transformBeforeSave: (values) => {
 				const result: Record<string, unknown> = { ...values }
@@ -96,6 +98,9 @@ export function C5AdditionalWorkforceForm({
 										hidden
 									/>
 								)}
+							</form.AppField>
+							<form.AppField name="isC5Confidential">
+								{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
 							</form.AppField>
 
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">

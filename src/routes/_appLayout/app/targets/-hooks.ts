@@ -117,6 +117,7 @@ export function useTargetsForm(
 		if (existingTargets) {
 			return {
 				baseYear: existingTargets.baseYear,
+				isC3Confidential: existingTargets.isC3Confidential ?? false,
 				baseYearEmissions: existingTargets.baseYearEmissions,
 				targetYear: existingTargets.targetYear,
 				targetReduction: existingTargets.targetReduction,
@@ -131,6 +132,7 @@ export function useTargetsForm(
 		}
 		return {
 			baseYear: undefined as number | undefined,
+			isC3Confidential: false,
 			baseYearEmissions: undefined as number | undefined,
 			targetYear: undefined as number | undefined,
 			targetReduction: undefined as number | undefined,
@@ -184,6 +186,7 @@ export function useTargetsForm(
 				}
 
 				await saveTargets({
+					isC3Confidential: value.isC3Confidential,
 					baseYear: value.baseYear,
 					baseYearEmissions: value.baseYearEmissions,
 					targetYear: value.targetYear,

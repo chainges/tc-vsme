@@ -3,6 +3,7 @@ import { z } from 'zod'
 export const c6HumanRightsPoliciesSchema = z
 	.object({
 		reportingYear: z.string().regex(/^\d{4}$/, 'År må være 4 siffer'),
+		isC6Confidential: z.boolean(),
 		/** (a) Does the undertaking have a code of conduct or human rights policy? */
 		hasCodeOfConduct: z.boolean().default(false),
 		/** (b.i) Covers child labour? */

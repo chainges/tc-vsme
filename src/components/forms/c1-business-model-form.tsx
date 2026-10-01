@@ -1,53 +1,39 @@
-import { useStore as useYearStore } from '@tanstack/react-store'
-import { useQuery } from 'convex/react'
-import { FormButtons } from '@/hooks/tanstack-form'
-import { useFormSubmission } from '@/hooks/use-form-submission'
-import { useOrgGuard } from '@/hooks/use-org-guard'
-import {
-	type C1BusinessModelFormValues,
-	c1BusinessModelSchema,
-} from '@/lib/forms/schemas/c1-business-model-schema'
-import { yearStore } from '@/lib/year-store'
-import { m } from '@/paraglide/messages'
-import { api } from '../../../convex/_generated/api'
+import { useStore as useYearStore } from "@tanstack/react-store"
+import { useQuery } from "convex/react"
+import { FormButtons } from "@/hooks/tanstack-form"
+import { useFormSubmission } from "@/hooks/use-form-submission"
+import { useOrgGuard } from "@/hooks/use-org-guard"
+import { type C1BusinessModelFormValues, c1BusinessModelSchema } from "@/lib/forms/schemas/c1-business-model-schema"
+import { yearStore } from "@/lib/year-store"
+import { m } from "@/paraglide/messages"
+import { api } from "../../../convex/_generated/api"
+import ConfidentialInfoBox from "../ConfidentialInfoBox"
 
 export function C1BusinessModelForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
 
 	// Guard against race conditions during org switching
 	const { organization, skipQuery } = useOrgGuard()
-	const orgData = useQuery(
-		api.organizations.getByClerkOrgId,
-		skipQuery || { clerkOrgId: organization?.id ?? '' },
-	)
+	const orgData = useQuery(api.organizations.getByClerkOrgId, skipQuery || { clerkOrgId: organization?.id ?? "" })
 
-	const {
-		form,
-		status,
-		isSaving,
-		isLoading,
-		saveDraft,
-		submit,
-		reopen,
-	} = useFormSubmission<C1BusinessModelFormValues>({
-		table: 'formGeneral',
-		reportingYear,
-		section: 'businessModel',
-		schema: c1BusinessModelSchema,
-		defaultValues: {
-			reportingYear: reportingYear.toString(),
-			productsAndServices: orgData?.productsAndServices || '',
-			markets: orgData?.markets || '',
-			businessRelationships: orgData?.businessRelationships || '',
-			sustainabilityStrategy: orgData?.sustainabilityStrategy || '',
-		} as C1BusinessModelFormValues,
-	})
+	const { form, status, isSaving, isLoading, saveDraft, submit, reopen } = useFormSubmission<C1BusinessModelFormValues>(
+		{
+			table: "formGeneral",
+			reportingYear,
+			section: "businessModel",
+			schema: c1BusinessModelSchema,
+			defaultValues: {
+				reportingYear: reportingYear.toString(),
+				productsAndServices: orgData?.productsAndServices || "",
+				markets: orgData?.markets || "",
+				businessRelationships: orgData?.businessRelationships || "",
+				sustainabilityStrategy: orgData?.sustainabilityStrategy || "",
+				isC1Confidential: false,
+			} as C1BusinessModelFormValues,
+		},
+	)
 	if (isLoading || !orgData) {
-		return (
-			<div className="flex items-center justify-center p-8 text-muted-foreground">
-				Loading...
-			</div>
-		)
+		return <div className='flex items-center justify-center p-8 text-muted-foreground'>Loading...</div>
 	}
 
 	return (
@@ -59,20 +45,29 @@ export function C1BusinessModelForm() {
 					form.handleSubmit()
 				}}
 			>
-				<fieldset disabled={status === 'submitted'} className="space-y-6">
+				<fieldset disabled={status === "submitted"} className='space-y-6'>
 					{/* Hidden reporting year field */}
-					<form.AppField name="reportingYear">
-						{(field) => (
-							<field.TextField
-								label={m["general.C1.reportingYear"]()}
-								placeholder="YYYY"
-								hidden
-							/>
-						)}
+					<form.AppField name='reportingYear'>
+						{(field) => <field.TextField label={m["general.C1.reportingYear"]()} placeholder='YYYY' hidden />}
+					</form.AppField>
+
+					<form.AppField name='isC1Confidential'>
+						{(field) => {
+							return (
+								<ConfidentialInfoBox
+									value={field.state.value || false}
+									
+									handleChange={(value) => {
+										// set value of isB1Confidential based on the switch
+										field.handleChange(value)
+									}}
+								/>
+							)
+						}}
 					</form.AppField>
 
 					{/* Products and Services */}
-					<form.AppField name="productsAndServices">
+					<form.AppField name='productsAndServices'>
 						{(field) => (
 							<field.TextareaField
 								label={m["general.C1.productsAndServices"]()}
@@ -84,7 +79,7 @@ export function C1BusinessModelForm() {
 					</form.AppField>
 
 					{/* Markets */}
-					<form.AppField name="markets">
+					<form.AppField name='markets'>
 						{(field) => (
 							<field.TextareaField
 								label={m["general.C1.markets"]()}
@@ -96,7 +91,7 @@ export function C1BusinessModelForm() {
 					</form.AppField>
 
 					{/* Business Relationships */}
-					<form.AppField name="businessRelationships">
+					<form.AppField name='businessRelationships'>
 						{(field) => (
 							<field.TextareaField
 								label={m["general.C1.businessRelationships"]()}
@@ -108,7 +103,7 @@ export function C1BusinessModelForm() {
 					</form.AppField>
 
 					{/* Sustainability Strategy */}
-					<form.AppField name="sustainabilityStrategy">
+					<form.AppField name='sustainabilityStrategy'>
 						{(field) => (
 							<field.TextareaField
 								label={m["general.C1.sustainabilityStrategy"]()}
@@ -120,13 +115,7 @@ export function C1BusinessModelForm() {
 					</form.AppField>
 				</fieldset>
 
-				<FormButtons
-					status={status}
-					isSaving={isSaving}
-					onSaveDraft={saveDraft}
-					onSubmit={submit}
-					onReopen={reopen}
-				/>
+				<FormButtons status={status} isSaving={isSaving} onSaveDraft={saveDraft} onSubmit={submit} onReopen={reopen} />
 			</form>
 		</form.AppForm>
 	)

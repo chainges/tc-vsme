@@ -20,10 +20,10 @@ code {
 }
 
 :root {
-  --background: oklch(0.9554 0.0045 214.3286);
-  --foreground: oklch(0.3052 0 0);
-  --card: oklch(0.9761 0 0);
-  --card-foreground: oklch(0.3052 0 0);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.129 0.042 264.695);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1.0000 0 0);
   --popover-foreground: oklch(0.3052 0 0);
   --primary: oklch(0.6085 0.1058 182.4588);
@@ -102,6 +102,19 @@ code {
   --highcharts-neutral-color-60: oklch(0.50 0 0);
   --highcharts-neutral-color-10: oklch(0.861 0 0);
   --highcharts-neutral-color-3: oklch(0.976 0 0);
+
+  --confidential: oklch(0.52 0.15 39);
+  --confidential-soft: oklch(0.95 0.04 61);
+  --confidential-wash: oklch(0.985 0.012 63);
+  --confidential-border: oklch(0.83 0.07 58);
+  --confidential-text: oklch(0.4926 0 0);
+
+  --comp-confidential: oklch(0.52 0.15 39);
+  --comp-confidential-text: oklch(0.52 0.15 39);
+  --comp-confidential-border: oklch(0.95 0.04 61);
+
+  --volunteer: oklch(0.5 0.11 158);
+  --volunteer-soft: oklch(0.95 0.05 155);
 }
 
 .dark {
@@ -184,6 +197,15 @@ code {
   --info-foreground: oklch(0.9 0.04 240);
   --info-background: oklch(0.26 0.04 255);
   --info-border: oklch(0.38 0.07 250);
+
+    --confidential: oklch(0.8828 0.1554 25.41);
+  --confidential-soft: oklch(0.3 0.06 51);
+  --confidential-wash: oklch(0.26 0.04 255);
+  --confidential-border: oklch(0.52 0.09 53);
+  --confidential-text: oklch(1 0 0);
+
+  --volunteer: oklch(0.5 0.11 158);
+  --volunteer-soft: oklch(0.95 0.05 155);
 }
 
 @theme inline {
@@ -254,6 +276,19 @@ code {
   --color-info-foreground: var(--info-foreground);
   --color-info-background: var(--info-background);
   --color-info-border: var(--info-border);
+
+    --color-confidential: var(--confidential);
+  --color-confidential-soft: var(--confidential-soft);
+  --color-confidential-wash: var(--confidential-wash);
+  --color-confidential-border: var(--confidential-border);
+  --color-confidential-text: var(--confidential-text);
+
+  --color-comp-confidential: var(--comp-confidential);
+  --color-comp-confidential-text: var(--comp-confidential-text);
+  --color-comp-confidential-border: var(--comp-confidential-border);
+
+  --color-volunteer: var(--volunteer);
+  --color-volunteer-soft: var(--volunteer-soft);
 }
 
 @layer base {

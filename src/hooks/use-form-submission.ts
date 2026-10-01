@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from 'convex/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { api } from '../../convex/_generated/api'
 import type { FormSection, FormTable } from '../../convex/forms/_utils'
@@ -43,22 +43,24 @@ export function useFormSubmission<TData>({
 	const submitFormMutation = useMutation(api.forms.submit.submitForm)
 	const reopenFormMutation = useMutation(api.forms.reopen.reopenForm)
 	const rollbackMutation = useMutation(api.forms.rollback.rollbackToVersion)
+	const defaultValuesRef = useRef(defaultValues)
+	defaultValuesRef.current = defaultValues
+	const savedData = existingData?.draftData || existingData?.data
+	const initialValues = { ...defaultValuesRef.current, ...savedData } as TData
 
 	// Initialize form
 	const form = useAppForm({
-		defaultValues: (existingData?.draftData ||
-			existingData?.data ||
-			defaultValues) as TData,
+		defaultValues: initialValues,
 		validators: {
 			onSubmit: schema,
 		},
 		onSubmitInvalid: ({ formApi }) => {
+			//console.log('FORM SUBMIT INVALID:', formApi)
 			focusFirstError(formApi)
-			 console.log('FORM ERRORS:', formApi.state.errors)
-			console.log('FORM STATE:', formApi.state)
 			toast.error('Skjemaet inneholder feil. Vennligst rett dem og prøv igjen.')
 		},
 		onSubmit: async ({ value }) => {
+			console.log('FORM SUBMIT VALUE:', value)
 			await handleFinalSubmit(value)
 		},
 	})
@@ -151,10 +153,10 @@ export function useFormSubmission<TData>({
 
 	// Update form values when data is loaded
 	useEffect(() => {
-		if (existingData?.draftData || existingData?.data) {
-			form.reset((existingData.draftData || existingData.data) as TData)
+		if (savedData) {
+			form.reset({ ...defaultValuesRef.current, ...savedData } as TData)
 		}
-	}, [existingData?.draftData, existingData?.data, form])
+	}, [savedData, form])
 
 	const isLoading = existingData === undefined
 	const status = existingData?.status || 'not_started'

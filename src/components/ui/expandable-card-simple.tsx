@@ -1,10 +1,10 @@
 'use client'
 
+import { is } from 'date-fns/locale'
 import { motion } from 'framer-motion'
 import { BadgeQuestionMarkIcon, ChevronRightIcon, InfoIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useRef } from 'react'
-
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
@@ -17,7 +17,6 @@ import {
 import { useExpandable } from '@/hooks/use-expandable'
 import { cn } from '@/lib/utils'
 import { m } from "@/paraglide/messages"
-
 export type FormStatus = 'not_started' | 'draft' | 'submitted'
 
 interface FormCardProps {
@@ -30,6 +29,7 @@ interface FormCardProps {
 	buttonText?: string
 	children?: ReactNode
 	module?: 'Basic Module' | 'Comprehensive Module'
+	isVolunteer?: boolean
 	code: string
 	version?: number
 }
@@ -65,6 +65,7 @@ export function FormCard({
 	module,
 	code,
 	version,
+	isVolunteer=false,
 }: FormCardProps) {
 	const { isExpanded, toggleExpand } = useExpandable()
 	const contentRef = useRef<HTMLDivElement>(null)
@@ -84,46 +85,41 @@ export function FormCard({
 	return (
 		<Card
 			className={cn(
-				'mx-auto w-full max-w-6xl transition-all duration-300 hover:shadow-lg gap-2',
-				module === 'Comprehensive Module' && 'bg-accent/20',
+				"mx-auto w-full max-w-6xl transition-all duration-300 hover:shadow-lg gap-2",
+				module === "Comprehensive Module" && "",
 			)}
 		>
 			<CardHeader
-				className="cursor-pointer"
+				className='cursor-pointer'
 				onClick={toggleExpand}
-				role="button"
+				role='button'
 				tabIndex={0}
 				onKeyDown={(e) => {
-					if (e.key === 'Enter' || e.key === ' ') {
+					if (e.key === "Enter" || e.key === " ") {
 						e.preventDefault()
 						toggleExpand()
 					}
 				}}
 			>
-				<div className="flex justify-between items-start w-full">
-					<div className="flex gap-2 items-center">
+				<div className='flex justify-between items-start w-full'>
+					<div className='flex gap-2 items-center'>
 						<div
 							className={cn(
-								'inline-flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm',
-								module === 'Comprehensive Module'
-									? 'bg-secondary text-secondary-foreground'
-									: 'bg-primary text-primary-foreground',
+								"inline-flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm",
+								module === "Comprehensive Module"
+									? "bg-secondary text-secondary-foreground"
+									: "bg-primary text-primary-foreground",
 							)}
 						>
 							{code}
 						</div>
-						<h3 className="text-xl font-semibold text-secondary">{title}</h3>
-						<ChevronRightIcon
-							className={cn(
-								'h-6 w-6 transition-transform duration-200',
-								isExpanded && 'rotate-90',
-							)}
-						/>
+						<h3 className='text-xl font-semibold text-secondary'>{title}</h3>
+						<ChevronRightIcon className={cn("h-6 w-6 transition-transform duration-200", isExpanded && "rotate-90")} />
 						<TooltipProvider>
 							<Tooltip>
 								<TooltipTrigger asChild>
 									<InfoIcon
-										className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors cursor-help"
+										className='h-5 w-5 text-muted-foreground hover:text-foreground transition-colors cursor-help'
 										onClick={(e) => {
 											e.stopPropagation()
 											toggleExpand()
@@ -136,20 +132,20 @@ export function FormCard({
 							</Tooltip>
 						</TooltipProvider>
 					</div>
-					<div className="flex items-center gap-2">
+					<div className='flex items-center gap-2'>
 						{hasHelpButton && (
 							<Button
-								type="button"
-								className="flex gap-2"
-								variant="outline"
-								size="default"
+								type='button'
+								className='flex gap-2'
+								variant='outline'
+								size='default'
 								onClick={(e) => {
 									e.stopPropagation()
 									onClick()
 								}}
 								onPointerDown={(e) => e.stopPropagation()}
 							>
-								<BadgeQuestionMarkIcon className="h-6 w-6" />
+								<BadgeQuestionMarkIcon className='h-6 w-6' />
 								<span>{buttonText}</span>
 							</Button>
 						)}
@@ -158,35 +154,33 @@ export function FormCard({
 			</CardHeader>
 
 			<CardContent>
-				<div className="space-y-0">
-					<div className="flex justify-between items-center">
-						<div className="flex gap-2">
-							<Badge
-								variant="secondary"
-								className={STATUS_CONFIG[status].className}
-							>
+				<div className='space-y-0'>
+					<div className='flex justify-between items-center'>
+						<div className='flex gap-2'>
+							<Badge variant='secondary' className={STATUS_CONFIG[status].className}>
 								{STATUS_CONFIG[status].label}
 							</Badge>
 							{module && (
 								<Badge
-									variant="secondary"
+									variant='secondary'
 									className={cn(
-										'bg-secondary text-secondary-foreground',
-										module === 'Basic Module' &&
-											'bg-primary text-primary-foreground',
+										"bg-secondary text-secondary-foreground",
+										module === "Basic Module" && "bg-primary text-primary-foreground",
 									)}
 								>
 									{getModuleLabel(module)}
 								</Badge>
 							)}
+							{isVolunteer && (
+								<Badge variant='volunteer'>
+									Volunteer
+								</Badge>
+							)}
 						</div>
 
-						<div className="text-sm text-muted-foreground text-right min-h-10">
+						<div className='text-sm text-muted-foreground text-right min-h-10'>
 							<div>
-								Status:{' '}
-								<span className="font-medium">
-									{STATUS_CONFIG[status].label}
-								</span>
+								Status: <span className='font-medium'>{STATUS_CONFIG[status].label}</span>
 							</div>
 							{version !== undefined && <div>Version: {version}</div>}
 						</div>
@@ -195,16 +189,16 @@ export function FormCard({
 					<motion.div
 						initial={false}
 						animate={{
-							height: isExpanded ? 'auto' : 0,
+							height: isExpanded ? "auto" : 0,
 							opacity: isExpanded ? 1 : 0,
 						}}
-						transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-						className="overflow-hidden"
+						transition={{ type: "spring", stiffness: 300, damping: 30 }}
+						className='overflow-hidden'
 					>
-						<div ref={contentRef} className="pb-4">
+						<div ref={contentRef} className='pb-4'>
 							{/* Children kept mounted to preserve Convex subscriptions */}
-							<div className="space-y-4 pt-2">
-								<div className="space-y-2">{children}</div>
+							<div className='space-y-4 pt-2'>
+								<div className='space-y-2'>{children}</div>
 							</div>
 						</div>
 					</motion.div>
@@ -212,7 +206,7 @@ export function FormCard({
 			</CardContent>
 
 			<CardFooter>
-				<div className="w-full text-sm text-muted-foreground">
+				<div className='w-full text-sm text-muted-foreground'>
 					Last updated by {contributor.name}: {updatedDate}
 				</div>
 			</CardFooter>

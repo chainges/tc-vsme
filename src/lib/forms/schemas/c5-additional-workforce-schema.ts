@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 export const c5AdditionalWorkforceSchema = z.object({
 	reportingYear: z.string().regex(/^\d{4}$/, 'År må være 4 siffer'),
+	isC5Confidential: z.boolean(),
 	maleManagers: z
 		.number()
 		.int('Må være et heltall')

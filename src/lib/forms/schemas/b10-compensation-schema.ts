@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 export const b10CompensationSchema = z.object({
 	reportingYear: z.string().regex(/^\d{4}$/, 'Year must be 4 digits'),
+	isB10Confidential: z.boolean(),
 	hourlyPayMale: z
 		.number({ message: 'Dette feltet er påkrevd' })
 		.min(0, 'Må være 0 eller mer'),

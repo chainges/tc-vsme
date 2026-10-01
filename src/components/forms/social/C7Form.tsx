@@ -1,50 +1,51 @@
-import { useStore } from '@tanstack/react-form'
-import { useStore as useYearStore } from '@tanstack/react-store'
-import { Card, CardContent } from '@/components/ui/card'
-import { FormButtons } from '@/hooks/tanstack-form'
-import { useFormSubmission } from '@/hooks/use-form-submission'
+import { useStore } from "@tanstack/react-form"
+import { useStore as useYearStore } from "@tanstack/react-store"
+import ConfidentialInfoBox from "@/components/ConfidentialInfoBox"
+import { Card, CardContent } from "@/components/ui/card"
+import { FormButtons } from "@/hooks/tanstack-form"
+import { useFormSubmission } from "@/hooks/use-form-submission"
 import {
 	type C7SeriousHumanRightsValues,
 	c7SeriousHumanRightsSchema,
-} from '@/lib/forms/schemas/c7-serious-human-rights-schema'
-import { yearStore } from '@/lib/year-store'
-import { m } from '@/paraglide/messages'
+} from "@/lib/forms/schemas/c7-serious-human-rights-schema"
+import { yearStore } from "@/lib/year-store"
+import { m } from "@/paraglide/messages"
 
 const INCIDENT_ITEMS = [
 	{
-		boolField: 'childLabor' as const,
-		measuresField: 'childLaborMeasures' as const,
-		label: 'Child Labour',
-		description: 'Confirmed incidents of child labour in own workforce',
-		measuresLabel: 'Measures taken – Child Labour',
+		boolField: "childLabor" as const,
+		measuresField: "childLaborMeasures" as const,
+		label: "Child Labour",
+		description: "Confirmed incidents of child labour in own workforce",
+		measuresLabel: "Measures taken – Child Labour",
 	},
 	{
-		boolField: 'forcedLabor' as const,
-		measuresField: 'forcedLaborMeasures' as const,
-		label: 'Forced Labour',
-		description: 'Confirmed incidents of forced labour in own workforce',
-		measuresLabel: 'Measures taken – Forced Labour',
+		boolField: "forcedLabor" as const,
+		measuresField: "forcedLaborMeasures" as const,
+		label: "Forced Labour",
+		description: "Confirmed incidents of forced labour in own workforce",
+		measuresLabel: "Measures taken – Forced Labour",
 	},
 	{
-		boolField: 'humanTrafficking' as const,
-		measuresField: 'humanTraffickingMeasures' as const,
-		label: 'Human Trafficking',
-		description: 'Confirmed incidents of human trafficking in own workforce',
-		measuresLabel: 'Measures taken – Human Trafficking',
+		boolField: "humanTrafficking" as const,
+		measuresField: "humanTraffickingMeasures" as const,
+		label: "Human Trafficking",
+		description: "Confirmed incidents of human trafficking in own workforce",
+		measuresLabel: "Measures taken – Human Trafficking",
 	},
 	{
-		boolField: 'discrimination' as const,
-		measuresField: 'discriminationMeasures' as const,
-		label: 'Discrimination',
-		description: 'Confirmed incidents of discrimination in own workforce',
-		measuresLabel: 'Measures taken – Discrimination',
+		boolField: "discrimination" as const,
+		measuresField: "discriminationMeasures" as const,
+		label: "Discrimination",
+		description: "Confirmed incidents of discrimination in own workforce",
+		measuresLabel: "Measures taken – Discrimination",
 	},
 	{
-		boolField: 'other' as const,
-		measuresField: 'otherMeasures' as const,
-		label: 'Other',
-		description: 'Other confirmed serious human rights violations',
-		measuresLabel: 'Measures taken – Other',
+		boolField: "other" as const,
+		measuresField: "otherMeasures" as const,
+		label: "Other",
+		description: "Other confirmed serious human rights violations",
+		measuresLabel: "Measures taken – Other",
 	},
 ] satisfies {
 	boolField: keyof C7SeriousHumanRightsValues
@@ -59,39 +60,33 @@ export function C7SeriousHumanRightsForm() {
 
 	const { form, status, isSaving, isLoading, saveDraft, submit, reopen } =
 		useFormSubmission<C7SeriousHumanRightsValues>({
-			table: 'formSocial',
+			table: "formSocial",
 			reportingYear,
-			section: 'seriousHumanRightsIncidents',
+			section: "seriousHumanRightsIncidents",
 			schema: c7SeriousHumanRightsSchema,
 			defaultValues: {
 				reportingYear: reportingYear.toString(),
 				childLabor: false,
-				childLaborMeasures: '',
+				childLaborMeasures: "",
 				forcedLabor: false,
-				forcedLaborMeasures: '',
+				forcedLaborMeasures: "",
 				humanTrafficking: false,
-				humanTraffickingMeasures: '',
+				humanTraffickingMeasures: "",
 				discrimination: false,
-				discriminationMeasures: '',
+				discriminationMeasures: "",
 				other: false,
-				otherMeasures: '',
+				otherMeasures: "",
 				hasValueChainIncidents: false,
-				valueChainIncidentsDescription: '',
+				valueChainIncidentsDescription: "",
+				isC7Confidential: false,
 			} as C7SeriousHumanRightsValues,
 		})
 
 	// Subscribe to value chain gate for reactive display
-	const hasValueChainIncidents = useStore(
-		form.store,
-		(state) => state.values.hasValueChainIncidents,
-	)
+	const hasValueChainIncidents = useStore(form.store, (state) => state.values.hasValueChainIncidents)
 
 	if (isLoading) {
-		return (
-			<div className="flex items-center justify-center p-8 text-muted-foreground">
-				Loading...
-			</div>
-		)
+		return <div className='flex items-center justify-center p-8 text-muted-foreground'>Loading...</div>
 	}
 
 	return (
@@ -109,6 +104,9 @@ export function C7SeriousHumanRightsForm() {
 							{/* Hidden reporting year */}
 							<form.AppField name='reportingYear'>
 								{(field) => <field.TextField label={m["social.C7.reportingYearLabel"]()} placeholder='YYYY' hidden />}
+							</form.AppField>
+							<form.AppField name='isC7Confidential'>
+								{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
 							</form.AppField>
 
 							{/* (a) Confirmed incidents in own workforce */}

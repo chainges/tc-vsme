@@ -3,6 +3,7 @@ import { v } from 'convex/values'
 
 // Section enum validator
 const formSectionValidator = v.union(
+  v.literal("basicModule"),
   v.literal("companyInfo"),
   v.literal("sustainabilityInitiatives"),
   v.literal("descriptionOfPracticesPolicies"),
@@ -29,6 +30,7 @@ const formSectionValidator = v.union(
 // Form data validators for each section
 const companyInfoDataValidator = v.object({
   reportingYear: v.string(),
+  confidentialAreas: v.array(v.string()),
   organizationName: v.string(),
   organizationNumber: v.string(),
   naceCode: v.string(),
@@ -39,6 +41,7 @@ const companyInfoDataValidator = v.object({
   TypeOfNumberOfEmployees: v.string(),
   country: v.string(),
   reportType: v.boolean(),
+  isB1Confidential: v.optional(v.boolean()),
   subsidiaries: v.optional(
     v.array(
       v.object({
@@ -80,12 +83,24 @@ const companyInfoDataValidator = v.object({
   ),
 })
 
+const basicModuleDataValidator = v.object({
+  reportingYear: v.string(),
+  moduleScope: v.union(
+    v.literal("vsme:OptionABasicModuleOnlyMember"),
+    v.literal("vsme:OptionBBasicModuleAndComprehensiveModuleMember"),
+  ),
+  containsPreviousPeriodDisclosures: v.boolean(),
+  sectionsThatHasNotChanged: v.array(v.string()),
+  linkOfPreviousReport: v.string(),
+})
+
 const sustainabilityInitiativesDataValidator = v.object({
   reportingYear: v.string(),
   hasSustainabilityPractices: v.boolean(),
   arePracticesPubliclyAvailable: v.boolean(),
   policiesHaveTargets: v.boolean(),
   selectedSustainabilityIssueValues: v.array(v.string()),
+  isB2Confidential: v.optional(v.boolean()),
 })
 
 const descriptionOfPracticesPoliciesDataValidator = v.object({
@@ -93,6 +108,7 @@ const descriptionOfPracticesPoliciesDataValidator = v.object({
   c2_sustainability_practice_description: v.optional(v.string()),
   c2_monitoring_targets_description: v.optional(v.string()),
   c2_accountable_role_or_person: v.optional(v.string()),
+  isC2Confidential: v.optional(v.boolean()),
 })
 
 const businessModelDataValidator = v.object({
@@ -101,10 +117,12 @@ const businessModelDataValidator = v.object({
   markets: v.optional(v.string()),
   businessRelationships: v.optional(v.string()),
   sustainabilityStrategy: v.optional(v.string()),
+  isC1Confidential: v.optional(v.boolean()),
 })
 
 // Union validator for all general form sections
 const formGeneralDataValidator = v.union(
+  basicModuleDataValidator,
   companyInfoDataValidator,
   sustainabilityInitiativesDataValidator,
   descriptionOfPracticesPoliciesDataValidator,
@@ -127,6 +145,7 @@ const energyEmissionsDataValidator = v.object({
   selfGeneratedEnergy: v.number(),
   totalEnergyConsumption: v.number(),
   totalScope3Emissions: v.number(),
+  isB3Confidential: v.optional(v.boolean()),
   category1: v.number(),
   category2: v.number(),
   category3: v.number(),
@@ -144,6 +163,7 @@ const energyEmissionsDataValidator = v.object({
   category15: v.number(),
   climateDataCollectionMethod: v.string(),
   dataUncertainty: v.string(),
+  confidentialAreas: v.optional(v.array(v.string())),
 })
 
 const pollutionDataValidator = v.object({
@@ -151,6 +171,7 @@ const pollutionDataValidator = v.object({
   reportingPollution: v.optional(v.boolean()),
   publiclyAvailableDisclosure: v.optional(v.boolean()),
   urlOrLinkToPubliclyAvailableDisclosure: v.optional(v.string()),
+  isB4Confidential: v.optional(v.boolean()),
   pollutants: v.array(
     v.object({
       id: v.string(),
@@ -181,6 +202,7 @@ const biodiversityDataValidator = v.object({
   totalLandUsedSquareMeters: v.optional(v.number()),
   protectedSpeciesCount: v.optional(v.string()),
   redListedSpeciesCount: v.optional(v.string()),
+  isB5Confidential: v.optional(v.boolean()),
 })
 
 const waterManagementDataValidator = v.object({
@@ -190,6 +212,7 @@ const waterManagementDataValidator = v.object({
   waterDischarge: v.optional(v.number()),
   waterConsumption: v.number(),
   waterStress: v.optional(v.number()), // Legacy field
+  isB6Confidential: v.optional(v.boolean()),
 })
 
 const resourceUseCircularEconomyDataValidator = v.object({
@@ -234,6 +257,8 @@ const resourceUseCircularEconomyDataValidator = v.object({
       unit: v.union(v.literal('tonn'), v.literal('kg'), v.literal('m³')),
     })
   ),
+  isB7Confidential: v.optional(v.boolean()),
+  confidentialAreas: v.optional(v.array(v.string())),
 })
 
 const scope3EmissionsDataValidator = v.object({
@@ -259,6 +284,12 @@ const scope3EmissionsDataValidator = v.object({
 const climateRiskAnalysisDataValidator = v.object({
   reportingYear: v.string(),
   climateRiskDescription: v.string(),
+  exposureAndSensitivityAssessment: v.string(),
+  timeHorizonsIdentified: v.string(),
+  hasIdentifiedClimateRelatedHazardious: v.boolean(),
+  climateAdaptationActions: v.boolean(),
+  potentialAdverseEffectsAndRiskRating: v.optional(v.string()),
+  isC4Confidential: v.optional(v.boolean()),
 })
 
 // Union validator for all environmental form sections
@@ -294,6 +325,8 @@ const workforceDataValidator = v.object({
   employeesAtEnd: v.optional(v.number()),
   employeeTurnoverRate: v.optional(v.number()),
   anyAdditionalInfo: v.optional(v.string()),
+  isB8Confidential: v.optional(v.boolean()),
+  confidentialAreas: v.optional(v.array(v.string())),
 })
 
 const healthSafetyDataValidator = v.object({
@@ -306,6 +339,7 @@ const healthSafetyDataValidator = v.object({
   sicknessAbsencePercentage: v.optional(v.number()),
   hmsTraining: v.optional(v.number()),
   anyAdditionalInfo: v.optional(v.string()),
+  isB9Confidential: v.optional(v.boolean()),
 })
 
 const compensationCollectiveDataValidator = v.object({
@@ -318,6 +352,7 @@ const compensationCollectiveDataValidator = v.object({
   collectiveBargainingShare: v.optional(v.number()),
   genderPayGap: v.optional(v.number()),
   minimumWageLiability: v.boolean(),
+  isB10Confidential: v.optional(v.boolean()),
 })
 
 const workLifeBalanceDataValidator = v.object({
@@ -335,6 +370,7 @@ const additionalWorkforceDataValidator = v.object({
   managementGenderRatio: v.optional(v.number()),
   selfEmployedWorkers: v.optional(v.number()),
   contractWorkers: v.optional(v.number()),
+  isC5Confidential: v.optional(v.boolean()),
 })
 
 const humanRightsPoliciesDataValidator = v.object({
@@ -357,6 +393,7 @@ const humanRightsPoliciesDataValidator = v.object({
   otherPolicies: v.optional(v.string()),
   /** (c) Does the undertaking have a complaints-handling mechanism? */
   hasComplaintsHandlingMechanism: v.boolean(),
+  isC6Confidential: v.optional(v.boolean()),
 })
 
 const seriousHumanRightsIncidentsDataValidator = v.object({
@@ -385,6 +422,7 @@ const seriousHumanRightsIncidentsDataValidator = v.object({
   hasValueChainIncidents: v.boolean(),
   /** (c) Description of value chain incidents */
   valueChainIncidentsDescription: v.optional(v.string()),
+  isC7Confidential: v.optional(v.boolean()),
 })
 
 // Union validator for all social form sections
@@ -415,6 +453,7 @@ const finesPenaltiesDataValidator = v.object({
       v.literal('GBP'),
     ),
   ),
+  isB11Confidential: v.optional(v.boolean()),
 })
 
 const sectorInvolvementDataValidator = v.object({
@@ -430,6 +469,7 @@ const sectorInvolvementDataValidator = v.object({
   pabGasThreshold: v.boolean(),
   pabElectricityThreshold: v.boolean(),
   euBenchmarksExclusion: v.boolean(),
+  isC8Confidential: v.optional(v.boolean()),
 })
 
 const boardCompositionDataValidator = v.object({
@@ -438,6 +478,7 @@ const boardCompositionDataValidator = v.object({
   femaleMembers: v.number(),
   maleMembers: v.number(),
   otherMembers: v.number(),
+  isC9Confidential: v.optional(v.boolean()),
 })
 
 // Union validator for all governance form sections
@@ -508,6 +549,10 @@ export default defineSchema({
     orgNumber: v.string(),
     reportingYear: v.number(),
     section: formSectionValidator,  // NEW: Identifies which FormCard
+    isB1Confidential: v.optional(v.boolean()),
+    isB2Confidential: v.optional(v.boolean()),
+    isC1Confidential: v.optional(v.boolean()),
+    isC2Confidential: v.optional(v.boolean()),
     draftData: v.any(), // Flexible storage for drafts
     data: v.optional(formGeneralDataValidator), // Strict storage for submitted data
     status: v.string(),          // "draft" | "submitted"
@@ -586,6 +631,7 @@ export default defineSchema({
     baseYearEmissions: v.number(),
     targetYear: v.number(),
     targetReduction: v.number(),
+    isC3Confidential: v.optional(v.boolean()),
     longTermTargetYear: v.optional(v.number()),
     longTermTargetReduction: v.optional(v.number()),
     keyActionsToReachTargets: v.optional(v.string()),

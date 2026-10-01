@@ -1,6 +1,7 @@
 import { useStore } from '@tanstack/react-form'
 import { useStore as useYearStore } from '@tanstack/react-store'
 import { useMemo } from 'react'
+import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { NumberFieldReadOnly } from '@/components/form-fields/NumberFieldReadOnly'
 import { Card, CardContent } from '@/components/ui/card'
 import { FormButtons } from '@/hooks/tanstack-form'
@@ -32,6 +33,7 @@ export function B9HealthSafetyForm({ totalEmployees = 0 }: B9HealthSafetyFormPro
 				rateOfWorkAccidents: 0,
 				knowExactHoursWorked: false,
 				totalHoursWorked: 0,
+				isB9Confidential: false,
 			} as B9HealthSafetyFormValues,
 			transformBeforeSave: (values) => {
 				const hours = values.knowExactHoursWorked
@@ -98,6 +100,9 @@ export function B9HealthSafetyForm({ totalEmployees = 0 }: B9HealthSafetyFormPro
 										hidden
 									/>
 								)}
+							</form.AppField>
+							<form.AppField name="isB9Confidential">
+								{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
 							</form.AppField>
 
 							{/* Work accidents + Fatalities */}

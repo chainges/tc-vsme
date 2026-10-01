@@ -96,6 +96,14 @@
 		"faq_q5": "Kan jeg eksportere rapporter for å dele med interessenter?",
 		"faq_a5": "Ja, du kan enkelt eksportere dine fullstendige bærekraftsrapporter i flere formater inkludert PDF og Excel. Dette gjør det enkelt å dele med interessenter, investorer, banker eller kunder som krever dokumentasjon av dine bærekraftsinitiativer."
 	},
+	"common": {
+		"submit": "Send inn",
+		"cancel": "Avbryt",
+		"delete": "Slett",
+		"edit": "Rediger",
+		"confidentialBoxTitle": "Merk hele denne seksjonen som konfidensiell",
+		"confidentialBoxDescription": "Aktivering av dette vil skjule all data i denne seksjonen fra XBRL-rapporten."
+	},
 	"sustainability": {
 		"initiatives_title": "Bærekraftsinitiativ",
 		"initiatives_empty_title": "Ingen initiativ lagt til ennå",
@@ -268,11 +276,13 @@
 	},
 	"general": {
 		"generalInformation": "Generell informasjon",
-		"generalInformationDescription": "Grunnleggende informasjon om din organisasjon",
+		"generalInformationDescription": "Juridisk identitet, økonomisk skala, arbeidsstyrke og rapporteringskontakt",
 		"basicModule": "Grunnleggende modul",
 		"comprehensiveModule": "Omfattende modul",
 		"reportingYear": "Rapporteringsår",
 		"B1": {
+			"Basic": "Grunnleggende for forberedelse",
+			"Basictooltip": "Klikk for å lære mer om den grunnleggende forberedelsen",
 			"title": "Firma informasjon",
 			"module": "Grunnleggende modul",
 			"tooltip": "Klikk for å lære mer",
@@ -297,6 +307,7 @@
 			"reportType": "Konsolidert rapport",
 			"reportTypeDescription": "Velg om rapporten skal være konsolidert eller individuell.",
 			"subsidiaries": "Datterselskaper",
+			"subsidiariesDescription":"Konsernselskaper inkludert i denne rapporten",
 			"nameOfSubsidiary": "Navn på datterselskap",
 			"address": "Adresse",
 			"addSubsidiary": "Legg til datterselskap",
@@ -304,7 +315,7 @@
 			"certificationsAndLabelsDescription": "F.eks. ISO 14001, EMAS, EU Ecolabel, Miljøfyrtårn",
 			"certification": "Sertifisering",
 			"certificationOrLabel": "Sertifisering/merkeordning",
-			"certificationOrLabelDescription": "Sertifisering/merkeordning",
+			"certificationOrLabelDescription": "F.eks. ISO 14001, EMAS, EU Ecolabel",
 			"issuer": "Utsteder",
 			"issuerDescription": "Utsteder",
 			"date": "Dato",
@@ -313,7 +324,7 @@
 			"ratingOrScoreDescription": "Vurdering/poengsum",
 			"addCertification": "Legg til sertifisering",
 			"properties": "Eiendommer",
-			"propertiesDescription": "Legg til adresser og geolokasjon for eiendommer som eies eller drives av virksomheten.",
+			"propertiesDescription": "Adresser og geolokasjon for eiendommer som eies eller drives av virksomheten",
 			"property": "Eiendom",
 			"addressDescription": "Søk etter adressen ved hjelp av Google Maps",
 			"addProperty": "Legg til eiendom",
@@ -497,6 +508,9 @@
 		},
 		"B7": {
 			"title": "Ressursbruk og sirkulærøkonomi",
+			"circularEconomy": "Sirkulærøkonomi",
+			"annualMassFlowOfRelevantMaterialsUsed": "Årlig massestrøm av relevante materialer",
+			"annualMassFlowOfRelevantMaterialsUsedDescription": "Beskrivelse av den årlige massestrømmen av relevante materialer brukt i driften",
 			"tooltip": "Klikk for å utvide",
 			"buttonText": "Hjelp",
 			"helpTitle": "Veiledning for sirkulærøkonomi",

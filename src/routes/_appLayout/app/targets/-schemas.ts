@@ -5,6 +5,7 @@ const currentYear = new Date().getFullYear()
 // Schema for the targets form - required fields for submission
 export const targetsFormSchema = z.object({
 	baseYear_with_data: z.string().optional(),
+	isC3Confidential: z.boolean(),
 	baseYear: z
 		.number('Base year is required')
 		.min(1990, 'Base year must be at least 1990')

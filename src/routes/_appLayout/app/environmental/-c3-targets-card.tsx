@@ -100,7 +100,7 @@ function EmissionTargetTable({
 			<Table>
 				<TableHeader>
 					<TableRow>
-						<TableHead className="w-[100px]">Scope</TableHead>
+						<TableHead className="w-25">Scope</TableHead>
 						<TableHead className="text-center">Base Year</TableHead>
 						<TableHead className="text-center">Base Emissions</TableHead>
 						<TableHead className="text-center">Reduction Target (%)</TableHead>

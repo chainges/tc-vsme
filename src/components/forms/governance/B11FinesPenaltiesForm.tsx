@@ -1,5 +1,6 @@
 import { useStore } from '@tanstack/react-form'
 import { useStore as useYearStore } from '@tanstack/react-store'
+import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { Card, CardContent } from '@/components/ui/card'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
@@ -23,6 +24,7 @@ export function B11FinesPenaltiesForm() {
 				reportingYear: reportingYear.toString(),
 				hasCorruptionFines: false,
 				corruptionFinesDescription: '',
+				isB11Confidential: false,
 			} as B11FinesPenaltiesValues,
 		})
 
@@ -61,6 +63,9 @@ export function B11FinesPenaltiesForm() {
 										hidden
 									/>
 								)}
+							</form.AppField>
+							<form.AppField name="isB11Confidential">
+								{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
 							</form.AppField>
 
 							<div className="flex flex-col items-start gap-3">

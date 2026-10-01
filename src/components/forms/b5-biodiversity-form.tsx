@@ -1,5 +1,6 @@
 import { useStore } from '@tanstack/react-form'
 import { useStore as useYearStore } from '@tanstack/react-store'
+import { LandPlotIcon, MapPinIcon } from 'lucide-react'
 import { useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { FormButtons } from '@/hooks/tanstack-form'
@@ -11,9 +12,16 @@ import {
 } from '@/lib/forms/schemas/b5-biodiversity-schema'
 import { yearStore } from '@/lib/year-store'
 import { m } from '@/paraglide/messages'
+import ConfidentialInfoBox from '../ConfidentialInfoBox'
+import SectionHeading from '../SectionHeading'
 
 type B5BiodiversityFormProps = {
 	properties: PropertyLocation[]
+}
+
+const confidentialAreaValues = {
+	sitesInBiodiversitySensitiveAreas: "vsme:B5SitesInBiodiversitySensitiveAreasMember",
+	biodiversityLandUse: "vsme:B5BiodiversityLandUseMember",
 }
 
 export function B5BiodiversityForm({ properties }: B5BiodiversityFormProps) {
@@ -28,25 +36,28 @@ export function B5BiodiversityForm({ properties }: B5BiodiversityFormProps) {
 		isNearSensitiveBiodiversityArea: false,
 	}))
 
-	const { form, status, isSaving, isLoading, saveDraft, submit, reopen } =
-		useFormSubmission<B5BiodiversityFormValues>({
-			table: 'formEnvironmental',
-			reportingYear,
-			section: 'biodiversity',
-			schema: b5BiodiversitySchema,
-			defaultValues: {
-				reportingYear: reportingYear.toString(),
-				hasSensitiveBiodiversityAreas: false,
-				sites: siteDefaults,
-				totalSealedAreaSquareMeters: undefined,
-				totalNatureOrientedAreaOnSiteSquareMeters: undefined,
-				totalNatureOrientedAreaOffSiteSquareMeters: undefined,
-				totalLandUsedSquareMeters: undefined,
-				protectedSpeciesCount: '',
-				redListedSpeciesCount: '',
-			} as B5BiodiversityFormValues,
-		})
+	const { form, status, isSaving, isLoading, saveDraft, submit, reopen } = useFormSubmission<B5BiodiversityFormValues>({
+		table: "formEnvironmental",
+		reportingYear,
+		section: "biodiversity",
+		schema: b5BiodiversitySchema,
+		defaultValues: {
+			reportingYear: reportingYear.toString(),
+			isB5Confidential: false,
+			hasSensitiveBiodiversityAreas: false,
+			sites: siteDefaults,
+			totalSealedAreaSquareMeters: undefined,
+			totalNatureOrientedAreaOnSiteSquareMeters: undefined,
+			totalNatureOrientedAreaOffSiteSquareMeters: undefined,
+			totalLandUsedSquareMeters: undefined,
+			protectedSpeciesCount: "",
+			redListedSpeciesCount: "",
+			confidentialAreas:[],
+		} as B5BiodiversityFormValues,
+	})
 	const sites = useStore(form.store, (state) => state.values.sites) ?? []
+
+	const confidentialAreas = useStore(form.store, (state) => state.values.confidentialAreas ?? [])
 
 	useEffect(() => {
 		const sitesByPropertyId = new Map(
@@ -85,109 +96,102 @@ export function B5BiodiversityForm({ properties }: B5BiodiversityFormProps) {
 					form.handleSubmit()
 				}}
 			>
-				<fieldset disabled={status === 'submitted'} className="space-y-6">
-					<form.AppField name="reportingYear">
+				<fieldset disabled={status === "submitted"} className='space-y-6'>
+					<form.AppField name='reportingYear'>
 						{(field) => (
-							<field.TextField
-								label={m["environmental.B5.reportingYearLabel"]()}
-								placeholder="YYYY"
-								hidden
-							/>
+							<field.TextField label={m["environmental.B5.reportingYearLabel"]()} placeholder='YYYY' hidden />
 						)}
 					</form.AppField>
+					<form.AppField name='isB5Confidential'>
+						{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
+					</form.AppField>
 
-					<Card>
-						<CardContent className="space-y-6">
-							<form.AppField name="hasSensitiveBiodiversityAreas">
-								{(field) => (
-									<field.SwitchField label={m["environmental.B5.label"]()} />
-								)}
-							</form.AppField>
+					<SectionHeading
+						title={"Sites in Biodiversity-Sensitive Areas"}
+						description={"Information about sites in biodiversity-sensitive areas."}
+						Icon={MapPinIcon}
+						disabled={status === "submitted"}
+						confidentialArea={confidentialAreaValues.sitesInBiodiversitySensitiveAreas}
+						confidentialAreas={confidentialAreas}
+						onConfidentialChange={(areas) => form.setFieldValue("confidentialAreas", areas)}
+					/>
 
-							<form.Subscribe
-								selector={(state) => state.values.hasSensitiveBiodiversityAreas}
-							>
-								{(hasSensitiveBiodiversityAreas) =>
-									hasSensitiveBiodiversityAreas ? (
-										<form.Subscribe selector={(state) => state.values.sites}>
-											{(sites) => (
-												<div className="space-y-6">
-													{sites?.map((site, index) => (
-														<Card key={site.propertyId}>
-															<CardContent className="space-y-6">
-																<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-																	<form.AppField name={`sites[${index}].siteLocation`}>
-																		{(field) => <field.TextField label={m["environmental.B5.siteLocation"]()} />}
-																	</form.AppField>
-																	<form.AppField name={`sites[${index}].areaSquareMeters`}>
-																		{(field) => <field.NumberField label={m["environmental.B5.areaSquareMeters"]()} unit="m²" />}
-																	</form.AppField>
-																</div>
-																<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-																	<form.AppField name={`sites[${index}].isInSensitiveBiodiversityArea`}>
-																		{(field) => <field.SwitchField label={m["environmental.B5.isInSensitiveBiodiversityArea"]()} />}
-																	</form.AppField>
-																	<form.AppField name={`sites[${index}].isNearSensitiveBiodiversityArea`}>
-																		{(field) => <field.SwitchField label={m["environmental.B5.isNearSensitiveBiodiversityArea"]()} />}
-																	</form.AppField>
-																</div>
-															</CardContent>
-														</Card>
-													))}
-												</div>
-											)}
-										</form.Subscribe>
-									) : null
-								}
-							</form.Subscribe>
-						</CardContent>
-					</Card>
+					<form.AppField name='hasSensitiveBiodiversityAreas'>
+						{(field) => <field.SwitchField label={m["environmental.B5.label"]()} />}
+					</form.AppField>
 
-					<Card>
-						<CardContent className="space-y-6">
-							<h3 className="text-base font-medium">
-								{m["environmental.B5.landInformation"]()}
-							</h3>
-							<div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-								<form.AppField name="totalSealedAreaSquareMeters">
-									{(field) => (
-										<field.NumberField
-											label={m["environmental.B5.totalSealedArea"]()}
-											unit="m²"
-										/>
+					<form.Subscribe selector={(state) => state.values.hasSensitiveBiodiversityAreas}>
+						{(hasSensitiveBiodiversityAreas) =>
+							hasSensitiveBiodiversityAreas ? (
+								<form.Subscribe selector={(state) => state.values.sites}>
+									{(sites) => (
+										<div className='space-y-6'>
+											{sites?.map((site, index) => (
+												<Card key={site.propertyId}>
+													<CardContent className='space-y-6'>
+														<div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
+															<form.AppField name={`sites[${index}].siteLocation`}>
+																{(field) => <field.TextField label={m["environmental.B5.siteLocation"]()} />}
+															</form.AppField>
+															<form.AppField name={`sites[${index}].areaSquareMeters`}>
+																{(field) => (
+																	<field.NumberField label={m["environmental.B5.areaSquareMeters"]()} unit='m²' />
+																)}
+															</form.AppField>
+														</div>
+														<div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
+															<form.AppField name={`sites[${index}].isInSensitiveBiodiversityArea`}>
+																{(field) => (
+																	<field.SwitchField label={m["environmental.B5.isInSensitiveBiodiversityArea"]()} />
+																)}
+															</form.AppField>
+															<form.AppField name={`sites[${index}].isNearSensitiveBiodiversityArea`}>
+																{(field) => (
+																	<field.SwitchField label={m["environmental.B5.isNearSensitiveBiodiversityArea"]()} />
+																)}
+															</form.AppField>
+														</div>
+													</CardContent>
+												</Card>
+											))}
+										</div>
 									)}
-								</form.AppField>
-								<form.AppField name="totalNatureOrientedAreaOnSiteSquareMeters">
-									{(field) => (
-										<field.NumberField
-											label={m["environmental.B5.totalNatureOrientedAreaOnSite"]()}
-											unit="m²"
-										/>
-									)}
-								</form.AppField>
-								<form.AppField name="totalNatureOrientedAreaOffSiteSquareMeters">
-									{(field) => (
-										<field.NumberField
-											label={m["environmental.B5.totalNatureOrientedAreaOffSite"]()}
-											unit="m²"
-										/>
-									)}
-								</form.AppField>
-								<form.AppField name="totalLandUsedSquareMeters">
-									{(field) => (
-										<field.NumberField
-											label={m["environmental.B5.totalLandUsed"]()}
-											unit="m²"
-										/>
-									)}
-								</form.AppField>
-							</div>
-						</CardContent>
-					</Card>
+								</form.Subscribe>
+							) : null
+						}
+					</form.Subscribe>
+
+					<SectionHeading
+						title={"Biodiversity Land Use"}
+						description={"Land use related to biodiversity."}
+						Icon={LandPlotIcon}
+						disabled={status === "submitted"}
+						confidentialArea={confidentialAreaValues.biodiversityLandUse}
+						confidentialAreas={confidentialAreas}
+						onConfidentialChange={(areas) => form.setFieldValue("confidentialAreas", areas)}
+						isVolunteer={true}
+					/>
+
+					<div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
+						<form.AppField name='totalSealedAreaSquareMeters'>
+							{(field) => <field.NumberField label={m["environmental.B5.totalSealedArea"]()} unit='m²' />}
+						</form.AppField>
+						<form.AppField name='totalNatureOrientedAreaOnSiteSquareMeters'>
+							{(field) => <field.NumberField label={m["environmental.B5.totalNatureOrientedAreaOnSite"]()} unit='m²' />}
+						</form.AppField>
+						<form.AppField name='totalNatureOrientedAreaOffSiteSquareMeters'>
+							{(field) => (
+								<field.NumberField label={m["environmental.B5.totalNatureOrientedAreaOffSite"]()} unit='m²' />
+							)}
+						</form.AppField>
+						<form.AppField name='totalLandUsedSquareMeters'>
+							{(field) => <field.NumberField label={m["environmental.B5.totalLandUsed"]()} unit='m²' />}
+						</form.AppField>
+					</div>
 				</fieldset>
 
 				<FormButtons
-					status={status as 'not_started' | 'draft' | 'submitted'}
+					status={status as "not_started" | "draft" | "submitted"}
 					isSaving={isSaving}
 					onSaveDraft={saveDraft}
 					onSubmit={submit}

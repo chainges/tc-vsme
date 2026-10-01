@@ -2,6 +2,7 @@ import { useStore } from '@tanstack/react-form'
 import { useStore as useYearStore } from '@tanstack/react-store'
 import { Info } from 'lucide-react'
 import { useEffect } from 'react'
+import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { Alert, AlertDescription, AlertTitle,  } from '@/components/ui/alert'
 import { Card, CardContent } from '@/components/ui/card'
 import { FormButtons } from '@/hooks/tanstack-form'
@@ -62,6 +63,7 @@ export function B10CompensationForm({
 			defaultValues: {
 				reportingYear: reportingYear.toString(),
 				minimumWageLiability: true,
+				isB10Confidential: false,
 			} as B10CompensationFormValues,
 		})
 
@@ -112,6 +114,9 @@ export function B10CompensationForm({
 					{/* Hidden reporting year */}
 					<form.AppField name='reportingYear'>
 						{(field) => <field.TextField label={m["social.B10.reportingYearLabel"]()} placeholder='YYYY' hidden />}
+					</form.AppField>
+					<form.AppField name='isB10Confidential'>
+						{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
 					</form.AppField>
 					<Card className='mb-4'>
 						<CardContent>

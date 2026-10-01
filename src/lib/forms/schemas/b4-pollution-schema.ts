@@ -15,6 +15,7 @@ export const pollutionEntrySchema = z.object({
 export const pollutionSchema = z
 	.object({
 		reportingYear: z.string().regex(/^\d{4}$/, 'Year must be 4 digits'),
+		isB4Confidential: z.boolean(),
 		reportingPollution: z.boolean(),
 		publiclyAvailableDisclosure: z.boolean().optional(),
 		urlOrLinkToPubliclyAvailableDisclosure: z.string().optional(),

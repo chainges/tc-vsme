@@ -2,10 +2,12 @@ import { type AnyFormApi, useStore } from '@tanstack/react-form'
 import { useStore as useYearStore } from '@tanstack/react-store'
 import { api } from 'convex/_generated/api'
 import { useMutation } from 'convex/react'
-import { AlertTriangle, Info, Plus, Save, Trash2 } from 'lucide-react'
+import { AlertTriangle, GlobeIcon, Info, Plus, Save, Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
+import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { NumberFieldReadOnly } from '@/components/form-fields/NumberFieldReadOnly'
+import SectionHeading from '@/components/SectionHeading'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -25,6 +27,13 @@ import {
 } from '@/lib/forms/schemas/b8-workforce-schema'
 import { yearStore } from '@/lib/year-store'
 import { m } from "@/paraglide/messages"
+
+const confidentialAreaValues = {
+	typeOfContract: "vsme:B8TypeOfContractMember",
+	gender: "vsme:B8GenderMember",
+	countryOfEmployment: "vsme:B8CountryOfEmploymentMember",
+	turnoverRate: "vsme:B8TurnoverRateMember",
+}
 
 
 interface EmployeeCountAlertProps {
@@ -127,6 +136,8 @@ export function B8WorkforceForm({
 				notReported: 0,
 				employeesPerCountry: defaultEmployeesByCountry,
 				anyAdditionalInfo: '',
+				isB8Confidential: false,
+				confidentialAreas: [],
 			} as B8WorkforceFormValues,
 			transformBeforeSave: (values) => {
 				const left = values.employeesLeft ?? 0
@@ -152,6 +163,11 @@ export function B8WorkforceForm({
 		const notReported = state.values.notReported ?? 0
 		return men + women + other + notReported
 	})
+
+	const confidentialAreas = useStore(
+					form.store,
+					(state) => state.values.confidentialAreas ?? [],
+				)
 
 	const employeesLeft = useStore(
 		form.store,
@@ -255,316 +271,271 @@ export function B8WorkforceForm({
 					form.handleSubmit()
 				}}
 			>
-				<fieldset disabled={status === 'submitted'} className="space-y-6">
+				<fieldset disabled={status === "submitted"} className='space-y-6'>
 					{/* Hidden reporting year */}
-					<form.AppField name="reportingYear">
-						{(field) => (
-							<field.TextField
-								label={m["social.B8.reportingYearLabel"]()}
-								placeholder="YYYY"
-								hidden
-							/>
-						)}
+					<form.AppField name='reportingYear'>
+						{(field) => <field.TextField label={m["social.B8.reportingYearLabel"]()} placeholder='YYYY' hidden />}
+					</form.AppField>
+					<form.AppField name='isB8Confidential'>
+						{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
 					</form.AppField>
 
 					{/* Card 1 — Country distribution */}
-					<Card>
-						<CardHeader>
-							<CardTitle className="text-base">
-								{m["social.B8.countryDistributionTitle"]()}
-							</CardTitle>
-							<p className="text-sm text-muted-foreground">
-								{m["social.B8.countryDistributionDescription"]({
-									totalEmployees,
-								})}
-							</p>
-						</CardHeader>
-						<CardContent>
-							<form.AppField name="employeesPerCountry">
-								{(field) => {
-									const rows = field.state.value ?? []
-									const totalAllocated = rows.reduce(
-										(sum, r) => sum + (r.numberOfEmployees ?? 0),
-										0,
-									)
-									const remaining = totalEmployees - totalAllocated
 
-									return (
-										<div className="space-y-3">
-											<div className="rounded-md border border-border">
-												<Table>
-													<TableHeader>
-														<TableRow>
-															<TableHead className="w-[50%]">{m["social.B8.countryLabel"]()}</TableHead>
-															<TableHead className="w-[35%]">
-																{m["social.B8.employeeCountLabel"]()}
-															</TableHead>
-															<TableHead className="w-[15%] text-right">
-																&nbsp;
-															</TableHead>
-														</TableRow>
-													</TableHeader>
-													<TableBody>
-														{rows.length === 0 && (
-															<TableRow>
-																<TableCell
-																	colSpan={3}
-																	className="h-16 text-center text-muted-foreground"
-																>
-																	{m["social.B8.noCountriesAdded"]()}
-																</TableCell>
-															</TableRow>
-														)}
-														{rows.map((item, i) => (
-															<TableRow key={item.id}>
-																<TableCell>
-																	<form.AppField
-																		name={`employeesPerCountry[${i}].country`}
-																	>
-																		{(f) => (
-																			<f.CountryField
-																				label=""
-																				placeholder={m["social.B8.countryPlaceholder"]()}
-																			/>
-																		)}
-																	</form.AppField>
-																</TableCell>
-																<TableCell>
-																	<form.AppField
-																		name={`employeesPerCountry[${i}].numberOfEmployees`}
-																	>
-																		{(f) => (
-																			<f.NumberField label="" placeholder="0" />
-																		)}
-																	</form.AppField>
-																</TableCell>
-																<TableCell className="text-center">
-																	<Button
-																		type="button"
-																		variant="ghost"
-																		size="icon"
-																		className="h-8 w-8 text-destructive hover:bg-destructive/10"
-																		onClick={() => field.removeValue(i)}
-																		disabled={status === 'submitted'}
-																	>
-																		<Trash2 className="h-4 w-4" />
-																	</Button>
-																</TableCell>
-															</TableRow>
-														))}
-													</TableBody>
-												</Table>
-											</div>
+					<SectionHeading
+						title={m["social.B8.countryDistributionTitle"]()}
+						description={m["social.B8.countryDistributionDescription"]({
+							totalEmployees,
+						})}
+						Icon={GlobeIcon}
+						disabled={status === "submitted"}
+						confidentialArea={confidentialAreaValues.countryOfEmployment}
+						confidentialAreas={confidentialAreas}
+						onConfidentialChange={(areas) => form.setFieldValue("confidentialAreas", areas)}
+					/>
 
-											{/* Summary row */}
-											{rows.length > 0 && (
-												<div className="flex items-center justify-between text-sm px-1">
-													<span className="text-muted-foreground">
-														{m["social.B8.countryCountSummary"]({
-															totalAllocated,
-															totalEmployees,
-														})}
-													</span>
-													{remaining !== 0 && (
-														<span
-															className={
-																remaining < 0
-																	? 'text-destructive font-medium'
-																	: 'text-amber-600 font-medium'
-															}
-														>
-															{remaining > 0
-																? m["social.B8.countryCountRemaining"]({ remaining })
-																: m["social.B8.countryCountOver"]({ remaining: Math.abs(remaining) })}
-														</span>
-													)}
-													{remaining === 0 && (
-														<span className="text-emerald-600 font-medium">
-																{m["social.B8.allEmployeesAllocated"]()}
-														</span>
-													)}
-												</div>
+					<form.AppField name='employeesPerCountry'>
+						{(field) => {
+							const rows = field.state.value ?? []
+							const totalAllocated = rows.reduce((sum, r) => sum + (r.numberOfEmployees ?? 0), 0)
+							const remaining = totalEmployees - totalAllocated
+
+							return (
+								<div className='space-y-3'>
+									<div className='rounded-md border border-border'>
+										<Table>
+											<TableHeader>
+												<TableRow>
+													<TableHead className='w-[50%]'>{m["social.B8.countryLabel"]()}</TableHead>
+													<TableHead className='w-[35%]'>{m["social.B8.employeeCountLabel"]()}</TableHead>
+													<TableHead className='w-[15%] text-right'>&nbsp;</TableHead>
+												</TableRow>
+											</TableHeader>
+											<TableBody>
+												{rows.length === 0 && (
+													<TableRow>
+														<TableCell colSpan={3} className='h-16 text-center text-muted-foreground'>
+															{m["social.B8.noCountriesAdded"]()}
+														</TableCell>
+													</TableRow>
+												)}
+												{rows.map((item, i) => (
+													<TableRow key={item.id}>
+														<TableCell>
+															<form.AppField name={`employeesPerCountry[${i}].country`}>
+																{(f) => <f.CountryField label='' placeholder={m["social.B8.countryPlaceholder"]()} />}
+															</form.AppField>
+														</TableCell>
+														<TableCell>
+															<form.AppField name={`employeesPerCountry[${i}].numberOfEmployees`}>
+																{(f) => <f.NumberField label='' placeholder='0' />}
+															</form.AppField>
+														</TableCell>
+														<TableCell className='text-center'>
+															<Button
+																type='button'
+																variant='ghost'
+																size='icon'
+																className='h-8 w-8 text-destructive hover:bg-destructive/10'
+																onClick={() => field.removeValue(i)}
+																disabled={status === "submitted"}
+															>
+																<Trash2 className='h-4 w-4' />
+															</Button>
+														</TableCell>
+													</TableRow>
+												))}
+											</TableBody>
+										</Table>
+									</div>
+
+									{/* Summary row */}
+									{rows.length > 0 && (
+										<div className='flex items-center justify-between text-sm px-1'>
+											<span className='text-muted-foreground'>
+												{m["social.B8.countryCountSummary"]({
+													totalAllocated,
+													totalEmployees,
+												})}
+											</span>
+											{remaining !== 0 && (
+												<span className={remaining < 0 ? "text-destructive font-medium" : "text-amber-600 font-medium"}>
+													{remaining > 0
+														? m["social.B8.countryCountRemaining"]({ remaining })
+														: m["social.B8.countryCountOver"]({ remaining: Math.abs(remaining) })}
+												</span>
 											)}
-											<div className="flex items-center justify-between text-sm px-1">
-												<Button
-													type="button"
-													variant="outline"
-													size="sm"
-													onClick={() =>
-														field.pushValue({
-															id: crypto.randomUUID(),
-															country: '',
-															numberOfEmployees: 0,
-														})
-													}
-													disabled={status === 'submitted'}
-												>
-													<Plus className="h-4 w-4 mr-1" />
-												{m["social.B8.addCountry"]()}
-												</Button>
-												{totalAllocated !== totalEmployees &&
-													generalFormData &&
-													status !== 'submitted' && (
-														<Button
-															type="button"
-															variant="secondary"
-															size="sm"
-															disabled={isUpdatingCompany}
-															onClick={() =>
-																handleUpdateCompanyEmployees(totalAllocated)
-															}
-														>
-															<Save className="h-4 w-4 mr-1" />
-															{m["social.B8.updateB1"]()}
-														</Button>
-													)}
-											</div>
+											{remaining === 0 && (
+												<span className='text-emerald-600 font-medium'>{m["social.B8.allEmployeesAllocated"]()}</span>
+											)}
 										</div>
-									)
-								}}
-							</form.AppField>
-						</CardContent>
-					</Card>
-
-					{/* Card 2 — Employees */}
-					<Card>
-						<CardHeader>
-							<CardTitle className="text-base">{m["social.B8.employeeSectionTitle"]()}</CardTitle>
-							<p className="text-sm text-muted-foreground">
-								{m["social.B8.employeeSectionDescription"]()}
-							</p>
-						</CardHeader>
-						<CardContent className="space-y-6">
-							<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-								<form.AppField name="permanentContractEmployees">
-									{(field) => (
-										<field.NumberField
-											label={m["social.B8.permanentContractLabel"]()}
-											description={m["social.B8.permanentContractDescription"]()}
-										/>
 									)}
-								</form.AppField>
+									<div className='flex items-center justify-between text-sm px-1'>
+										<Button
+											type='button'
+											variant='outline'
+											size='sm'
+											onClick={() =>
+												field.pushValue({
+													id: crypto.randomUUID(),
+													country: "",
+													numberOfEmployees: 0,
+												})
+											}
+											disabled={status === "submitted"}
+										>
+											<Plus className='h-4 w-4 mr-1' />
+											{m["social.B8.addCountry"]()}
+										</Button>
+										{totalAllocated !== totalEmployees && generalFormData && status !== "submitted" && (
+											<Button
+												type='button'
+												variant='secondary'
+												size='sm'
+												disabled={isUpdatingCompany}
+												onClick={() => handleUpdateCompanyEmployees(totalAllocated)}
+											>
+												<Save className='h-4 w-4 mr-1' />
+												{m["social.B8.updateB1"]()}
+											</Button>
+										)}
+									</div>
+								</div>
+							)
+						}}
+					</form.AppField>
 
-								<form.AppField name="temporaryContractEmployees">
-									{(field) => (
-										<field.NumberField
-											label={m["social.B8.temporaryContractLabel"]()}
-											description={m["social.B8.temporaryContractDescription"]()}
-										/>
-									)}
-								</form.AppField>
+					<SectionHeading
+						title={m["social.B8.employeeSectionTitle"]()}
+						description={m["social.B8.employeeSectionDescription"]({
+							totalEmployees,
+						})}
+						Icon={GlobeIcon}
+						disabled={status === "submitted"}
+						confidentialArea={confidentialAreaValues.typeOfContract}
+						confidentialAreas={confidentialAreas}
+						onConfidentialChange={(areas) => form.setFieldValue("confidentialAreas", areas)}
+					/>
 
-								<NumberFieldReadOnly
-									label={m["social.B8.totalEmployeesLabel"]()}
-									value={employeeSum}
-									description={m["social.B8.totalEmployeesDescription"]()}
-									placeholder="0"
+					<div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+						<form.AppField name='permanentContractEmployees'>
+							{(field) => (
+								<field.NumberField
+									label={m["social.B8.permanentContractLabel"]()}
+									description={m["social.B8.permanentContractDescription"]()}
 								/>
-							</div>
+							)}
+						</form.AppField>
 
-							<EmployeeCountAlert
-								form={form}
-								totalEmployees={totalEmployees}
-							/>
-						</CardContent>
-					</Card>
+						<form.AppField name='temporaryContractEmployees'>
+							{(field) => (
+								<field.NumberField
+									label={m["social.B8.temporaryContractLabel"]()}
+									description={m["social.B8.temporaryContractDescription"]()}
+								/>
+							)}
+						</form.AppField>
+
+						<NumberFieldReadOnly
+							label={m["social.B8.totalEmployeesLabel"]()}
+							value={employeeSum}
+							description={m["social.B8.totalEmployeesDescription"]()}
+							placeholder='0'
+						/>
+					</div>
 
 					{/* Card 3 — Gender */}
-					<Card>
-						<CardHeader>
-							<CardTitle className="text-base">{m["social.B8.genderSectionTitle"]()}</CardTitle>
-							<p className="text-sm text-muted-foreground">
-								{m["social.B8.genderSectionDescription"]()}
-							</p>
-						</CardHeader>
-						<CardContent className="space-y-6">
-							<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-								<form.AppField name="men">
-									{(field) => <field.NumberField label={m["social.B8.maleLabel"]()} />}
-								</form.AppField>
 
-								<form.AppField name="women">
-									{(field) => <field.NumberField label={m["social.B8.femaleLabel"]()} />}
-								</form.AppField>
+					<SectionHeading
+						title={m["social.B8.genderSectionTitle"]()}
+						description={m["social.B8.genderSectionDescription"]({
+							totalEmployees,
+						})}
+						Icon={GlobeIcon}
+						disabled={status === "submitted"}
+						confidentialArea={confidentialAreaValues.gender}
+						confidentialAreas={confidentialAreas}
+						onConfidentialChange={(areas) => form.setFieldValue("confidentialAreas", areas)}
+					/>
+					<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6'>
+						<form.AppField name='men'>
+							{(field) => <field.NumberField label={m["social.B8.maleLabel"]()} />}
+						</form.AppField>
 
-								<form.AppField name="other">
-									{(field) => <field.NumberField label={m["social.B8.otherLabel"]()} />}
-								</form.AppField>
+						<form.AppField name='women'>
+							{(field) => <field.NumberField label={m["social.B8.femaleLabel"]()} />}
+						</form.AppField>
 
-								<form.AppField name="notReported">
-									{(field) => <field.NumberField label={m["social.B8.notReportedLabel"]()} />}
-								</form.AppField>
+						<form.AppField name='other'>
+							{(field) => <field.NumberField label={m["social.B8.otherLabel"]()} />}
+						</form.AppField>
 
-								<NumberFieldReadOnly
-									label={m["social.B8.totalEmployeesLabel"]()}
-									value={genderSum}
-									description={m["social.B8.totalEmployeesDescription"]()}
-									placeholder="0"
-								/>
-							</div>
+						<form.AppField name='notReported'>
+							{(field) => <field.NumberField label={m["social.B8.notReportedLabel"]()} />}
+						</form.AppField>
 
-							<GenderCountAlert form={form} totalEmployees={totalEmployees} />
-						</CardContent>
-					</Card>
+						<NumberFieldReadOnly
+							label={m["social.B8.totalEmployeesLabel"]()}
+							value={genderSum}
+							description={m["social.B8.totalEmployeesDescription"]()}
+							placeholder='0'
+						/>
+					</div>
 					{/* Card 4 — Turnover Rate */}
-					<Card>
-						<CardHeader>
-							<CardTitle className="text-base">{m["social.B8.turnoverSectionTitle"]()}</CardTitle>
-							<p className="text-sm text-muted-foreground">
-								{m["social.B8.turnoverSectionDescription"]()}
-							</p>
-						</CardHeader>
-						<CardContent>
-							{totalEmployees < 50 && (
-								<Alert variant="info" className="mb-6 border-l-4">
-									<Info />
-									<AlertTitle>{m["social.B8.turnoverInfoTitle"]()}</AlertTitle>
-									<AlertDescription>
-										{m["social.B8.turnoverInfoDescription"]()}
-									</AlertDescription>
-								</Alert>
-							)}
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<form.AppField name="employeesLeft">
-									{(field) => (
-										<field.NumberField
-											label={m["social.B8.employeesLeftLabel"]()}
-											description={m["social.B8.employeesLeftDescription"]()}
-										/>
-									)}
-								</form.AppField>
 
-								<form.AppField name="employeesAtStart">
-									{(field) => (
-										<field.NumberField
-											label={m["social.B8.employeesAtStartLabel"]()}
-											description={m["social.B8.employeesAtStartDescription"]()}
-										/>
-									)}
-								</form.AppField>
+					<SectionHeading
+						title={m["social.B8.turnoverSectionTitle"]()}
+						description={m["social.B8.turnoverSectionDescription"]({
+							totalEmployees,
+						})}
+						Icon={GlobeIcon}
+						isVolunteer={totalEmployees < 50}
+						disabled={status === "submitted"}
+						confidentialArea={confidentialAreaValues.turnoverRate}
+						confidentialAreas={confidentialAreas}
+						onConfidentialChange={(areas) => form.setFieldValue("confidentialAreas", areas)}
+					/>
 
-								<form.AppField name="employeesAtEnd">
-									{(field) => (
-										<field.NumberField
-											label={m["social.B8.employeesAtEndLabel"]()}
-											description={m["social.B8.employeesAtEndDescription"]()}
-										/>
-									)}
-								</form.AppField>
-
-								<NumberFieldReadOnly
-									label={m["social.B8.turnoverRateLabel"]()}
-									unit="%"
-									value={turnoverRatePercent ?? ''}
-									description={m["social.B8.turnoverRateDescription"]()}
-									placeholder="—"
+					<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+						<form.AppField name='employeesLeft'>
+							{(field) => (
+								<field.NumberField
+									label={m["social.B8.employeesLeftLabel"]()}
+									description={m["social.B8.employeesLeftDescription"]()}
 								/>
-							</div>
-						</CardContent>
-					</Card>
+							)}
+						</form.AppField>
+
+						<form.AppField name='employeesAtStart'>
+							{(field) => (
+								<field.NumberField
+									label={m["social.B8.employeesAtStartLabel"]()}
+									description={m["social.B8.employeesAtStartDescription"]()}
+								/>
+							)}
+						</form.AppField>
+
+						<form.AppField name='employeesAtEnd'>
+							{(field) => (
+								<field.NumberField
+									label={m["social.B8.employeesAtEndLabel"]()}
+									description={m["social.B8.employeesAtEndDescription"]()}
+								/>
+							)}
+						</form.AppField>
+
+						<NumberFieldReadOnly
+							label={m["social.B8.turnoverRateLabel"]()}
+							unit='%'
+							value={turnoverRatePercent ?? ""}
+							description={m["social.B8.turnoverRateDescription"]()}
+							placeholder='—'
+						/>
+					</div>
+					
 
 					{/* Eventuell utfyllende info */}
-					<form.AppField name="anyAdditionalInfo">
+					<form.AppField name='anyAdditionalInfo'>
 						{(field) => (
 							<field.TextareaField
 								label={m["social.B8.additionalInfoLabel"]()}
@@ -576,12 +547,12 @@ export function B8WorkforceForm({
 				</fieldset>
 
 				<FormButtons
-					status={status as 'not_started' | 'draft' | 'submitted'}
+					status={status as "not_started" | "draft" | "submitted"}
 					isSaving={isSaving}
 					onSaveDraft={saveDraft}
 					onSubmit={submit}
 					onReopen={reopen}
-					disableSubmit={!canSubmit && status !== 'submitted'}
+					disableSubmit={!canSubmit && status !== "submitted"}
 					submitDisabledReasons={submitDisabledReasons}
 				/>
 			</form>

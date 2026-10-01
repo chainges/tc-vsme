@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Info } from 'lucide-react'
 import { useEffect } from 'react'
+import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { EmissionsChart } from '@/components/emissions-chart'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -88,6 +89,11 @@ export function MainTab({
 							}}
 							className="space-y-6"
 						>
+							<AppField name="isC3Confidential">
+								{(field) => (
+									<ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />
+								)}
+							</AppField>
 							{/* Base Year with data selector */}
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 								<AppField

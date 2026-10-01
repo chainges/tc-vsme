@@ -4,7 +4,7 @@ import { useStore as useYearStore } from '@tanstack/react-store'
 import { useAction, useQuery as useConvexQuery } from 'convex/react'
 import {
 	Award,
-	Building2,
+	Building2Icon,
 	History,
 	Plus,
 	RefreshCw,
@@ -12,7 +12,6 @@ import {
 } from 'lucide-react'
 import { useMemo } from 'react'
 import { Button } from '@/components/ui/button'
-import { NACE_DATA } from '@/data/NACE'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
 import { useOrgGuard } from '@/hooks/use-org-guard'
@@ -26,18 +25,29 @@ import { yearStore } from '@/lib/year-store'
 import { m } from "@/paraglide/messages"
 import { api } from '../../../convex/_generated/api'
 import type { FieldChange, FormVersion } from '../../../convex/forms/_utils'
+import ConfidentialInfoBox from '../ConfidentialInfoBox'
+import SectionHeading from '../SectionHeading'
 import {
 	Accordion,
 	AccordionContent,
 	AccordionItem,
 	AccordionTrigger,
 } from '../ui/accordion'
+import { Card, CardContent } from '../ui/card'
 import { FieldGroup } from '../ui/field'
 
 type MongoEmissionsData = {
 	Revenue?: number
 	[key: string]: unknown
 }
+
+const confidentialAreaValues = {
+	generalInformation:
+		'vsme:B1BasisForPreparationAndOtherUndertakingSGeneralInformationMember',
+	subsidiaries: 'vsme:B1ListOfSubsidiariesMember',
+	properties: 'vsme:B1ListOfSiteSMember',
+	certifications: 'vsme:B1DisclosureOfSustainabilityRelatedCertificationSOrLabelSMember',
+} as const
 
 /**
  * Maps MongoDB emissions data to form default values.
@@ -63,19 +73,15 @@ export function B1GeneralForm() {
 	// get actuall nace value from NACE_DATA based on orgData?.naceCode
 	// if nace code's length is greater then 5 we will slice it to 5 and then get the value from NACE_DATA
 
-	console.log('Org NACE Code:', orgData?.naceCode)
-
-	const naceCode = useMemo(() => {
-		if (!orgData?.naceCode) return ''
+	// const naceCode = useMemo(() => {
+	// 	if (!orgData?.naceCode) return ''
 		
-		const codeToUse = orgData.naceCode.length > 5 ? orgData.naceCode.slice(0, 5) : orgData.naceCode
-		const naceDataMap = NACE_DATA as Record<string, { label?: string }>
-		const naceValue = naceDataMap[codeToUse]?.label ?? ''
+	// 	const codeToUse = orgData.naceCode.length > 5 ? orgData.naceCode.slice(0, 5) : orgData.naceCode
+	// 	const naceDataMap = NACE_DATA as Record<string, { label?: string }>
+	// 	const naceValue = naceDataMap[codeToUse]?.label ?? ''
 
-		return naceValue
-	}, [orgData?.naceCode])
-
-	console.log('Mapped NACE Code:', naceCode)
+	// 	return naceValue
+	// }, [orgData?.naceCode])
 
 	// Fetch MongoDB emissions data with TanStack Query for caching
 	const getEmissions = useAction(api.emissions.getEmissionsByOrgId)
@@ -108,6 +114,7 @@ export function B1GeneralForm() {
 	const defaultValues = useMemo<B1GeneralFormValues>(() => {
 		const baseDefaults: B1GeneralFormValues = {
 			reportingYear: reportingYear.toString(),
+			confidentialAreas: [],
 			organizationName: orgData?.name || '',
 			organizationNumber: orgData?.orgNumber || '',
 			naceCode: orgData?.naceCode || '',
@@ -121,6 +128,7 @@ export function B1GeneralForm() {
 			subsidiaries: [],
 			contactPersonName: '',
 			contactPersonEmail: '',
+			isB1Confidential: false,
 			properties: [],
 			certifications: [],
 		}
@@ -147,6 +155,10 @@ export function B1GeneralForm() {
 		section: 'companyInfo',
 		schema: b1GeneralSchema,
 		defaultValues,
+		transformBeforeSave: (values) => ({
+			...values,
+			confidentialAreas: values.confidentialAreas ?? [],
+		}),
 	})
 
 	// Ensure org-sourced fields are always populated from live data,
@@ -161,6 +173,14 @@ export function B1GeneralForm() {
 	// }, [orgData?.orgNumber, orgData?.name, form])
 
 	const reportType2 = useStore(form.store, (state) => state.values.reportType)
+	const confidentialAreas = useStore(
+		form.store,
+		(state) => state.values.confidentialAreas ?? [],
+	)
+
+	// const handleSectionConfidentialChange = (value:Boolean) => {
+	// 	// set the isB1Confidential field based on the section switch
+	// }
 
 	// Combined loading state (only for initial load, not refetch)
 	const isFormLoading = isLoading || isMongoLoading
@@ -197,6 +217,31 @@ export function B1GeneralForm() {
 							</form.AppField>
 						</div>
 
+						<form.AppField name='isB1Confidential'>
+							{(field) => {
+								return (
+									<ConfidentialInfoBox
+										value={field.state.value}
+										handleChange={(value) => {
+											// set value of isB1Confidential based on the switch
+											field.handleChange(value)
+										}}
+									/>
+								)
+							}}
+						</form.AppField>
+
+						<SectionHeading
+							title={m["general.generalInformation"]()}
+							description={m["general.generalInformationDescription"]()}
+							Icon={Building2Icon}
+							confidentialAreas={confidentialAreas}
+							confidentialArea={confidentialAreaValues.generalInformation}
+							onConfidentialChange={(areas) => form.setFieldValue("confidentialAreas", areas)}
+						/>
+
+						{/* <form.Subscribe>{(state) => state.values.isB1Confidential && <ConfidentialInfoBox />}</form.Subscribe> */}
+
 						{/* Row 2: Org Name & NACE */}
 						<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
 							<form.AppField name='organizationName'>
@@ -204,7 +249,12 @@ export function B1GeneralForm() {
 							</form.AppField>
 
 							<form.AppField name='naceCode'>
-								{(field) => <field.TextField label={m["general.B1.naceCode"]()} description={m["general.B1.naceCodeDescription"]()} />}
+								{(field) => (
+									<field.TextField
+										label={m["general.B1.naceCode"]()}
+										description={m["general.B1.naceCodeDescription"]()}
+									/>
+								)}
 							</form.AppField>
 						</div>
 
@@ -237,12 +287,14 @@ export function B1GeneralForm() {
 						</div>
 
 						{/* Row 4: Employees & Country */}
-						<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+						<div className='grid grid-cols-1 md:grid-cols-2 gap-6 mt-4'>
 							<form.AppField name='employees'>
 								{(field) => <field.NumberField label={m["general.B1.employees"]()} />}
 							</form.AppField>
 
-							<form.AppField name='country'>{(field) => <field.CountryField label={m["general.B1.country"]()} />}</form.AppField>
+							<form.AppField name='country'>
+								{(field) => <field.CountryField label={m["general.B1.country"]()} />}
+							</form.AppField>
 							<form.AppField name='EmployeeCountingMethodology'>
 								{(field) => (
 									<field.SelectField
@@ -289,222 +341,254 @@ export function B1GeneralForm() {
 						</FieldGroup>
 
 						{/* Row 6: Report Type */}
-						<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-							<form.AppField
-								name='reportType'
-								listeners={{
-									onChange: ({ value, fieldApi }) => {
-										if (!value) {
-											fieldApi.form.setFieldValue("subsidiaries", [])
-										}
-									},
-								}}
-							>
-								{(field) => <field.SwitchField label={m["general.B1.reportType"]()} description={m["general.B1.reportTypeDescription"]()} />}
-							</form.AppField>
-							{/* Empty column to match image layout if needed, or just full width */}
 
-							<div></div>
-						</div>
+						<Card className='mb-8'>
+							<CardContent>
+								<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+									<form.AppField
+										name='reportType'
+										listeners={{
+											onChange: ({ value, fieldApi }) => {
+												if (!value) {
+													fieldApi.form.setFieldValue("subsidiaries", [])
+												}
+											},
+										}}
+									>
+										{(field) => (
+											<field.SwitchField
+												label={m["general.B1.reportType"]()}
+												description={m["general.B1.reportTypeDescription"]()}
+											/>
+										)}
+									</form.AppField>
+									{/* Empty column to match image layout if needed, or just full width */}
+
+									<div></div>
+								</div>
+							</CardContent>
+						</Card>
+
+						{form.state.values.reportType && (
+							<SectionHeading
+								title={m["general.B1.subsidiaries"]()}
+								description={m["general.B1.subsidiariesDescription"]()}
+								Icon={Building2Icon}
+								confidentialAreas={confidentialAreas}
+								confidentialArea={confidentialAreaValues.subsidiaries}
+								onConfidentialChange={(areas) => form.setFieldValue("confidentialAreas", areas)}
+							/>
+						)}
 
 						<form.Subscribe selector={(state) => state.values.reportType}>
 							{(reportType) => (
 								<FieldGroup>
 									{reportType && (
-										<div className='pt-4'>
-											<h2 className='text-lg font-medium mb-4'>{m["general.B1.subsidiaries"]()}</h2>
-											<form.AppField name='subsidiaries'>
-												{(field) => (
-													<div className='space-y-4'>
-														{field.state.value?.map((item, i) => (
-															<div key={item.id} className='grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-x-6'>
-																<form.AppField name={`subsidiaries[${i}].name`}>
-																	{(f) => <f.TextField label={m["general.B1.nameOfSubsidiary"]()} />}
-																</form.AppField>
-																<form.AppField name={`subsidiaries[${i}].address`}>
-																	{(f) => <f.TextField label={m["general.B1.address"]()} />}
-																</form.AppField>
-																<Button
-																	type='button'
-																	variant='ghost'
-																	size='icon'
-																	className='text-destructive hover:text-destructive hover:bg-destructive/10 self-end'
-																	onClick={() => field.removeValue(i)}
-																	disabled={status === "submitted"}
-																>
-																	<Trash2 className='h-6 w-6' />
-																</Button>
-															</div>
-														))}
-														<Button
-															type='button'
-															variant='outline'
-															className='w-full md:w-auto'
-															onClick={() =>
-																field.pushValue({
-																	id: crypto.randomUUID(),
-																	name: "",
-																	address: "",
-																})
-															}
-															disabled={status === "submitted"}
-														>
-															<Plus className='h-4 w-4 mr-2' />
-															{m["general.B1.addSubsidiary"]()}
-														</Button>
-													</div>
-												)}
-											</form.AppField>
-										</div>
+										<form.AppField name='subsidiaries'>
+											{(field) => (
+												<div className='space-y-4'>
+													{field.state.value?.map((item, i) => (
+														<div key={item.id} className='grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-x-6'>
+															<form.AppField name={`subsidiaries[${i}].name`}>
+																{(f) => <f.TextField label={m["general.B1.nameOfSubsidiary"]()} />}
+															</form.AppField>
+															<form.AppField name={`subsidiaries[${i}].address`}>
+																{(f) => <f.TextField label={m["general.B1.address"]()} />}
+															</form.AppField>
+															<Button
+																type='button'
+																variant='ghost'
+																size='icon'
+																className='text-destructive hover:text-destructive hover:bg-destructive/10 self-end'
+																onClick={() => field.removeValue(i)}
+																disabled={status === "submitted"}
+															>
+																<Trash2 className='h-6 w-6' />
+															</Button>
+														</div>
+													))}
+													<Button
+														type='button'
+														variant='outline'
+														className='w-full md:w-auto'
+														onClick={() =>
+															field.pushValue({
+																id: crypto.randomUUID(),
+																name: "",
+																address: "",
+															})
+														}
+														disabled={status === "submitted"}
+													>
+														<Plus className='h-4 w-4 mr-2' />
+														{m["general.B1.addSubsidiary"]()}
+													</Button>
+												</div>
+											)}
+										</form.AppField>
 									)}
 								</FieldGroup>
 							)}
 						</form.Subscribe>
 						{/* Row 7: Certifications & Properties in a grid for lg screens */}
-						<div className='grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4 border-t border-border'>
-							{/* Certifications Section */}
-							<FieldGroup>
-								<div className='flex items-center gap-2 mb-1'>
-									<Award className='h-5 w-5 text-muted-foreground' />
-									<h2 className='text-lg font-medium'>{m["general.B1.certificationsAndLabels"]()}</h2>
-								</div>
-								<p className='text-sm text-muted-foreground mb-4'>{m["general.B1.certificationsAndLabelsDescription"]()}</p>
 
-								<form.AppField name='certifications'>
-									{(field) => (
-										<div className='space-y-4'>
-											{field.state.value?.map((item, i) => (
-												<div key={item.id} className='relative rounded-lg border border-border bg-card p-4 space-y-4'>
-													<div className='flex items-center justify-between'>
-														<span className='text-sm font-medium text-muted-foreground'>{m["general.B1.certification"]()} {i + 1}</span>
-														<Button
-															type='button'
-															variant='ghost'
-															size='icon'
-															className='h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10'
-															onClick={() => field.removeValue(i)}
-															disabled={status === "submitted"}
-															aria-label={`Fjern sertifisering ${i + 1}`}
-														>
-															<Trash2 className='h-4 w-4' />
-														</Button>
-													</div>
+						<SectionHeading
+							title={m["general.B1.certificationsAndLabels"]()}
+							description={m["general.B1.certificationsAndLabelsDescription"]()}
+							Icon={Award}
+							confidentialAreas={confidentialAreas}
+							confidentialArea={confidentialAreaValues.certifications}
+							onConfidentialChange={(areas) => form.setFieldValue("confidentialAreas", areas)}
+						/>
 
-													<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-														<form.AppField name={`certifications[${i}].name`}>
-															{(f) => (
-																<f.TextField
-																	label={m["general.B1.certificationOrLabel"]()}
-																	placeholder={m["general.B1.certificationOrLabelDescription"]()}
-																/>
-															)}
-														</form.AppField>
-														<form.AppField name={`certifications[${i}].issuer`}>
-															{(f) => <f.TextField label={m["general.B1.issuer"]()} placeholder={m["general.B1.issuer"]()} />}
-														</form.AppField>
-														<form.AppField name={`certifications[${i}].date`}>
-															{(f) => <f.DateField label={m["general.B1.date"]()} placeholder={m["general.B1.datePlaceholder"]()} />}
-														</form.AppField>
-														<form.AppField name={`certifications[${i}].assessment`}>
-															{(f) => <f.TextField label={m["general.B1.ratingOrScore"]()} placeholder={m["general.B1.ratingOrScoreDescription"]()} />}
-														</form.AppField>
-													</div>
-												</div>
-											))}
+						<form.AppField name='certifications'>
+							{(field) => (
+								<div className='space-y-4'>
+									{field.state.value?.map((item, i) => (
+										<div key={item.id} className='relative rounded-lg border border-border bg-card p-4 space-y-4'>
+											<div className='flex items-center justify-between'>
+												<span className='text-sm font-medium text-muted-foreground'>
+													{m["general.B1.certification"]()} {i + 1}
+												</span>
+												<Button
+													type='button'
+													variant='ghost'
+													size='icon'
+													className='h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10'
+													onClick={() => field.removeValue(i)}
+													disabled={status === "submitted"}
+													aria-label={`Fjern sertifisering ${i + 1}`}
+												>
+													<Trash2 className='h-4 w-4' />
+												</Button>
+											</div>
 
-											<Button
-												type='button'
-												variant='outline'
-												className='w-full'
-												onClick={() =>
-													field.pushValue({
-														id: crypto.randomUUID(),
-														name: "",
-														issuer: "",
-														date: "",
-														assessment: "",
-													})
-												}
-												disabled={status === "submitted"}
-											>
-												<Plus className='h-4 w-4 mr-2' />
-												{m["general.B1.addCertification"]()}
-											</Button>
+											<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+												<form.AppField name={`certifications[${i}].name`}>
+													{(f) => (
+														<f.TextField
+															label={m["general.B1.certificationOrLabel"]()}
+															placeholder={m["general.B1.certificationOrLabelDescription"]()}
+														/>
+													)}
+												</form.AppField>
+												<form.AppField name={`certifications[${i}].issuer`}>
+													{(f) => (
+														<f.TextField label={m["general.B1.issuer"]()} placeholder={m["general.B1.issuer"]()} />
+													)}
+												</form.AppField>
+												<form.AppField name={`certifications[${i}].date`}>
+													{(f) => (
+														<f.DateField
+															label={m["general.B1.date"]()}
+															placeholder={m["general.B1.datePlaceholder"]()}
+														/>
+													)}
+												</form.AppField>
+												<form.AppField name={`certifications[${i}].assessment`}>
+													{(f) => (
+														<f.TextField
+															label={m["general.B1.ratingOrScore"]()}
+															placeholder={m["general.B1.ratingOrScoreDescription"]()}
+														/>
+													)}
+												</form.AppField>
+											</div>
 										</div>
-									)}
-								</form.AppField>
-							</FieldGroup>
+									))}
 
-							{/* Properties Section */}
-							<FieldGroup>
-								<div className='flex items-center gap-2 mb-1'>
-									<Building2 className='h-5 w-5 text-muted-foreground' />
-									<h2 className='text-lg font-medium'>{m["general.B1.properties"]()}</h2>
+									<Button
+										type='button'
+										variant='outline'
+										className='w-full'
+										onClick={() =>
+											field.pushValue({
+												id: crypto.randomUUID(),
+												name: "",
+												issuer: "",
+												date: "",
+												assessment: "",
+											})
+										}
+										disabled={status === "submitted"}
+									>
+										<Plus className='h-4 w-4 mr-2' />
+										{m["general.B1.addCertification"]()}
+									</Button>
 								</div>
-								<p className='text-sm text-muted-foreground mb-4'>
-									{m["general.B1.propertiesDescription"]()}
-								</p>
+							)}
+						</form.AppField>
 
-								<form.AppField name='properties'>
-									{(field) => (
-										<div className='space-y-4'>
-											{field.state.value?.map((item, i) => (
-												<div key={item.id} className='relative rounded-lg border border-border bg-card p-4'>
-													<div className='flex items-center justify-between mb-3'>
-														<span className='text-sm font-medium text-muted-foreground'>{m["general.B1.property"]()} {i + 1}</span>
-														<Button
-															type='button'
-															variant='ghost'
-															size='icon'
-															className='h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10'
-															onClick={() => field.removeValue(i)}
-															disabled={status === "submitted"}
-															aria-label={`Fjern eiendom ${i + 1}`}
-														>
-															<Trash2 className='h-4 w-4' />
-														</Button>
-													</div>
+						<SectionHeading
+							title={m["general.B1.properties"]()}
+							description={m["general.B1.propertiesDescription"]()}
+							Icon={Building2Icon}
+							disabled={status === "submitted" || form.state.values?.properties?.length === 0}
+							confidentialAreas={confidentialAreas}
+							confidentialArea={confidentialAreaValues.properties}
+							onConfidentialChange={(areas) => form.setFieldValue("confidentialAreas", areas)}
+						/>
 
-													<form.AppField name={`properties[${i}]`}>
-														{(f) => (
-															<f.PropertyLocationField
-																label={m["general.B1.address"]()}
-																description={m["general.B1.addressDescription"]()}
-																disabled={status === "submitted"}
-															/>
-														)}
-													</form.AppField>
-												</div>
-											))}
+						<form.AppField name='properties'>
+							{(field) => (
+								<div className='space-y-4'>
+									{field.state.value?.map((item, i) => (
+										<div key={item.id} className='relative rounded-lg border border-border bg-card p-4'>
+											<div className='flex items-center justify-between mb-3'>
+												<span className='text-sm font-medium text-muted-foreground'>
+													{m["general.B1.property"]()} {i + 1}
+												</span>
+												<Button
+													type='button'
+													variant='ghost'
+													size='icon'
+													className='h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10'
+													onClick={() => field.removeValue(i)}
+													disabled={status === "submitted"}
+													aria-label={`Fjern eiendom ${i + 1}`}
+												>
+													<Trash2 className='h-4 w-4' />
+												</Button>
+											</div>
 
-											<Button
-												type='button'
-												variant='outline'
-												className='w-full'
-												onClick={() =>
-													field.pushValue({
-														id: crypto.randomUUID(),
-														formattedAddress: "",
-														streetAddress: "",
-														city: "",
-														postalCode: "",
-														country: "",
-														countryCode: "",
-														placeId: "",
-														lat: 0,
-														lng: 0,
-													})
-												}
-												disabled={status === "submitted"}
-											>
-												<Plus className='h-4 w-4 mr-2' />
-												{m["general.B1.addProperty"]()}
-											</Button>
+											<form.AppField name={`properties[${i}]`}>
+												{(f) => (
+													<f.PropertyLocationField
+														label={m["general.B1.address"]()}
+														description={m["general.B1.addressDescription"]()}
+														disabled={status === "submitted"}
+													/>
+												)}
+											</form.AppField>
 										</div>
-									)}
-								</form.AppField>
-							</FieldGroup>
-						</div>
+									))}
+
+									<Button
+										type='button'
+										variant='outline'
+										className='w-full'
+										onClick={() =>
+											field.pushValue({
+												id: crypto.randomUUID(),
+												formattedAddress: "",
+												streetAddress: "",
+												city: "",
+												postalCode: "",
+												country: "",
+												countryCode: "",
+												placeId: "",
+												lat: 0,
+												lng: 0,
+											})
+										}
+										disabled={status === "submitted"}
+									>
+										<Plus className='h-4 w-4 mr-2' />
+										{m["general.B1.addProperty"]()}
+									</Button>
+								</div>
+							)}
+						</form.AppField>
 					</fieldset>
 
 					<FormButtons
@@ -556,8 +640,7 @@ export function B1GeneralForm() {
 															<li key={`${change.field}-${i}`}>
 																{change.field === "_rollback"
 																	? m["general.B1.rolledBackToVersion"]({ version: change.newValue })
-																	: `${m["general.B1.changed"]()} ${change.field}`
-																}
+																	: `${m["general.B1.changed"]()} ${change.field}`}
 															</li>
 														))}
 													</ul>

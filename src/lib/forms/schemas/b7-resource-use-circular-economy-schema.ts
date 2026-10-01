@@ -36,6 +36,7 @@ const wasteInformationSchema = z.object({
 
 export const b7ResourceUseCircularEconomySchema = z.object({
 	reportingYear: z.string().regex(/^\d{4}$/, 'Year must be 4 digits'),
+	isB7Confidential: z.boolean(),
 	applyCircularEconomyPrinciples: z.boolean().default(false),
 	circularEconomyDescription: z.string().optional(),
 	significantMaterialFlows: z.boolean().default(false),
@@ -61,6 +62,7 @@ export const b7ResourceUseCircularEconomySchema = z.object({
 		.number({ message: 'Dette feltet er påkrevd' })
 		.min(0, 'Må være 0 eller mer'),
 	recycledMaterials: z.array(recycledMaterialSchema),
+	confidentialAreas: z.array(z.string()).default([]),
 })
 
 export type B7ResourceUseCircularEconomyFormValues = z.infer<

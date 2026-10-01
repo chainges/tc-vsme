@@ -1,5 +1,6 @@
 import { useStore } from '@tanstack/react-form'
 import { useStore as useYearStore } from '@tanstack/react-store'
+import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { Card, CardContent } from '@/components/ui/card'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
@@ -30,6 +31,7 @@ export function C6HumanRightsPoliciesForm() {
 				hasOtherPolicies: false,
 				otherPolicies: '',
 				hasComplaintsHandlingMechanism: false,
+				isC6Confidential: false,
 			} as C6HumanRightsPoliciesValues,
 		})
 
@@ -62,6 +64,9 @@ export function C6HumanRightsPoliciesForm() {
 							{/* Hidden reporting year */}
 							<form.AppField name='reportingYear'>
 								{(field) => <field.TextField label={m["social.C6.reportingYearLabel"]()} placeholder='YYYY' hidden />}
+							</form.AppField>
+							<form.AppField name='isC6Confidential'>
+								{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
 							</form.AppField>
 
 							{/* (a) Does the undertaking have a code of conduct or human rights policy? */}
