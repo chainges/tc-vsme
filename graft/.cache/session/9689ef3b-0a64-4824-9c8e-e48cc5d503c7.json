@@ -1,0 +1,13 @@
+{
+  "lastQuery": "I have already done so. No change in behaviour.",
+  "perAgentQuery": {},
+  "graftReads": 0,
+  "sourceReads": 1,
+  "savedTokens": 0,
+  "injectedPointers": [],
+  "nudges": 0,
+  "host": "claude-code",
+  "inputCostMicros": 316812,
+  "inputTokensBilled": 791360,
+  "lastBillingUuid": "1c40b1fc-452b-40bb-b116-2e7d673b3cae"
+}
