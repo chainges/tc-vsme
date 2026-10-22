@@ -1,0 +1,425 @@
+{
+  "B1": {
+    "schema": "b1GeneralSchema",
+    "file": "b1-general-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "confidentialAreas": "string[]",
+      "organizationName": "string",
+      "organizationNumber": "string",
+      "naceCode": "string",
+      "revenue": "number",
+      "balanceSheetTotal": "number",
+      "employees": "number (int)",
+      "EmployeeCountingMethodology": "enum('vsme:AtTheEndOfTheReportingPeriodMember' | 'vsme:AverageDuringTheReportingPeriodMember')",
+      "TypeOfNumberOfEmployees": "enum('vsme:HeadcountMember' | 'vsme:Full-TimeEquivalentFTEMember')",
+      "country": "string",
+      "reportType": "boolean",
+      "subsidiaries": "{ id: string, name: string, address: string }[] (optional)",
+      "isB1Confidential": "boolean",
+      "contactPersonName": "string",
+      "contactPersonEmail": "string (email, optional)",
+      "contactPersonPhone": "string (optional)",
+      "properties": "PropertyLocation[] (optional)",
+      "certifications": "Certification[] (optional)"
+    },
+    "subSchemas": {
+      "PropertyLocation": {
+        "id": "string",
+        "formattedAddress": "string",
+        "streetAddress": "string",
+        "city": "string",
+        "postalCode": "string",
+        "country": "string",
+        "countryCode": "string",
+        "placeId": "string",
+        "lat": "number",
+        "lng": "number"
+      },
+      "Certification": {
+        "id": "string",
+        "name": "string",
+        "issuer": "string",
+        "date": "string (optional)",
+        "assessment": "string (optional)"
+      }
+    }
+  },
+  "B2": {
+    "schema": "sustainabilityInitiativesSchema",
+    "file": "b2-sustainability-initiatives-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "hasSustainabilityPractices": "boolean",
+      "arePracticesPubliclyAvailable": "boolean",
+      "policiesHaveTargets": "boolean",
+      "selectedSustainabilityIssueValues": "string[]",
+      "isB2Confidential": "boolean"
+    }
+  },
+  "B3": {
+    "schema": "b3EnergyEmissionsSchema",
+    "file": "b3-energy-emissions-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "renewableElectricity": "number",
+      "nonRenewableElectricity": "number",
+      "stationaryCombustion": "number",
+      "mobileCombustion": "number",
+      "renewableFuels": "number",
+      "otherEnergySources": "number",
+      "emissionsIntensity": "number",
+      "scope1Emissions": "number",
+      "scope2EmissionsLocationBased": "number",
+      "scope2EmissionsMarketBased": "number",
+      "selfGeneratedEnergy": "number",
+      "totalEnergyConsumption": "number",
+      "totalScope3Emissions": "number",
+      "category1": "number",
+      "category2": "number",
+      "category3": "number",
+      "category4": "number",
+      "category5": "number",
+      "category6": "number",
+      "category7": "number",
+      "category8": "number",
+      "category9": "number",
+      "category10": "number",
+      "category11": "number",
+      "category12": "number",
+      "category13": "number",
+      "category14": "number",
+      "category15": "number",
+      "climateDataCollectionMethod": "string",
+      "dataUncertainty": "string",
+      "isB3Confidential": "boolean",
+      "confidentialAreas": "string[]"
+    }
+  },
+  "B4": {
+    "schema": "pollutionSchema",
+    "file": "b4-pollution-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "isB4Confidential": "boolean",
+      "reportingPollution": "boolean",
+      "publiclyAvailableDisclosure": "boolean (optional)",
+      "urlOrLinkToPubliclyAvailableDisclosure": "string (optional)",
+      "pollutants": "PollutionEntry[]"
+    },
+    "subSchemas": {
+      "PollutionEntry": {
+        "id": "string",
+        "pollutantCode": "string",
+        "amountOfEmissionToAir": "number",
+        "amountOfEmissionToWater": "number",
+        "amountOfEmissionToSoil": "number",
+        "unitCode": "enum('kg' | 't')"
+      }
+    }
+  },
+  "B5": {
+    "schema": "b5BiodiversitySchema",
+    "file": "b5-biodiversity-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "isB5Confidential": "boolean",
+      "hasSensitiveBiodiversityAreas": "boolean",
+      "sites": "Site[]",
+      "totalSealedAreaSquareMeters": "number (optional)",
+      "totalNatureOrientedAreaOnSiteSquareMeters": "number (optional)",
+      "totalNatureOrientedAreaOffSiteSquareMeters": "number (optional)",
+      "totalLandUsedSquareMeters": "number (optional)",
+      "protectedSpeciesCount": "string (optional)",
+      "redListedSpeciesCount": "string (optional)",
+      "confidentialAreas": "string[] (optional)"
+    },
+    "subSchemas": {
+      "Site": {
+        "propertyId": "string",
+        "siteLocation": "string",
+        "areaSquareMeters": "number (optional)",
+        "isInSensitiveBiodiversityArea": "boolean",
+        "isNearSensitiveBiodiversityArea": "boolean"
+      }
+    }
+  },
+  "B6": {
+    "schema": "b6WaterSchema",
+    "file": "b6-water-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "isB6Confidential": "boolean",
+      "waterWithdrawal": "number",
+      "waterWithdrawalStress": "number",
+      "waterDischarge": "number"
+    }
+  },
+  "B7": {
+    "schema": "b7ResourceUseCircularEconomySchema",
+    "file": "b7-resource-use-circular-economy-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "isB7Confidential": "boolean",
+      "applyCircularEconomyPrinciples": "boolean (default false)",
+      "circularEconomyDescription": "string (optional)",
+      "significantMaterialFlows": "boolean (default false)",
+      "annualMassFlows": "AnnualMassFlow[] (default [])",
+      "onlyHouseholdWaste": "boolean (default true)",
+      "wasteInformation": "WasteInformation[] (default [])",
+      "totalWaste": "number",
+      "recyclingRate": "number (0-100)",
+      "energyRecovery": "number (0-100)",
+      "landfill": "number (0-100)",
+      "hazardousWaste": "number",
+      "recycledMaterials": "RecycledMaterial[]",
+      "confidentialAreas": "string[] (default [])"
+    },
+    "subSchemas": {
+      "RecycledMaterial": {
+        "id": "string",
+        "materialType": "string",
+        "amount": "number",
+        "unit": "enum('tonn' | 'kg' | 'm³')"
+      },
+      "AnnualMassFlow": {
+        "id": "string",
+        "materialType": "string",
+        "volume": "number",
+        "unit": "enum('tonn' | 'kg' | 'm³')"
+      },
+      "WasteInformation": {
+        "id": "string",
+        "hazardous": "boolean",
+        "name": "string",
+        "unit": "enum('tonn' | 'kg' | 'm³')",
+        "wasteDivertedToRecycle": "number",
+        "wasteDirectedToDisposal": "number",
+        "total": "number"
+      }
+    }
+  },
+  "B8": {
+    "schema": "b8WorkforceSchema",
+    "file": "b8-workforce-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "isB8Confidential": "boolean",
+      "permanentContractEmployees": "number (int)",
+      "temporaryContractEmployees": "number (int)",
+      "men": "number (int)",
+      "women": "number (int)",
+      "other": "number (int)",
+      "notReported": "number (int)",
+      "employeesPerCountry": "EmployeePerCountry[]",
+      "employeesLeft": "number (int, optional)",
+      "employeesAtStart": "number (int, optional)",
+      "employeesAtEnd": "number (int, optional)",
+      "anyAdditionalInfo": "string (optional)",
+      "confidentialAreas": "string[] (optional)"
+    },
+    "subSchemas": {
+      "EmployeePerCountry": {
+        "id": "string",
+        "country": "string",
+        "numberOfEmployees": "number (int)"
+      }
+    }
+  },
+  "B9": {
+    "schema": "b9HealthSafetySchema",
+    "file": "b9-health-safety-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "isB9Confidential": "boolean",
+      "workAccidents": "number (int)",
+      "deceased": "number (int)",
+      "rateOfWorkAccidents": "number (optional)",
+      "knowExactHoursWorked": "boolean (default false)",
+      "totalHoursWorked": "number (optional)"
+    }
+  },
+  "B10": {
+    "schema": "b10CompensationSchema",
+    "file": "b10-compensation-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "isB10Confidential": "boolean",
+      "hourlyPayMale": "number",
+      "hourlyPayFemale": "number",
+      "collectiveBargainingAgreement": "number (int)",
+      "trainingHoursMale": "number",
+      "trainingHoursFemale": "number",
+      "collectiveBargainingShare": "number (optional)",
+      "genderPayGap": "number (optional)",
+      "minimumWageLiability": "boolean"
+    }
+  },
+  "B11": {
+    "workLifeBalance": {
+      "schema": "b11WorkLifeBalanceSchema",
+      "file": "b11-work-life-balance-schema.ts",
+      "fields": {
+        "reportingYear": "string",
+        "isB11Confidential": "boolean",
+        "femaleParentalLeave": "number",
+        "maleParentalLeave": "number",
+        "parentalLeavePolicyDescription": "string"
+      }
+    },
+    "finesPenalties": {
+      "schema": "b11FinesPenaltiesSchema",
+      "file": "b11-fines-penalties-schema.ts",
+      "fields": {
+        "reportingYear": "string",
+        "isB11Confidential": "boolean",
+        "hasCorruptionFines": "boolean (default false)",
+        "corruptionFinesDescription": "string (optional)",
+        "numberOfConvictions": "number (optional)",
+        "totalFines": "number (optional)",
+        "currency": "enum('NOK' | 'SEK' | 'DKK' | 'EUR' | 'USD' | 'GBP') (optional)"
+      }
+    }
+  },
+  "C1": {
+    "schema": "c1BusinessModelSchema",
+    "file": "c1-business-model-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "productsAndServices": "string (optional)",
+      "markets": "string (optional)",
+      "businessRelationships": "string (optional)",
+      "sustainabilityStrategy": "string (optional)",
+      "isC1Confidential": "boolean"
+    }
+  },
+  "C2": {
+    "schema": "c2DescriptionPracticesPoliciesSchema",
+    "file": "c2-description-practices-policies-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "c2_sustainability_practice_description": "string",
+      "c2_monitoring_targets_description": "string",
+      "c2_accountable_role_or_person": "string (optional)",
+      "isC2Confidential": "boolean"
+    }
+  },
+  "C3": {
+    "schema": "c2Scope3EmissionsSchema",
+    "file": "c3-scope3-emissions-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "totalScope3Emissions": "number",
+      "category1": "number",
+      "category2": "number",
+      "category3": "number",
+      "category4": "number",
+      "category5": "number",
+      "category6": "number",
+      "category7": "number",
+      "category8": "number",
+      "category9": "number",
+      "category10": "number",
+      "category11": "number",
+      "category12": "number",
+      "category13": "number",
+      "category14": "number",
+      "category15": "number"
+    }
+  },
+  "C4": {
+    "schema": "c4ClimateRiskSchema",
+    "file": "c4-climate-risk-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "isC4Confidential": "boolean",
+      "climateRiskDescription": "string",
+      "hasIdentifiedClimateRelatedHazardious": "boolean",
+      "exposureAndSensitivityAssessment": "string",
+      "timeHorizonsIdentified": "string",
+      "climateAdaptationActions": "boolean",
+      "potentialAdverseEffectsAndRiskRating": "string (optional)"
+    }
+  },
+  "C5": {
+    "schema": "c5AdditionalWorkforceSchema",
+    "file": "c5-additional-workforce-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "isC5Confidential": "boolean",
+      "maleManagers": "number (int, optional)",
+      "femaleManagers": "number (int, optional)",
+      "selfEmployedWorkers": "number (int, optional)",
+      "contractWorkers": "number (int, optional)",
+      "managementGenderRatio": "number (optional)"
+    }
+  },
+  "C6": {
+    "schema": "c6HumanRightsPoliciesSchema",
+    "file": "c6-human-rights-policies-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "isC6Confidential": "boolean",
+      "hasCodeOfConduct": "boolean (default false)",
+      "childLaborPolicy": "boolean (default false)",
+      "forcedLaborPolicy": "boolean (default false)",
+      "humanTraffickingPolicy": "boolean (default false)",
+      "discriminationPolicy": "boolean (default false)",
+      "accidentPreventionPolicy": "boolean (default false)",
+      "hasOtherPolicies": "boolean (default false)",
+      "otherPolicies": "string (optional)",
+      "hasComplaintsHandlingMechanism": "boolean (default false)"
+    }
+  },
+  "C7": {
+    "schema": "c7SeriousHumanRightsSchema",
+    "file": "c7-serious-human-rights-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "isC7Confidential": "boolean",
+      "childLabor": "boolean (default false)",
+      "childLaborMeasures": "string (optional)",
+      "forcedLabor": "boolean (default false)",
+      "forcedLaborMeasures": "string (optional)",
+      "humanTrafficking": "boolean (default false)",
+      "humanTraffickingMeasures": "string (optional)",
+      "discrimination": "boolean (default false)",
+      "discriminationMeasures": "string (optional)",
+      "other": "boolean (default false)",
+      "otherMeasures": "string (optional)",
+      "hasValueChainIncidents": "boolean (default false)",
+      "valueChainIncidentsDescription": "string (optional)"
+    }
+  },
+  "C8": {
+    "schema": "c8SectorInvolvementSchema",
+    "file": "c8-sector-involvement-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "isC8Confidential": "boolean",
+      "controversialWeaponsRevenue": "number (optional)",
+      "tobaccoRevenue": "number (optional)",
+      "coalRevenue": "number (optional)",
+      "gasRevenue": "number (optional)",
+      "oilRevenue": "number (optional)",
+      "chemicalProductionRevenue": "number (optional)",
+      "pabCoalThreshold": "boolean (default false)",
+      "pabOilThreshold": "boolean (default false)",
+      "pabGasThreshold": "boolean (default false)",
+      "pabElectricityThreshold": "boolean (default false)",
+      "euBenchmarksExclusion": "boolean (default false)"
+    }
+  },
+  "C9": {
+    "schema": "c9BoardCompositionSchema",
+    "file": "c9-board-composition-schema.ts",
+    "fields": {
+      "reportingYear": "string",
+      "isC9Confidential": "boolean",
+      "totalMembers": "number",
+      "femaleMembers": "number",
+      "maleMembers": "number",
+      "otherMembers": "number"
+    }
+  }
+}

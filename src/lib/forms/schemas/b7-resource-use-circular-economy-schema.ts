@@ -29,6 +29,7 @@ const wasteInformationSchema = z.object({
 	hazardous: z.boolean(),
 	name: z.string().min(1, 'Dette feltet er påkrevd'),
 	unit: z.enum(RECYCLED_MATERIAL_UNITS),
+	axis: z.string().optional(),
 	wasteDivertedToRecycle: z.number().min(0, 'Må være 0 eller mer'),
 	wasteDirectedToDisposal: z.number().min(0, 'Må være 0 eller mer'),
 	total: z.number().min(0, 'Må være 0 eller mer'),

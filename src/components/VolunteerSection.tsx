@@ -10,7 +10,7 @@ export default function VolunteerSection({
 	children: React.ReactNode
 }) {
 	return (
-		<div className='rounded-md border border-volunteer/25 bg-volunteer-soft/35 p-4 sm:p-5'>
+		<div className='rounded-md border border-volunteer/25 bg-volunteer-soft/35 dark:border-blue-950 dark:bg-volunteer p-4 sm:p-5'>
 			<div className='flex flex-wrap items-center justify-between gap-2 mb-6 border-b border-volunteer/20 pb-3'>
 				<div>
 					<h3 className='font-display text-lg'>{title}</h3>

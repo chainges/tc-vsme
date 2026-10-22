@@ -90,6 +90,10 @@ const data = {
 					url: '/app/targets',
 				},
 				{
+					title: 'Generate XBRL',
+					url: '/app/generate',
+				},
+				{
 					title: 'Settings',
 					url: '/app/settings',
 				},

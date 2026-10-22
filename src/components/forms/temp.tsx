@@ -15,7 +15,7 @@ import {
     type C2Scope3EmissionsFormValues,
     c2Scope3EmissionsSchema,
     SCOPE_3_CATEGORIES,
-} from '@/lib/forms/schemas/c2-scope3-emissions-schema'
+} from '@/lib/forms/schemas/c3-scope3-emissions-schema'
 import { yearStore } from '@/lib/year-store'
 import { m } from '@/paraglide/messages'
 import { api } from '../../../convex/_generated/api'

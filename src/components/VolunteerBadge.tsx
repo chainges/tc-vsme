@@ -6,7 +6,7 @@ function VolunteerBadge({ scope = "field" }: { scope?: "field" | "section" }) {
 	return (
 		<Tooltip>
 			<TooltipTrigger asChild>
-				<Badge variant='outline' className='gap-1 border-volunteer/30 bg-volunteer-soft text-volunteer shadow-none'>
+				<Badge variant='outline' className='gap-1 bg-green-300 text-volunteer shadow-none'>
 					<Leaf className='size-3' /> Volunteer
 				</Badge>
 			</TooltipTrigger>

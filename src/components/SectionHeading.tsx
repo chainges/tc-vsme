@@ -40,8 +40,7 @@ const SectionHeading = ({
 	return (
 		<div
 			className={cn(
-				"mb-6 mt-8 flex flex-col justify-between gap-3 border-b border-border p-4 sm:flex-row sm:items-center",
-				isVolunteer && "bg-volunteer-soft/35 rounded-t-xl",
+				"mb-6 mt-8 flex flex-col justify-between gap-3 border-b border-border p-4 sm:flex-row sm:items-center"
 			)}
 		>
 			<div className='flex items-center gap-3'>

@@ -12,7 +12,7 @@ import {
 	type B3EnergyEmissionsFormValues,
 	b3EnergyEmissionsSchema,
 } from "@/lib/forms/schemas/b3-energy-emissions-schema"
-import { SCOPE_3_CATEGORIES } from "@/lib/forms/schemas/c2-scope3-emissions-schema"
+import { SCOPE_3_CATEGORIES } from "@/lib/forms/schemas/c3-scope3-emissions-schema"
 import { yearStore } from "@/lib/year-store"
 import { m } from "@/paraglide/messages"
 import { api } from "../../../convex/_generated/api"

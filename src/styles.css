@@ -22,6 +22,8 @@ code {
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.129 0.042 264.695);
+
+
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1.0000 0 0);
@@ -36,7 +38,7 @@ code {
   --accent-foreground: oklch(1.0000 0 0);
   --destructive: oklch(0.6520 0.2340 26.6909);
   --destructive-foreground: oklch(1.0000 0 0);
-  --border: oklch(0.8607 0 0);
+  --border: oklch(0.929 0.013 255.508);
   --input: oklch(0.8607 0 0);
   --ring: oklch(0.6085 0.1058 182.4588);
   --chart-1: oklch(0.6112 0.1585 147.6453);
@@ -84,7 +86,7 @@ code {
   --pink: oklch(0.70 0.18 350);
 
   --info: oklch(0.52 0.17 250);
-  --info-foreground: oklch(0.34 0.09 252);
+  --info-foreground: oklch(0.984 0.003 247.858);
   --info-background: oklch(0.965 0.022 240);
   --info-border: oklch(0.86 0.06 245);
   --background: oklch(1 0 0);
@@ -92,16 +94,16 @@ code {
 
   /* Highcharts theme overrides (light) */
   --highcharts-background-color: transparent;
-  --highcharts-color-0: oklch(0.65 0.14 180);   /* teal */
-  --highcharts-color-1: oklch(0.70 0.14 240);   /* sky */
-  --highcharts-color-2: oklch(0.72 0.16 50);    /* copper */
-  --highcharts-color-3: oklch(0.65 0.20 20);    /* rose */
-  --highcharts-color-4: oklch(0.82 0.16 80);    /* amber */
-  --highcharts-color-5: oklch(0.70 0.18 350);   /* pink */
+  --highcharts-color-0: oklch(0.65 0.14 180);   
+  --highcharts-color-1: oklch(0.70 0.14 240);  
+  --highcharts-color-2: oklch(0.72 0.16 50);    
+  --highcharts-color-3: oklch(0.65 0.20 20);    
+  --highcharts-color-4: oklch(0.82 0.16 80);    
+  --highcharts-color-5: oklch(0.70 0.18 350);   
   --highcharts-neutral-color-80: oklch(0.305 0 0);
   --highcharts-neutral-color-60: oklch(0.50 0 0);
   --highcharts-neutral-color-10: oklch(0.861 0 0);
-  --highcharts-neutral-color-3: oklch(0.976 0 0);
+  --highcharts-neutral-color-3: oklch(0.976 0 0); 
 
   --confidential: oklch(0.52 0.15 39);
   --confidential-soft: oklch(0.95 0.04 61);
@@ -115,11 +117,19 @@ code {
 
   --volunteer: oklch(0.5 0.11 158);
   --volunteer-soft: oklch(0.95 0.05 155);
+
+  --success: oklch(0.696 0.17 162.48);
+  --success-foreground: oklch(0.984 0.003 247.858);
+  
+  --volunteer-badge: oklch(0.5 0.11 158);
+  --volunteer-soft-badge: oklch(0.95 0.05 155);
 }
 
 .dark {
   --background: oklch(0.2500 0.0154 196.2080);
   --foreground: oklch(0.9761 0 0);
+  --success: oklch(0.765 0.177 163.223);
+  --success-foreground: oklch(0.129 0.042 264.695);
   --card: oklch(0.2189 0.0259 199.7517);
   --card-foreground: oklch(0.9761 0 0);
   --popover: oklch(0.4276 0 0);
@@ -181,17 +191,17 @@ code {
 
   /* Highcharts theme overrides (dark) */
   --highcharts-background-color: transparent;
-  --highcharts-color-0: oklch(0.55 0.14 180);   /* teal */
-  --highcharts-color-1: oklch(0.55 0.15 240);   /* sky */
-  --highcharts-color-2: oklch(0.65 0.16 50);    /* copper */
-  --highcharts-color-3: oklch(0.55 0.20 20);    /* rose */
-  --highcharts-color-4: oklch(0.75 0.16 80);    /* amber */
-  --highcharts-color-5: oklch(0.60 0.18 350);   /* pink */
-  --highcharts-neutral-color-100: oklch(0.97 0 0);  /* chart title */
-  --highcharts-neutral-color-80: oklch(0.85 0 0);   /* axis labels, legend text */
-  --highcharts-neutral-color-60: oklch(0.70 0 0);   /* axis titles */
-  --highcharts-neutral-color-10: oklch(0.35 0 0);   /* grid lines */
-  --highcharts-neutral-color-3: oklch(0.219 0.026 199); /* tooltip background */
+  --highcharts-color-0: oklch(0.55 0.14 180);
+  --highcharts-color-1: oklch(0.55 0.15 240);
+  --highcharts-color-2: oklch(0.65 0.16 50);
+  --highcharts-color-3: oklch(0.55 0.20 20);
+  --highcharts-color-4: oklch(0.75 0.16 80);
+  --highcharts-color-5: oklch(0.60 0.18 350);  
+  --highcharts-neutral-color-100: oklch(0.97 0 0);
+  --highcharts-neutral-color-80: oklch(0.85 0 0); 
+  --highcharts-neutral-color-60: oklch(0.70 0 0);  
+  --highcharts-neutral-color-10: oklch(0.35 0 0); 
+  --highcharts-neutral-color-3: oklch(0.219 0.026 199);
 
     --info: oklch(0.78 0.11 235);
   --info-foreground: oklch(0.9 0.04 240);
@@ -204,13 +214,15 @@ code {
   --confidential-border: oklch(0.52 0.09 53);
   --confidential-text: oklch(1 0 0);
 
-  --volunteer: oklch(0.5 0.11 158);
-  --volunteer-soft: oklch(0.95 0.05 155);
+  --volunteer: oklch(0.208 0.042 265.755);
+  --volunteer-soft: oklch(0.95 0.05 230);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
@@ -289,6 +301,8 @@ code {
 
   --color-volunteer: var(--volunteer);
   --color-volunteer-soft: var(--volunteer-soft);
+  --border-volunteer-badge: var(--volunteer-badge);
+  --background-volunteer-badge: var(--volunteer-soft-badge);
 }
 
 @layer base {
