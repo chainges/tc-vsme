@@ -92,7 +92,6 @@ export const b3EnergyEmissionsSchema = z.object({
 	dataUncertainty: z
 		.string({ message: 'Dette feltet er påkrevd' })
 		.min(10, 'Beskrivelsen må være på minst 10 tegn'),
-	isB3Confidential: z.boolean(),
 	confidentialAreas: z.array(z.string()),
 })
 

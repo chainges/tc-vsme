@@ -1,6 +1,7 @@
 import { mutation } from "../_generated/server"
-import { v } from "convex/values"
+import { ConvexError, v } from "convex/values"
 import { requireOrgId, requireUserId } from "../_utils/auth"
+import { SECTION_SCHEMAS, type SectionName } from "../_utils/readiness"
 import { formTableValidator, formSectionValidator, getFormRecordBySection } from "./_utils"
 
 export const submitForm = mutation({
@@ -91,6 +92,18 @@ export const submitForm = mutation({
     for (const key of Object.keys(dataToSubmit)) {
       if (dataToSubmit[key] === undefined || dataToSubmit[key] === null) {
         delete dataToSubmit[key]
+      }
+    }
+
+    // scope3Emissions and workLifeBalance have no schema because their forms are not rendered
+    const schema = SECTION_SCHEMAS[args.section as SectionName]
+    if (schema) {
+      const parsed = schema.safeParse(dataToSubmit)
+      if (!parsed.success) {
+        throw new ConvexError({
+          code: "INVALID_FORM",
+          issues: parsed.error.issues.slice(0, 10).map((i) => ({ path: i.path.join("."), message: i.message })),
+        })
       }
     }
 

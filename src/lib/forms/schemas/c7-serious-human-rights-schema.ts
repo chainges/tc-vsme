@@ -3,7 +3,7 @@ import { z } from 'zod'
 export const c7SeriousHumanRightsSchema = z
 	.object({
 		reportingYear: z.string().regex(/^\d{4}$/, 'År må være 4 siffer'),
-		isC7Confidential: z.boolean(),
+		confidentialAreas: z.array(z.string()).optional(),
 		/** (a.i) Confirmed incidents of child labour */
 		childLabor: z.boolean().default(false),
 		/** (b) Measures taken to address child labour */

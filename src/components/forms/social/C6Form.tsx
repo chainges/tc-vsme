@@ -11,6 +11,8 @@ import {
 import { yearStore } from '@/lib/year-store'
 import { m } from '@/paraglide/messages'
 
+const C6_Confidential = "vsme:C6-AdditionalOwnWorkforceInformationHumanRightsPoliciesAndProcessesMember"
+
 export function C6HumanRightsPoliciesForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
 
@@ -22,6 +24,7 @@ export function C6HumanRightsPoliciesForm() {
 			schema: c6HumanRightsPoliciesSchema,
 			defaultValues: {
 				reportingYear: reportingYear.toString(),
+				confidentialAreas: [],
 				hasCodeOfConduct: false,
 				childLaborPolicy: false,
 				forcedLaborPolicy: false,
@@ -31,7 +34,6 @@ export function C6HumanRightsPoliciesForm() {
 				hasOtherPolicies: false,
 				otherPolicies: '',
 				hasComplaintsHandlingMechanism: false,
-				isC6Confidential: false,
 			} as C6HumanRightsPoliciesValues,
 		})
 
@@ -40,6 +42,18 @@ export function C6HumanRightsPoliciesForm() {
 		form.store,
 		(state) => state.values.hasCodeOfConduct,
 	)
+
+	const confidentialAreas = useStore(
+		form.store,
+		(state) => state.values.confidentialAreas ?? [],
+	)
+	const isC6Confidential = confidentialAreas.includes(C6_Confidential)
+	const handleConfidentialChange = (checked: boolean) => {
+		const nextAreas = checked
+			? [...new Set([...confidentialAreas, C6_Confidential])]
+			: confidentialAreas.filter((area) => area !== C6_Confidential)
+		form.setFieldValue("confidentialAreas", nextAreas)
+	}
 
 	if (isLoading) {
 		return (
@@ -65,9 +79,7 @@ export function C6HumanRightsPoliciesForm() {
 							<form.AppField name='reportingYear'>
 								{(field) => <field.TextField label={m["social.C6.reportingYearLabel"]()} placeholder='YYYY' hidden />}
 							</form.AppField>
-							<form.AppField name='isC6Confidential'>
-								{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
-							</form.AppField>
+							<ConfidentialInfoBox value={isC6Confidential} handleChange={handleConfidentialChange} />
 
 							{/* (a) Does the undertaking have a code of conduct or human rights policy? */}
 							<div className='flex flex-col items-start gap-3'>

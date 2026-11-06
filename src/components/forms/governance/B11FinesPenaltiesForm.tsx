@@ -11,6 +11,8 @@ import {
 import { yearStore } from '@/lib/year-store'
 import { m } from '@/paraglide/messages'
 
+const B11_Confidential = "vsme:B11-ConvictionsAndFinesForCorruptionAndBriberyMember"
+
 export function B11FinesPenaltiesForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
 
@@ -24,7 +26,7 @@ export function B11FinesPenaltiesForm() {
 				reportingYear: reportingYear.toString(),
 				hasCorruptionFines: false,
 				corruptionFinesDescription: '',
-				isB11Confidential: false,
+				confidentialAreas: [],
 			} as B11FinesPenaltiesValues,
 		})
 
@@ -33,6 +35,15 @@ export function B11FinesPenaltiesForm() {
 		form.store,
 		(state) => state.values.hasCorruptionFines,
 	)
+
+	const confidentialAreas = useStore(form.store, (state) => state.values.confidentialAreas ?? [])
+	const isB11Confidential = confidentialAreas.includes(B11_Confidential)
+	const handleConfidentialChange = (checked: boolean) => {
+		const nextAreas = checked
+			? [...new Set([...confidentialAreas, B11_Confidential])]
+			: confidentialAreas.filter((area) => area !== B11_Confidential)
+		form.setFieldValue("confidentialAreas", nextAreas)
+	}
 
 	if (isLoading) {
 		return (
@@ -64,9 +75,7 @@ export function B11FinesPenaltiesForm() {
 									/>
 								)}
 							</form.AppField>
-							<form.AppField name="isB11Confidential">
-								{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
-							</form.AppField>
+							<ConfidentialInfoBox value={isB11Confidential} handleChange={handleConfidentialChange} />
 
 							<div className="flex flex-col items-start gap-3">
 								<h3 className="text-base font-semibold">

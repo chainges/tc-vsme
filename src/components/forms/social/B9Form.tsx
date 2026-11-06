@@ -17,6 +17,8 @@ interface B9HealthSafetyFormProps {
 	totalEmployees?: number
 }
 
+const B9_Confidential = "vsme:B9-WorkforceHealthAndSafetyMember"
+
 export function B9HealthSafetyForm({ totalEmployees = 0 }: B9HealthSafetyFormProps) {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
 
@@ -33,7 +35,7 @@ export function B9HealthSafetyForm({ totalEmployees = 0 }: B9HealthSafetyFormPro
 				rateOfWorkAccidents: 0,
 				knowExactHoursWorked: false,
 				totalHoursWorked: 0,
-				isB9Confidential: false,
+				confidentialAreas: [],
 			} as B9HealthSafetyFormValues,
 			transformBeforeSave: (values) => {
 				const hours = values.knowExactHoursWorked
@@ -49,6 +51,18 @@ export function B9HealthSafetyForm({ totalEmployees = 0 }: B9HealthSafetyFormPro
 				}
 			},
 		})
+
+	const confidentialAreas = useStore(
+		form.store,
+		(state) => state.values.confidentialAreas ?? [],
+	)
+	const isB9Confidential = confidentialAreas.includes(B9_Confidential)
+	const handleConfidentialChange = (checked: boolean) => {
+		const nextAreas = checked
+			? [...new Set([...confidentialAreas, B9_Confidential])]
+			: confidentialAreas.filter((area) => area !== B9_Confidential)
+		form.setFieldValue("confidentialAreas", nextAreas)
+	}
 
 	const workAccidents = useStore(
 		form.store,
@@ -101,9 +115,7 @@ export function B9HealthSafetyForm({ totalEmployees = 0 }: B9HealthSafetyFormPro
 									/>
 								)}
 							</form.AppField>
-							<form.AppField name="isB9Confidential">
-								{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
-							</form.AppField>
+							<ConfidentialInfoBox value={isB9Confidential} handleChange={handleConfidentialChange} />
 
 							{/* Work accidents + Fatalities */}
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">

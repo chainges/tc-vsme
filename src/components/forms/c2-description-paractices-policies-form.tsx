@@ -1,6 +1,5 @@
 import { useStore as useYearStore } from '@tanstack/react-store'
 import { useQuery } from 'convex/react'
-import { Card, CardContent } from '@/components/ui/card'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
 import { useOrgGuard } from '@/hooks/use-org-guard'
@@ -12,6 +11,9 @@ import { yearStore } from '@/lib/year-store'
 import { m } from '@/paraglide/messages'
 import { api } from '../../../convex/_generated/api'
 import ConfidentialInfoBox from '../ConfidentialInfoBox'
+
+const C2_CONFIDENTIAL_AREA =
+	'vsme:C2-DescriptionOfPracticesPoliciesAndFutureInitiativesForTransitioningTowardsAMoreSustainableEconomyMember'
 
 type B2FormData = {
 	hasSustainabilityPractices?: boolean
@@ -61,9 +63,17 @@ export function C2DescriptionPracticesPoliciesForm() {
 				c2_sustainability_practice_description: '',
 				c2_monitoring_targets_description: '',
 				c2_accountable_role_or_person: '',
-				isC2Confidential: false,
+				confidentialAreas: [],
 			},
 		})
+	const confidentialAreas = useYearStore(form.store, (state) => state.values.confidentialAreas ?? [])
+	const isC2Confidential = confidentialAreas.includes(C2_CONFIDENTIAL_AREA)
+	const handleConfidentialChange = (checked: boolean) => {
+		const nextAreas = checked
+			? [...new Set([...confidentialAreas, C2_CONFIDENTIAL_AREA])]
+			: confidentialAreas.filter((area) => area !== C2_CONFIDENTIAL_AREA)
+		form.setFieldValue('confidentialAreas', nextAreas)
+	}
 
 	if (isLoading || b2Data === undefined) {
 		return (
@@ -89,16 +99,7 @@ export function C2DescriptionPracticesPoliciesForm() {
 						)}
 					</form.AppField>
 
-					<form.AppField name='isC2Confidential'>
-						{(field) => (
-							<ConfidentialInfoBox
-								value={field.state.value || false}
-								handleChange={(value) => {
-									field.setValue(value)
-								}}
-							/>
-						)}
-					</form.AppField>
+					<ConfidentialInfoBox value={isC2Confidential} handleChange={handleConfidentialChange} />
 
 					{/* <h3 className="text-lg font-medium">{m["environmental.C2.title"]()}</h3> */}
 					{hasSustainabilityPractices ? (

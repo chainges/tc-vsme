@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const b9HealthSafetySchema = z.object({
 	reportingYear: z.string().regex(/^\d{4}$/, 'Year must be 4 digits'),
-	isB9Confidential: z.boolean(),
+	confidentialAreas: z.array(z.string()).default([]),
 	workAccidents: z
 		.number({ message: 'Dette feltet er påkrevd' })
 		.int('Må være et heltall')

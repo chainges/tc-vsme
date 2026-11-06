@@ -9,6 +9,8 @@ import { m } from "@/paraglide/messages"
 import { api } from "../../../convex/_generated/api"
 import ConfidentialInfoBox from "../ConfidentialInfoBox"
 
+const C1_CONFIDENTIAL_AREA = "vsme:C1-StrategyBusinessModelAndSustainabilityRelatedInitiativesMember"
+
 export function C1BusinessModelForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
 
@@ -28,10 +30,19 @@ export function C1BusinessModelForm() {
 				markets: orgData?.markets || "",
 				businessRelationships: orgData?.businessRelationships || "",
 				sustainabilityStrategy: orgData?.sustainabilityStrategy || "",
-				isC1Confidential: false,
+				confidentialAreas: [],
 			} as C1BusinessModelFormValues,
 		},
 	)
+	const confidentialAreas = useYearStore(form.store, (state) => state.values.confidentialAreas ?? [])
+	const isC1Confidential = confidentialAreas.includes(C1_CONFIDENTIAL_AREA)
+	const handleConfidentialChange = (checked: boolean) => {
+		const nextAreas = checked
+			? [...new Set([...confidentialAreas, C1_CONFIDENTIAL_AREA])]
+			: confidentialAreas.filter((area) => area !== C1_CONFIDENTIAL_AREA)
+		form.setFieldValue("confidentialAreas", nextAreas)
+	}
+
 	if (isLoading || !orgData) {
 		return <div className='flex items-center justify-center p-8 text-muted-foreground'>Loading...</div>
 	}
@@ -51,20 +62,7 @@ export function C1BusinessModelForm() {
 						{(field) => <field.TextField label={m["general.C1.reportingYear"]()} placeholder='YYYY' hidden />}
 					</form.AppField>
 
-					<form.AppField name='isC1Confidential'>
-						{(field) => {
-							return (
-								<ConfidentialInfoBox
-									value={field.state.value || false}
-									
-									handleChange={(value) => {
-										// set value of isB1Confidential based on the switch
-										field.handleChange(value)
-									}}
-								/>
-							)
-						}}
-					</form.AppField>
+					<ConfidentialInfoBox value={isC1Confidential} handleChange={handleConfidentialChange} />
 
 					{/* Products and Services */}
 					<form.AppField name='productsAndServices'>

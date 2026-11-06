@@ -3,7 +3,7 @@ import { z } from 'zod'
 export const b11FinesPenaltiesSchema = z
 	.object({
 		reportingYear: z.string().regex(/^\d{4}$/, 'År må være 4 siffer'),
-		isB11Confidential: z.boolean(),
+		confidentialAreas: z.array(z.string()).default([]).optional(),
 		hasCorruptionFines: z.boolean().default(false),
 		corruptionFinesDescription: z.string().optional(),
 		numberOfConvictions: z.number().optional(),

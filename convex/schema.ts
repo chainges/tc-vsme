@@ -100,6 +100,7 @@ const sustainabilityInitiativesDataValidator = v.object({
   arePracticesPubliclyAvailable: v.boolean(),
   policiesHaveTargets: v.boolean(),
   selectedSustainabilityIssueValues: v.array(v.string()),
+  confidentialAreas: v.optional(v.array(v.string())),
   isB2Confidential: v.optional(v.boolean()),
 })
 
@@ -108,6 +109,7 @@ const descriptionOfPracticesPoliciesDataValidator = v.object({
   c2_sustainability_practice_description: v.optional(v.string()),
   c2_monitoring_targets_description: v.optional(v.string()),
   c2_accountable_role_or_person: v.optional(v.string()),
+  confidentialAreas: v.optional(v.array(v.string())),
   isC2Confidential: v.optional(v.boolean()),
 })
 
@@ -117,6 +119,7 @@ const businessModelDataValidator = v.object({
   markets: v.optional(v.string()),
   businessRelationships: v.optional(v.string()),
   sustainabilityStrategy: v.optional(v.string()),
+  confidentialAreas: v.optional(v.array(v.string())),
   isC1Confidential: v.optional(v.boolean()),
 })
 
@@ -203,6 +206,7 @@ const biodiversityDataValidator = v.object({
   protectedSpeciesCount: v.optional(v.string()),
   redListedSpeciesCount: v.optional(v.string()),
   isB5Confidential: v.optional(v.boolean()),
+  confidentialAreas: v.optional(v.array(v.string())),
 })
 
 const waterManagementDataValidator = v.object({

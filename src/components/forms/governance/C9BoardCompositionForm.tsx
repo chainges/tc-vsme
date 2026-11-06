@@ -10,6 +10,8 @@ import {
 import { yearStore } from '@/lib/year-store'
 import { m } from '@/paraglide/messages'
 
+const C9_Confidential = "vsme:C9-GenderDiversityRatioInTheGovernanceBodyMember"
+
 export function C9BoardCompositionForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
 
@@ -25,9 +27,18 @@ export function C9BoardCompositionForm() {
 				femaleMembers: 0,
 				maleMembers: 0,
 				otherMembers: 0,
-				isC9Confidential: false,
+				confidentialAreas: [],
 			} as C9BoardCompositionValues,
 		})
+	
+	const confidentialAreas = useYearStore(form.store, (state) => state.values.confidentialAreas ?? [])
+	const isC9Confidential = confidentialAreas.includes(C9_Confidential)
+	const handleConfidentialChange = (checked: boolean) => {
+		const nextAreas = checked
+			? [...new Set([...confidentialAreas, C9_Confidential])]
+			: confidentialAreas.filter((area) => area !== C9_Confidential)
+		form.setFieldValue("confidentialAreas", nextAreas)
+	}
 
 	if (isLoading) {
 		return (
@@ -58,9 +69,7 @@ export function C9BoardCompositionForm() {
 
 							{/* <div className='font-semibold'>{m["governance.C9.boardGenderBalanceTitle"]()}</div> */}
 
-							<form.AppField name='isC9Confidential'>
-								{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
-							</form.AppField>
+							<ConfidentialInfoBox value={isC9Confidential} handleChange={handleConfidentialChange} />
 
 							<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
 								<form.AppField name='totalMembers'>

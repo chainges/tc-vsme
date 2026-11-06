@@ -41,6 +41,8 @@ interface EmployeeCountAlertProps {
 	totalEmployees: number
 }
 
+const B8_Confidential = "vsme:B8-WorkforceGeneralCharacteristicsMember"
+
 function EmployeeCountAlert({ form, totalEmployees }: EmployeeCountAlertProps) {
 	const employeeSum = useStore(form.store, (state) => {
 		const perm = state.values.permanentContractEmployees ?? 0
@@ -168,6 +170,14 @@ export function B8WorkforceForm({
 					form.store,
 					(state) => state.values.confidentialAreas ?? [],
 				)
+	
+	const isB8Confidential = confidentialAreas.includes(B8_Confidential)
+	const handleConfidentialChange = (checked: boolean) => {
+		const nextAreas = checked
+			? [...new Set([...confidentialAreas, B8_Confidential])]
+			: confidentialAreas.filter((area) => area !== B8_Confidential)
+		form.setFieldValue("confidentialAreas", nextAreas)
+	}
 
 	const employeesLeft = useStore(
 		form.store,
@@ -276,9 +286,7 @@ export function B8WorkforceForm({
 					<form.AppField name='reportingYear'>
 						{(field) => <field.TextField label={m["social.B8.reportingYearLabel"]()} placeholder='YYYY' hidden />}
 					</form.AppField>
-					<form.AppField name='isB8Confidential'>
-						{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
-					</form.AppField>
+					 <ConfidentialInfoBox value={isB8Confidential} handleChange={handleConfidentialChange} />
 
 					{/* Card 1 — Country distribution */}
 

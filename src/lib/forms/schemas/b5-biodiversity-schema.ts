@@ -30,8 +30,6 @@ export const b5BiodiversitySchema = z
 			.number()
 			.min(0, 'Må være 0 eller mer')
 			.optional(),
-		protectedSpeciesCount: z.string().optional(),
-		redListedSpeciesCount: z.string().optional(),
 		confidentialAreas: z.array(z.string()).optional(),
 	})
 

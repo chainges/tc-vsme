@@ -1,4 +1,4 @@
-import { useStore as useYearStore } from '@tanstack/react-store'
+import { useStore, useStore as useYearStore } from '@tanstack/react-store'
 import { Card, CardContent } from '@/components/ui/card'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
@@ -22,9 +22,25 @@ export function C4ClimateRiskForm() {
 			reportingYear: reportingYear.toString(),
 			climateRiskDescription: "",
 			hasIdentifiedClimateRelatedHazardious: false,
-			isC4Confidential: false,
+			confidentialAreas: [],
+			exposureAndSensitivityAssessment: "",
+			timeHorizonsIdentified: "",
+			climateAdaptationActions: false,
+			potentialAdverseEffectsAndRiskRating: "",
 		} as C4ClimateRiskFormValues,
 	})
+
+	const confidentialAreas = useStore(
+		form.store,
+		(state) => state.values.confidentialAreas ?? [],
+	)
+	const isC4Confidential = confidentialAreas.includes("vsme:C4-ClimateRiskAnalysis")
+	const handleConfidentialChange = (checked: boolean) => {
+		const nextAreas = checked
+			? [...new Set([...confidentialAreas, "vsme:C4-ClimateRiskAnalysis"])]
+			: confidentialAreas.filter((area) => area !== "vsme:C4-ClimateRiskAnalysis")
+		form.setFieldValue("confidentialAreas", nextAreas)
+	}
 
 	if (isLoading) {
 		return (
@@ -49,9 +65,7 @@ export function C4ClimateRiskForm() {
 							<field.TextField label={m["environmental.C4.reportingYearLabel"]()} placeholder='YYYY' hidden />
 						)}
 					</form.AppField>
-					<form.AppField name='isC4Confidential'>
-						{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
-					</form.AppField>
+					<ConfidentialInfoBox value={isC4Confidential} handleChange={handleConfidentialChange} />
 
 					<Card>
 						<CardContent className='space-y-6'>

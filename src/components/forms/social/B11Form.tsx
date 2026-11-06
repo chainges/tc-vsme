@@ -1,4 +1,4 @@
-import { useStore as useYearStore } from '@tanstack/react-store'
+import { useStore, useStore as useYearStore } from '@tanstack/react-store'
 import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { Card, CardContent } from '@/components/ui/card'
 import { FormButtons } from '@/hooks/tanstack-form'
@@ -8,6 +8,8 @@ import {
 	b11WorkLifeBalanceSchema,
 } from '@/lib/forms/schemas/b11-work-life-balance-schema'
 import { yearStore } from '@/lib/year-store'
+
+const B11_Confidential = "vsme:B11-ConvictionsAndFinesForCorruptionAndBriberyMember"
 
 export function B11WorkLifeBalanceForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
@@ -23,9 +25,21 @@ export function B11WorkLifeBalanceForm() {
 				femaleParentalLeave: 0,
 				maleParentalLeave: 0,
 				parentalLeavePolicyDescription: '',
-				isB11Confidential: false,
+				confidentialAreas: [],
 			} as B11WorkLifeBalanceFormValues,
 		})
+	
+	const confidentialAreas = useStore(
+		form.store,
+		(state) => state.values.confidentialAreas ?? [],
+	)
+	const isB11Confidential = confidentialAreas.includes(B11_Confidential)
+	const handleConfidentialChange = (checked: boolean) => {
+		const nextAreas = checked
+			? [...new Set([...confidentialAreas, B11_Confidential])]
+			: confidentialAreas.filter((area) => area !== B11_Confidential)
+		form.setFieldValue("confidentialAreas", nextAreas)
+	}
 
 	if (isLoading) {
 		return (
@@ -57,9 +71,7 @@ export function B11WorkLifeBalanceForm() {
 									/>
 								)}
 							</form.AppField>
-							<form.AppField name="isB11Confidential">
-								{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
-							</form.AppField>
+							<ConfidentialInfoBox value={isB11Confidential} handleChange={handleConfidentialChange} />
 
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 								<form.AppField name="femaleParentalLeave">

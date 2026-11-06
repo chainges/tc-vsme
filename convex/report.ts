@@ -1,6 +1,43 @@
-import { v } from "convex/values";
-import { action } from "./_generated/server";
+import { ConvexError, v } from "convex/values";
+import { action, internalQuery, query, type QueryCtx } from "./_generated/server";
 import { internal } from "./_generated/api";
+import { requireOrgId } from "./_utils/auth";
+import { evaluateReadiness, type ReadinessRow } from "./_utils/readiness";
+
+const FORM_TABLES = ["formGeneral", "formEnvironmental", "formSocial", "formGovernance"] as const;
+
+async function computeReadiness(ctx: QueryCtx, orgId: string, reportingYear: number) {
+  const tables = await Promise.all(
+    FORM_TABLES.map((table) =>
+      ctx.db
+        .query(table)
+        .withIndex("by_org_year", (q) => q.eq("orgId", orgId).eq("reportingYear", reportingYear))
+        .collect(),
+    ),
+  );
+  const targets = await ctx.db
+    .query("targets")
+    .withIndex("by_organizationId", (q) => q.eq("organizationId", orgId))
+    .first();
+
+  const rows: ReadinessRow[] = tables
+    .flat()
+    .map((r) => ({ section: r.section, status: r.status, data: r.data }));
+  return evaluateReadiness({ rows, targets });
+}
+
+export const getReadiness = query({
+  args: { reportingYear: v.number() },
+  handler: async (ctx, { reportingYear }) => {
+    const orgId = await requireOrgId(ctx);
+    return await computeReadiness(ctx, orgId, reportingYear);
+  },
+});
+
+export const getReadinessInternal = internalQuery({
+  args: { orgId: v.string(), reportingYear: v.number() },
+  handler: async (ctx, { orgId, reportingYear }) => computeReadiness(ctx, orgId, reportingYear),
+});
 
 export interface ConfidentialAreaEntry {
   path: string;     // e.g. "formEnvironmental.energyEmissions.confidentialAreas"
@@ -46,7 +83,11 @@ export const getCompleteReportData = action({
   args: { orgId: v.string(), reportingYear: v.number() },
   returns: v.any(),
   handler: async (ctx, { orgId, reportingYear }): Promise<any> => {
-    
+    const readiness = await ctx.runQuery(internal.report.getReadinessInternal, { orgId, reportingYear });
+    if (!readiness.canGenerate) {
+      throw new ConvexError({ code: "REPORT_NOT_READY", missing: readiness.missing });
+    }
+
     // All 4 queries fire at the SAME TIME
     // log the orgId and reportingYear for debugging
     console.log(`Fetching report data for orgId: ${orgId}, reportingYear: ${reportingYear}`);

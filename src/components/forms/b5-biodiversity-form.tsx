@@ -19,6 +19,8 @@ type B5BiodiversityFormProps = {
 	properties: PropertyLocation[]
 }
 
+const B5_CONFIDENTIAL = "vsme:B5-BiodiversityMember"
+
 const confidentialAreaValues = {
 	sitesInBiodiversitySensitiveAreas: "vsme:B5SitesInBiodiversitySensitiveAreasMember",
 	biodiversityLandUse: "vsme:B5BiodiversityLandUseMember",
@@ -58,6 +60,15 @@ export function B5BiodiversityForm({ properties }: B5BiodiversityFormProps) {
 	const sites = useStore(form.store, (state) => state.values.sites) ?? []
 
 	const confidentialAreas = useStore(form.store, (state) => state.values.confidentialAreas ?? [])
+
+	
+	const isB5Confidential = confidentialAreas.includes(B5_CONFIDENTIAL)
+	const handleConfidentialChange = (checked: boolean) => {
+		const nextAreas = checked
+			? [...new Set([...confidentialAreas, B5_CONFIDENTIAL])]
+			: confidentialAreas.filter((area) => area !== B5_CONFIDENTIAL)
+		form.setFieldValue("confidentialAreas", nextAreas)
+	}
 
 	useEffect(() => {
 		const sitesByPropertyId = new Map(
@@ -102,9 +113,7 @@ export function B5BiodiversityForm({ properties }: B5BiodiversityFormProps) {
 							<field.TextField label={m["environmental.B5.reportingYearLabel"]()} placeholder='YYYY' hidden />
 						)}
 					</form.AppField>
-					<form.AppField name='isB5Confidential'>
-						{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
-					</form.AppField>
+					<ConfidentialInfoBox value={isB5Confidential} handleChange={handleConfidentialChange} />
 
 					<SectionHeading
 						title={"Sites in Biodiversity-Sensitive Areas"}

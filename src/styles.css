@@ -86,7 +86,7 @@ code {
   --pink: oklch(0.70 0.18 350);
 
   --info: oklch(0.52 0.17 250);
-  --info-foreground: oklch(0.984 0.003 247.858);
+  --info-foreground: oklch(0.9 0.63 256);
   --info-background: oklch(0.965 0.022 240);
   --info-border: oklch(0.86 0.06 245);
   --background: oklch(1 0 0);

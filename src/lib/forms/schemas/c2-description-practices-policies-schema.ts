@@ -10,7 +10,7 @@ export const c2DescriptionPracticesPoliciesSchema = z.object({
 		.min(1, 'This field is required'),
     // this field is optional
 	c2_accountable_role_or_person: z.string().optional(),
-	isC2Confidential: z.boolean()
+	confidentialAreas: z.array(z.string()).default([]),
 })
 
 export type C2DescriptionPracticesPoliciesFormValues = z.infer<

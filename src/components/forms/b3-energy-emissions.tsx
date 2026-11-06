@@ -20,7 +20,6 @@ import type { FieldChange, FormVersion } from "../../../convex/forms/_utils"
 import ConfidentialInfoBox from "../ConfidentialInfoBox"
 import SectionHeading from "../SectionHeading"
 import { Accordion, AccordionContent,AccordionItem, AccordionTrigger } from "../ui/accordion"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle,}   from "../ui/card"
 import VolunteerSection from "../VolunteerSection"
 
 type MongoEmissionsData = {
@@ -56,6 +55,8 @@ type MongoEmissionsData = {
 	}
 	[key: string]: unknown
 }
+
+const B3_CONFIDENTIAL_AREA = "vsme:B3-EnergyAndGreenhouseGasEmissionsMember"
 
 const confidentialAreaValues = {
 	totalEnergyConsumption: "vsme:B3TotalEnergyConsumptionInMWhMember",
@@ -155,7 +156,6 @@ export function B3EnergyEmissionsForm() {
 				scope2EmissionsLocationBased: mongoDefaults.scope2EmissionsLocationBased || 0,
 				scope2EmissionsMarketBased: mongoDefaults.scope2EmissionsMarketBased || 0,
 				totalScope3Emissions: mongoDefaults.totalScope3Emissions || 0,
-				isB3Confidential: false,
 				confidentialAreas: mongoDefaults.confidentialAreas || [],
 				category1: mongoDefaults.category1 || 0,
 				category2: mongoDefaults.category2 || 0,
@@ -241,9 +241,16 @@ export function B3EnergyEmissionsForm() {
 	}, [existingData, mongoDefaults, form])
 
 	const confidentialAreas = useStore(
-			form.store,
-			(state) => state.values.confidentialAreas ?? [],
-		)
+		form.store,
+		(state) => state.values.confidentialAreas ?? [],
+	)
+	const isB3Confidential = confidentialAreas.includes(B3_CONFIDENTIAL_AREA)
+	const handleConfidentialChange = (checked: boolean) => {
+		const nextAreas = checked
+			? [...new Set([...confidentialAreas, B3_CONFIDENTIAL_AREA])]
+			: confidentialAreas.filter((area) => area !== B3_CONFIDENTIAL_AREA)
+		form.setFieldValue("confidentialAreas", nextAreas)
+	}
 
 	if (isLoading || isFetchingMongo) {
 		return <div className='p-8 text-center text-muted-foreground'>{m["environmental.B3.loadingFormData"]()}</div>
@@ -260,16 +267,7 @@ export function B3EnergyEmissionsForm() {
 					}}
 				>
 					<fieldset disabled={status === "submitted"} className='space-y-6'>
-						<form.AppField name='isB3Confidential'>
-							{(field) => (
-								<ConfidentialInfoBox
-									value={field.state.value || false}
-									handleChange={(value) => {
-										field.setValue(value)
-									}}
-								/>
-							)}
-						</form.AppField>
+						<ConfidentialInfoBox value={isB3Confidential} handleChange={handleConfidentialChange} />
 
 						<SectionHeading
 							title={m["environmental.B3.energyConsumptionTitle"]()}
@@ -356,16 +354,26 @@ export function B3EnergyEmissionsForm() {
 									/>
 								)}
 							</form.AppField>
-							<form.AppField name='totalEnergyConsumption'>
-								{(field) => (
-									<field.NumberField
-										label={m["environmental.B3.totalEnergyConsumptionLabel"]()}
-										unit='kWh'
-										description={m["environmental.B3.totalEnergyConsumptionDescription"]()}
-									/>
-								)}
-							</form.AppField>
 						</div>
+
+						<SectionHeading
+							title={m["environmental.B3.totalEnergyConsumptionLabel"]()}
+							description={m["environmental.B3.totalEnergyConsumptionDescription"]()}
+							Icon={ZapIcon}
+							disabled={status === "submitted"}
+							confidentialArea={confidentialAreaValues.totalEnergyConsumption}
+							confidentialAreas={confidentialAreas}
+							onConfidentialChange={(areas) => form.setFieldValue("confidentialAreas", areas)}
+						/>
+						<form.AppField name='totalEnergyConsumption'>
+							{(field) => (
+								<field.NumberField
+									label={m["environmental.B3.totalEnergyConsumptionLabel"]()}
+									unit='kWh'
+									description={m["environmental.B3.totalEnergyConsumptionDescription"]()}
+								/>
+							)}
+						</form.AppField>
 
 						<Alert variant='info' className='mb-6 border-l-4'>
 							<Info />
@@ -395,18 +403,27 @@ export function B3EnergyEmissionsForm() {
 							onConfidentialChange={(areas) => form.setFieldValue("confidentialAreas", areas)}
 						/>
 
-						<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-							<form.AppField name='emissionsIntensity'>
-								{(field) => (
-									<field.NumberField
-										label={m["environmental.B3.emissionsIntensityLabel"]()}
-										unit='kgCO₂e/tNOK'
-										step='0.01'
-										description={m["environmental.B3.emissionsIntensityDescription"]()}
-									/>
-								)}
-							</form.AppField>
+						<SectionHeading
+							title={m["environmental.B3.emissionsIntensityLabel"]()}
+							description={m["environmental.B3.emissionsIntensityDescription"]()}
+							Icon={ZapIcon}
+							disabled={status === "submitted"}
+							confidentialArea={confidentialAreaValues.greenhouseGasEmissionIntensity}
+							confidentialAreas={confidentialAreas}
+							onConfidentialChange={(areas) => form.setFieldValue("confidentialAreas", areas)}
+						/>
+						<form.AppField name='emissionsIntensity'>
+							{(field) => (
+								<field.NumberField
+									label={m["environmental.B3.emissionsIntensityLabel"]()}
+									unit='kgCO₂e/tNOK'
+									step='0.01'
+									description={m["environmental.B3.emissionsIntensityDescription"]()}
+								/>
+							)}
+						</form.AppField>
 
+						<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
 							<form.AppField name='scope1Emissions'>
 								{(field) => (
 									<field.NumberField

@@ -18,6 +18,8 @@ interface B10CompensationFormProps {
 	totalEmployees: number
 }
 
+const B10_Confidential = "vsme:B10-WorkforceRemunerationCollectiveBargainingAndTrainingMember"
+
 const PayGapInfoBox = ()=>{
 	return (
 		<Alert variant='info' className='mb-8 border-l-4'>
@@ -63,8 +65,15 @@ export function B10CompensationForm({
 			defaultValues: {
 				reportingYear: reportingYear.toString(),
 				minimumWageLiability: true,
-				isB10Confidential: false,
-			} as B10CompensationFormValues,
+				hourlyPayMale: 0,
+				hourlyPayFemale: 0,
+				collectiveBargainingAgreement: 0,
+				trainingHoursMale: 0,
+				trainingHoursFemale: 0,
+				collectiveBargainingShare: 0,
+				genderPayGap: 0,
+				confidentialAreas: []
+			} as B10CompensationFormValues
 		})
 
 	// Subscribe to fields for reactive updates
@@ -72,6 +81,17 @@ export function B10CompensationForm({
 		form.store,
 		(state) => state.values.minimumWageLiability,
 	)
+	const confidentialAreas = useStore(
+		form.store,
+		(state) => state.values.confidentialAreas ?? [],
+	)
+	const isB10Confidential = confidentialAreas.includes(B10_Confidential)
+	const handleConfidentialChange = (checked: boolean) => {
+		const nextAreas = checked
+			? [...new Set([...confidentialAreas, B10_Confidential])]
+			: confidentialAreas.filter((area) => area !== B10_Confidential)
+		form.setFieldValue("confidentialAreas", nextAreas)
+	}
 
 	const collectiveBargainingAgreement = useStore(
 		form.store,
@@ -115,9 +135,7 @@ export function B10CompensationForm({
 					<form.AppField name='reportingYear'>
 						{(field) => <field.TextField label={m["social.B10.reportingYearLabel"]()} placeholder='YYYY' hidden />}
 					</form.AppField>
-					<form.AppField name='isB10Confidential'>
-						{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
-					</form.AppField>
+					<ConfidentialInfoBox value={isB10Confidential} handleChange={handleConfidentialChange} />
 					<Card className='mb-4'>
 						<CardContent>
 							<div className='flex flex-col items-start gap-3'>

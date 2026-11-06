@@ -55,6 +55,8 @@ const INCIDENT_ITEMS = [
 	measuresLabel: string
 }[]
 
+const C7_Confidential = "vsme:C7-SevereNegativeHumanRightsIncidentsMember"
+
 export function C7SeriousHumanRightsForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
 
@@ -78,12 +80,21 @@ export function C7SeriousHumanRightsForm() {
 				otherMeasures: "",
 				hasValueChainIncidents: false,
 				valueChainIncidentsDescription: "",
-				isC7Confidential: false,
+				confidentialAreas: [],
 			} as C7SeriousHumanRightsValues,
 		})
 
 	// Subscribe to value chain gate for reactive display
 	const hasValueChainIncidents = useStore(form.store, (state) => state.values.hasValueChainIncidents)
+
+	const confidentialAreas = useStore(form.store, (state) => state.values.confidentialAreas ?? [])
+	const isC7Confidential = confidentialAreas.includes(C7_Confidential)
+	const handleConfidentialChange = (checked: boolean) => {
+		const nextAreas = checked
+			? [...new Set([...confidentialAreas, C7_Confidential])]
+			: confidentialAreas.filter((area) => area !== C7_Confidential)
+		form.setFieldValue("confidentialAreas", nextAreas)
+	}
 
 	if (isLoading) {
 		return <div className='flex items-center justify-center p-8 text-muted-foreground'>Loading...</div>
@@ -105,9 +116,7 @@ export function C7SeriousHumanRightsForm() {
 							<form.AppField name='reportingYear'>
 								{(field) => <field.TextField label={m["social.C7.reportingYearLabel"]()} placeholder='YYYY' hidden />}
 							</form.AppField>
-							<form.AppField name='isC7Confidential'>
-								{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
-							</form.AppField>
+							<ConfidentialInfoBox value={isC7Confidential} handleChange={handleConfidentialChange} />
 
 							{/* (a) Confirmed incidents in own workforce */}
 							<div className='flex flex-col items-start gap-3'>

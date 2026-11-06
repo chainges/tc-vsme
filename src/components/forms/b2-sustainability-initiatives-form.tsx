@@ -16,6 +16,9 @@ import { yearStore } from "@/lib/year-store"
 import { m } from "@/paraglide/messages"
 import ConfidentialInfoBox from "../ConfidentialInfoBox"
 
+const B2_CONFIDENTIAL_AREA =
+	"vsme:B2-PracticesPoliciesAndFutureInitiativesForTransitioningTowardsAMoreSustainableEconomyMember"
+
 type SustainabilityTopic = {
 	label: string
 	subtopics?: Array<string | SustainabilityTopic>
@@ -108,9 +111,17 @@ export function B2SustainabilityInitiativesForm() {
 				arePracticesPubliclyAvailable: false,
 				policiesHaveTargets: false,
 				selectedSustainabilityIssueValues: [],
-				isB2Confidential: false,
+				confidentialAreas: [],
 			} as SustainabilityInitiativesFormValues,
 		})
+	const confidentialAreas = useYearStore(form.store, (state) => state.values.confidentialAreas ?? [])
+	const isB2Confidential = confidentialAreas.includes(B2_CONFIDENTIAL_AREA)
+	const handleConfidentialChange = (checked: boolean) => {
+		const nextAreas = checked
+			? [...new Set([...confidentialAreas, B2_CONFIDENTIAL_AREA])]
+			: confidentialAreas.filter((area) => area !== B2_CONFIDENTIAL_AREA)
+		form.setFieldValue("confidentialAreas", nextAreas)
+	}
 
 	if (isLoading) {
 		return <div className='flex items-center justify-center p-8 text-muted-foreground'>Loading...</div>
@@ -147,19 +158,7 @@ export function B2SustainabilityInitiativesForm() {
 							{(field) => <field.TextField label={m["general.reportingYear"]()} placeholder={"YYYY"} hidden />}
 						</form.AppField>
 
-						<form.AppField name='isB2Confidential'>
-							{(field) => {
-								return (
-									<ConfidentialInfoBox
-										value={field.state.value || false}
-										handleChange={(value) => {
-											// set value of isB1Confidential based on the switch
-											field.handleChange(value)
-										}}
-									/>
-								)
-							}}
-						</form.AppField>
+						<ConfidentialInfoBox value={isB2Confidential} handleChange={handleConfidentialChange} />
 
 						<Card>
 							<CardContent className='space-y-6'>

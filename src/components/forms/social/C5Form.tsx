@@ -1,4 +1,4 @@
-import { useStore as useYearStore } from '@tanstack/react-store'
+import { useStore, useStore as useYearStore } from '@tanstack/react-store'
 import { Info } from 'lucide-react'
 import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -16,6 +16,8 @@ interface C5AdditionalWorkforceFormProps {
 	totalEmployees: number
 }
 
+const C5_Confidential = "vsme:C5-AdditionalGeneralWorkforceCharacteristicsMember"
+
 export function C5AdditionalWorkforceForm({
 	totalEmployees,
 }: C5AdditionalWorkforceFormProps) {
@@ -31,7 +33,7 @@ export function C5AdditionalWorkforceForm({
 			schema: c5AdditionalWorkforceSchema,
 			defaultValues: {
 				reportingYear: reportingYear.toString(),
-					isC5Confidential: false,
+				confidentialAreas: [],
 			} as C5AdditionalWorkforceValues,
 			transformBeforeSave: (values) => {
 				const result: Record<string, unknown> = { ...values }
@@ -57,6 +59,18 @@ export function C5AdditionalWorkforceForm({
 				return result as C5AdditionalWorkforceValues
 			},
 		})
+	
+		const confidentialAreas = useStore(
+			form.store,
+			(state) => state.values.confidentialAreas ?? [],
+		)
+		const isC5Confidential = confidentialAreas.includes(C5_Confidential)
+		const handleConfidentialChange = (checked: boolean) => {
+			const nextAreas = checked
+				? [...new Set([...confidentialAreas, C5_Confidential])]
+				: confidentialAreas.filter((area) => area !== C5_Confidential)
+			form.setFieldValue("confidentialAreas", nextAreas)
+		}
 
 	if (isLoading) {
 		return (
@@ -99,9 +113,7 @@ export function C5AdditionalWorkforceForm({
 									/>
 								)}
 							</form.AppField>
-							<form.AppField name="isC5Confidential">
-								{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
-							</form.AppField>
+							<ConfidentialInfoBox value={isC5Confidential} handleChange={handleConfidentialChange} />
 
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 								<form.AppField name="maleManagers">

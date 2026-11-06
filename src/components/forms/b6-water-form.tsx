@@ -12,6 +12,8 @@ import { yearStore } from '@/lib/year-store'
 import { m } from '@/paraglide/messages'
 import ConfidentialInfoBox from '../ConfidentialInfoBox'
 
+const B6_CONFIDENTIAL = "vsme:B6-WaterMember"
+
 export function B6WaterManagementForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
 
@@ -23,10 +25,10 @@ export function B6WaterManagementForm() {
 			schema: b6WaterSchema,
 			defaultValues: {
 				reportingYear: reportingYear.toString(),
-				isB6Confidential: false,
 				waterWithdrawal: 0,
 				waterWithdrawalStress: 0,
 				waterDischarge: 0,
+				confidentialAreas: [],
 			} as B6WaterFormValues,
 			transformBeforeSave: (values) => ({
 				...values,
@@ -43,6 +45,20 @@ export function B6WaterManagementForm() {
 		form.store,
 		(state) => (state.values as B6WaterFormValues).waterDischarge,
 	)
+
+	const confidentialAreas = useStore(
+		form.store,
+		(state) => (state.values as B6WaterFormValues).confidentialAreas ?? [],
+	)
+
+	const isB6Confidential = confidentialAreas.includes(B6_CONFIDENTIAL)
+	const handleConfidentialChange = (checked: boolean) => {
+		const nextAreas = checked
+			? [...new Set([...confidentialAreas, B6_CONFIDENTIAL])]
+			: confidentialAreas.filter((area) => area !== B6_CONFIDENTIAL)
+		form.setFieldValue("confidentialAreas", nextAreas)
+	}
+
 
 	const waterConsumption = (withdrawal ?? 0) - (discharge ?? 0)
 
@@ -73,9 +89,7 @@ export function B6WaterManagementForm() {
 							/>
 						)}
 					</form.AppField>
-					<form.AppField name="isB6Confidential">
-						{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
-					</form.AppField>
+					<ConfidentialInfoBox value={isB6Confidential} handleChange={handleConfidentialChange} />
 
 					<Card>
 						<CardContent className="">

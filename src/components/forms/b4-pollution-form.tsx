@@ -1,4 +1,4 @@
-import { useStore as useYearStore } from "@tanstack/react-store"
+import { useStore, useStore as useYearStore } from "@tanstack/react-store"
 import { Plus, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,8 +10,11 @@ import { yearStore } from "@/lib/year-store"
 import { m } from "@/paraglide/messages"
 import ConfidentialInfoBox from "../ConfidentialInfoBox"
 
+const B4_CONFIDENTIAL = "vsme:B4-PollutionOfAirWaterAndSoilMember"
+
 export function B4PollutionForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
+
 
 	const { form, status, isSaving, isLoading, saveDraft, submit, reopen } = useFormSubmission<PollutionFormValues>({
 		table: "formEnvironmental",
@@ -24,9 +27,22 @@ export function B4PollutionForm() {
 			publiclyAvailableDisclosure: false,
 			urlOrLinkToPubliclyAvailableDisclosure: "",
 			pollutants: [],
-			isB4Confidential: false,
+			confidentialAreas: [],
 		} as PollutionFormValues,
 	})
+
+	const confidentialAreas = useStore(
+			form.store,
+			(state) => state.values.confidentialAreas ?? [],
+		)
+
+	const isB4Confidential = confidentialAreas.includes(B4_CONFIDENTIAL)
+	const handleConfidentialChange = (checked: boolean) => {
+		const nextAreas = checked
+			? [...new Set([...confidentialAreas, B4_CONFIDENTIAL])]
+			: confidentialAreas.filter((area) => area !== B4_CONFIDENTIAL)
+		form.setFieldValue("confidentialAreas", nextAreas)
+	}
 
 	if (isLoading) {
 		return <div className='flex items-center justify-center p-8 text-muted-foreground'>Loading...</div>
@@ -45,9 +61,9 @@ export function B4PollutionForm() {
 					<form.AppField name='reportingYear'>
 						{(field) => <field.TextField label={m["environmental.B4.reportingYear"]()} placeholder='YYYY' hidden />}
 					</form.AppField>
-					<form.AppField name='isB4Confidential'>
-						{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
-					</form.AppField>
+			
+					<ConfidentialInfoBox value={isB4Confidential} handleChange={handleConfidentialChange} />
+				
 
 					<form.AppField name='reportingPollution'>
 						{(field) => <field.SwitchField label={m["environmental.B4.reportingPollutionLabel"]()} />}

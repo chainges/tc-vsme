@@ -28,6 +28,8 @@ const confidentialAreaValues={
 	annualMassFlowOfRelevantMaterialsUsed:"vsme:B7AnnualMassFlowOfRelevantMaterialsUsedMember",
 }
 
+const B7_CONFIDENTIAL = "vsme:B7-ResourceUseCircularEconomyAndWasteManagementMember"
+
 export function B7ResourceUseCircularEconomyForm() {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
 
@@ -66,10 +68,17 @@ export function B7ResourceUseCircularEconomyForm() {
 			} as unknown as B7ResourceUseCircularEconomyFormValues,
 		})
 	
-		const confidentialAreas = useStore(
-				form.store,
-				(state) => state.values.confidentialAreas ?? [],
-			)
+	const confidentialAreas = useStore(
+			form.store,
+			(state) => state.values.confidentialAreas ?? [],
+	)
+	const isB7Confidential = confidentialAreas.includes(B7_CONFIDENTIAL)
+	const handleConfidentialChange = (checked: boolean) => {
+		const nextAreas = checked
+			? [...new Set([...confidentialAreas, B7_CONFIDENTIAL])]
+			: confidentialAreas.filter((area) => area !== B7_CONFIDENTIAL)
+		form.setFieldValue("confidentialAreas", nextAreas)
+	}
 
 	if (isLoading) {
 		return <div className='flex items-center justify-center p-8 text-muted-foreground'>Loading...</div>
@@ -90,9 +99,7 @@ export function B7ResourceUseCircularEconomyForm() {
 							<field.TextField label={m["environmental.B7.reportingYearLabel"]()} placeholder='YYYY' hidden />
 						)}
 					</form.AppField>
-					<form.AppField name='isB7Confidential'>
-						{(field) => <ConfidentialInfoBox value={field.state.value} handleChange={field.handleChange} />}
-					</form.AppField>
+					<ConfidentialInfoBox value={isB7Confidential} handleChange={handleConfidentialChange} />
 
 					<form.AppField name='applyCircularEconomyPrinciples'>
 						{(field) => <field.SwitchField label={m["environmental.B7.applyCircularEconomyPrinciples"]()} />}

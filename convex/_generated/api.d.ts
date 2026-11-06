@@ -9,6 +9,7 @@
  */
 
 import type * as _utils_auth from "../_utils/auth.js";
+import type * as _utils_readiness from "../_utils/readiness.js";
 import type * as emissions from "../emissions.js";
 import type * as emissionsQueries from "../emissionsQueries.js";
 import type * as enviroment from "../enviroment.js";
@@ -41,6 +42,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   "_utils/auth": typeof _utils_auth;
+  "_utils/readiness": typeof _utils_readiness;
   emissions: typeof emissions;
   emissionsQueries: typeof emissionsQueries;
   enviroment: typeof enviroment;
