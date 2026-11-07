@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import { api } from "convex/_generated/api";
-import { useQuery } from "convex/react";
+import { useMutation as useConvexMutation, useQuery } from "convex/react";
 import {
   AlertTriangle,
   ArrowRight,
@@ -43,6 +43,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useOrgGuard } from "@/hooks/use-org-guard";
 import { generateXbrl } from "@/lib/report/generate-xbrl";
+import { reportStore } from "@/lib/report/report-store";
 import { modulesInArea, moduleTitle, READINESS_AREAS, STATE_LABEL } from "@/lib/report-readiness";
 import { yearStore } from "@/lib/year-store";
 
@@ -77,11 +78,16 @@ export const Route = createFileRoute("/_appLayout/app/generate/")({
 
 function ReportReadiness() {
   const reportingYear = useStore(yearStore, (state) => state.selectedYear);
+	const createReport = useConvexMutation(api.reportMutations.createReport);
   const { skipQuery } = useOrgGuard();
   const readiness = useQuery(api.report.getReadiness, skipQuery || { reportingYear });
 
   const generate = useMutation({
-    mutationFn: () => generateXbrl({ data: { reportingYear } }),
+		mutationFn: async () => {
+			const report = await createReport({ reportingYear });
+			reportStore.setState((state) => ({ ...state, reportId: report.reportId }));
+			return generateXbrl({ data: { reportingYear, reportId: report.reportId } });
+		},
     onSuccess: (result) => {
       if (result.status === "ok") toast.success("XBRL report generation started");
       else if (result.status === "not_ready") toast.error(`Still missing: ${result.missing.join(", ")}`);

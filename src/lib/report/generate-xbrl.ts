@@ -10,7 +10,7 @@ export type GenerateXbrlResult =
 
 /** Re-checks readiness with the caller's Convex identity, then asks the Python service to build the XBRL. */
 export const generateXbrl = createServerFn({ method: 'POST' })
-	.inputValidator((data: { reportingYear: number }) => data)
+	.inputValidator((data: { reportingYear: number; reportId: string }) => data)
 	.handler(async ({ data }): Promise<GenerateXbrlResult> => {
 		const { userId, orgId, getToken } = await auth()
 
@@ -34,6 +34,7 @@ export const generateXbrl = createServerFn({ method: 'POST' })
 		const params = new URLSearchParams({
 			orgId,
 			reportingYear: String(data.reportingYear),
+			reportId: data.reportId,
 		})
 
 		const response = await fetch(

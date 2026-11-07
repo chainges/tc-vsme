@@ -685,5 +685,49 @@ export default defineSchema({
     lastModifiedBy: v.string(),
     lastModifiedAt: v.number(),
   })
-    .index("by_organizationId", ["organizationId"]),
+  .index("by_organizationId", ["organizationId"]),
+
+  reports: defineTable({
+    orgId: v.string(),
+    reportingYear: v.number(),
+    reportId: v.string(),
+
+    // Report generation lifecycle
+    status: v.union(
+      v.literal("queued"),
+      v.literal("processing"),
+      v.literal("uploading"),
+      v.literal("completed"),
+      v.literal("failed")
+    ),
+
+    // Generated file information
+    storage: v.optional(
+      v.object({
+        provider: v.literal("gcs"),
+        bucket: v.string(),
+        objectKey: v.string(),
+        fileName: v.string(),
+        contentType: v.string(),
+        size: v.number(),
+      })
+    ),
+
+    // Generation information
+    createdAt: v.number(),
+    startedAt: v.optional(v.number()),
+    completedAt: v.optional(v.number()),
+
+    // Error information
+    error: v.optional(v.string()),
+
+    // Useful for tracking report versions
+    version: v.optional(v.number()),
+    generatorVersion: v.optional(v.string()),
+  })
+  .index("by_org", ["orgId"])
+  .index("by_org_year", ["orgId", "reportingYear"])
+  .index("by_org_year_version", ["orgId", "reportingYear", "version"])
+  .index("by_report_id", ["reportId"])
+
 })

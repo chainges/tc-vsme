@@ -15,6 +15,7 @@ import * as formsGet from './forms/get'
 import * as formsSubmit from './forms/submit'
 import * as formsReopen from './forms/reopen'
 import * as formsUtils from './forms/_utils'
+import * as reportMutations from './reportMutations'
 
 export const modules = {
   './organizations.ts': () => Promise.resolve(organizations),
@@ -30,6 +31,7 @@ export const modules = {
   './forms/submit.ts': () => Promise.resolve(formsSubmit),
   './forms/reopen.ts': () => Promise.resolve(formsReopen),
   './forms/_utils.ts': () => Promise.resolve(formsUtils),
+  './reportMutations.ts': () => Promise.resolve(reportMutations),
   './_generated/api.d.ts': () => Promise.resolve({}),
   './_generated/api.js': () => Promise.resolve({}),
   './_generated/dataModel.d.ts': () => Promise.resolve({}),

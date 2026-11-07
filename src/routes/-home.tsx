@@ -43,8 +43,8 @@ export default function Home() {
 		<div className="min-h-screen bg-background text-foreground overflow-x-hidden">
 			{/* Decorative Background Elements */}
 			<div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-				<div className="absolute top-0 right-0 w-[500px] h-[500px] bg-(--sky)/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-				<div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-(--teal)/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+				<div className="absolute top-0 right-0 w-125 h-125 bg-(--sky)/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+				<div className="absolute bottom-0 left-0 w-125 h-125 bg-(--teal)/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
 			</div>
 
 			{/* Hero Section */}

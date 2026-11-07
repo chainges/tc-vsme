@@ -1,0 +1,3 @@
+in this file C:\Users\Hp\Desktop\Work\VSME\tc-vsme\src\routes\_appLayout\app\generate\index.tsx when user will click on generate xbrl it will createReport which is defined in this file C:\Users\Hp\Desktop\Work\VSME\tc-vsme\convex\reportMutations.ts after creating report it will store reportId in tanstack store and then will call generateXbrl which is defined in this file C:\Users\Hp\Desktop\Work\VSME\tc-vsme\src\lib\report\generate-xbrl.ts
+
+see current implementation 

@@ -29,6 +29,7 @@ import type * as mongodb_client from "../mongodb/client.js";
 import type * as mongodb_queries from "../mongodb/queries.js";
 import type * as organizations from "../organizations.js";
 import type * as report from "../report.js";
+import type * as reportMutations from "../reportMutations.js";
 import type * as social from "../social.js";
 import type * as targets from "../targets.js";
 import type * as todos from "../todos.js";
@@ -62,6 +63,7 @@ declare const fullApi: ApiFromModules<{
   "mongodb/queries": typeof mongodb_queries;
   organizations: typeof organizations;
   report: typeof report;
+  reportMutations: typeof reportMutations;
   social: typeof social;
   targets: typeof targets;
   todos: typeof todos;

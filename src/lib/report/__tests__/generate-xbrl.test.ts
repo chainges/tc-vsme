@@ -9,7 +9,7 @@ vi.mock('@tanstack/react-start', () => ({
 vi.mock('convex/browser', () => ({ ConvexHttpClient: vi.fn() }))
 vi.mock('../../../../convex/_generated/api', () => ({ api: { report: { getReadiness: 'getReadiness' } } }))
 
-type Handler = (args: { data: { reportingYear: number } }) => Promise<unknown>
+type Handler = (args: { data: { reportingYear: number; reportId: string } }) => Promise<unknown>
 
 describe('generateXbrl', () => {
 	const query = vi.fn()
@@ -33,32 +33,28 @@ describe('generateXbrl', () => {
 
 	it('does not call the XBRL service when the report is not ready', async () => {
 		query.mockResolvedValue({ canGenerate: false, missing: ['B3'] })
-		const result = await generateXbrl({ data: { reportingYear: 2025 } })
+		const result = await generateXbrl({ data: { reportingYear: 2025, reportId: 'report_1' } })
 		expect(result).toEqual({ status: 'not_ready', missing: ['B3'] })
 		expect(fetchMock).not.toHaveBeenCalled()
 	})
 
-	it('posts org and year to the XBRL service when ready', async () => {
+	it('sends org, year, and report ID to the XBRL service when ready', async () => {
 		query.mockResolvedValue({ canGenerate: true, missing: [] })
 		fetchMock.mockResolvedValue(
 			new Response(JSON.stringify({ file: 'a.xbrl' }), { headers: { 'content-type': 'application/json' } }),
 		)
-		const result = await generateXbrl({ data: { reportingYear: 2025 } })
+		const result = await generateXbrl({ data: { reportingYear: 2025, reportId: 'report_1' } })
 		expect(result).toEqual({ status: 'ok', body: JSON.stringify({ file: 'a.xbrl' }) })
 		expect(fetchMock).toHaveBeenCalledWith(
-			'https://xbrl.test/convex',
-			expect.objectContaining({
-				method: 'POST',
-				headers: expect.objectContaining({ 'x-api-key': 'secret' }),
-				body: JSON.stringify({ orgId: 'org_1', reportingYear: 2025 }),
-			}),
+			'https://xbrl.test/convex?orgId=org_1&reportingYear=2025&reportId=report_1',
+			expect.objectContaining({ method: 'GET' }),
 		)
 	})
 
 	it('returns an error when the XBRL service fails', async () => {
 		query.mockResolvedValue({ canGenerate: true, missing: [] })
 		fetchMock.mockResolvedValue(new Response('boom', { status: 502 }))
-		expect(await generateXbrl({ data: { reportingYear: 2025 } })).toEqual({
+		expect(await generateXbrl({ data: { reportingYear: 2025, reportId: 'report_1' } })).toEqual({
 			status: 'error',
 			message: 'XBRL service responded with 502',
 		})
@@ -67,7 +63,7 @@ describe('generateXbrl', () => {
 	it('rejects unauthenticated callers', async () => {
 		const { auth } = await import('@clerk/tanstack-react-start/server')
 		vi.mocked(auth).mockResolvedValue({ userId: null, orgId: null } as never)
-		expect(await generateXbrl({ data: { reportingYear: 2025 } })).toEqual({
+		expect(await generateXbrl({ data: { reportingYear: 2025, reportId: 'report_1' } })).toEqual({
 			status: 'error',
 			message: 'Not authenticated',
 		})

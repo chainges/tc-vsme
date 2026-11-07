@@ -1,20 +1,25 @@
 // This is the layout file of the app
 
+import { convexQuery } from "@convex-dev/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
+import { useStore } from "@tanstack/react-store"
+import { api } from "convex/_generated/api"
 import { AppSidebar } from "@/components/app-sidebar"
+import { type Language, LanguageSwitcher } from "@/components/LanguageSwitcher"
 import { ThemeSwitcher } from "@/components/ThemeSwitcher"
 import {
 	Breadcrumb,
 	BreadcrumbItem,
-	BreadcrumbLink,
 	BreadcrumbList,
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import XbrlGenerationProgress from "@/components/XbrlGenerationProgress"
 import { getAuthContext } from "@/lib/auth"
-import { type Language, LanguageSwitcher } from "@/components/LanguageSwitcher"
+import { reportStore } from "@/lib/report/report-store"
 import { getLocale, setLocale } from "@/paraglide/runtime"
 
 /**
@@ -38,10 +43,12 @@ export const Route = createFileRoute("/_appLayout")({
 		// Fetch full authentication context with metadata
 		const authContext = await getAuthContext()
 
-		const hasVsme = authContext?.hasVsme
-		const orgHasVsme = authContext?.orgHasVsme
-		const needsOrgSetup = authContext?.needsOrgSetup
-		const vsmeDb = authContext?.vsmeDb
+		// const hasVsme = authContext?.hasVsme
+		// const orgHasVsme = authContext?.orgHasVsme
+		// const needsOrgSetup = authContext?.needsOrgSetup
+		// const vsmeDb = authContext?.vsmeDb
+
+
 
 		// Check 1: User must be authenticated
 		if (!authContext) {
@@ -73,10 +80,20 @@ function RouteComponent() {
 	const { authContext } = Route.useRouteContext()
 	const needsOrgSetup = authContext?.needsOrgSetup
 	const vsmeDb = authContext?.vsmeDb
-	const hasVsme = authContext?.hasVsme
-	const orgHasVsme = authContext?.orgHasVsme
+	//const hasVsme = authContext?.hasVsme
+	//const orgHasVsme = authContext?.orgHasVsme
 	const canAccessDashboard = authContext?.canAccessDashboard
 	const currentLocale = getLocale()
+
+	const reportId = useStore(reportStore, (state) => state.reportId)
+
+	const { data: report, isPending, error } = useQuery({
+		...convexQuery(api.reportMutations.getReportById, { reportId: reportId ?? "" }),
+		enabled: reportId !== null,
+	})
+
+	console.log(report, isPending, error)
+
 	return (
 		<SidebarProvider>
 			<AppSidebar />
@@ -105,6 +122,9 @@ function RouteComponent() {
 					</div>
 
 					<div className='flex items-center gap-2 px-4'>
+						<div>
+							<XbrlGenerationProgress generationStatus="queued" isGenerating={true} />
+						</div>
 						<div>
 							<LanguageSwitcher
 								languages={languages}
