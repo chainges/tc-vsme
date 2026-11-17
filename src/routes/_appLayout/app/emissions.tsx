@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
 import { useAction, useConvexAuth } from 'convex/react'
+import { CloudFog } from 'lucide-react'
 import { yearStore } from '@/lib/year-store'
 import { api } from '../../../../convex/_generated/api'
 
@@ -100,34 +101,28 @@ function EmissionsPage() {
 	]
 
 	return (
-		<div className="flex flex-col gap-6">
-			<div className="flex items-center justify-between">
-				<div className="flex flex-col gap-2">
-					<h1 className="text-3xl font-bold">Emissions Data</h1>
-					<p className="text-muted-foreground">
-						Viewing emissions data for organization: {orgIdToUse}
-					</p>
+		<div className='flex flex-col gap-6 px-4 pb-8 pt-7 md:px-6 lg:px-8'>
+			<div className='flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between'>
+				<div>
+					<h1 className='flex items-center gap-2.5 text-xl font-semibold'>
+						<CloudFog className='size-5 text-primary' />
+						Emissions Data
+					</h1>
+					<p className='mt-1 text-sm text-muted-foreground'>Viewing emissions data for organization: {orgIdToUse}</p>
 				</div>
 				<button
-					type="button"
+					type='button'
 					onClick={() => refetch()}
 					disabled={isRefetching}
-					className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+					className='shrink-0 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors'
 				>
-					{isRefetching ? 'Refreshing...' : 'Refresh'}
+					{isRefetching ? "Refreshing..." : "Refresh"}
 				</button>
 			</div>
 
-			<div className="grid gap-4 md:grid-cols-3">
+			<div className='grid gap-4 md:grid-cols-3'>
 				{yearData.map(({ year, data, loading, error, isSelected }) => (
-					<EmissionsCard
-						key={year}
-						year={year}
-						data={data}
-						loading={loading}
-						error={error}
-						isSelected={isSelected}
-					/>
+					<EmissionsCard key={year} year={year} data={data} loading={loading} error={error} isSelected={isSelected} />
 				))}
 			</div>
 		</div>

@@ -85,7 +85,7 @@ export function FormCard({
 	return (
 		<Card
 			className={cn(
-				"mx-auto w-full max-w-6xl transition-all duration-300 hover:shadow-lg gap-2",
+				"mx-auto w-full transition-all duration-300 hover:shadow-lg gap-2",
 				module === "Comprehensive Module" && "",
 			)}
 		>
@@ -101,8 +101,8 @@ export function FormCard({
 					}
 				}}
 			>
-				<div className='flex justify-between items-start w-full'>
-					<div className='flex gap-2 items-center'>
+				<div className='flex w-full flex-col gap-3 md:flex-row md:items-start md:justify-between'>
+					<div className='flex min-w-0 flex-wrap items-center gap-2'>
 						<div
 							className={cn(
 								"inline-flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm",
@@ -113,13 +113,13 @@ export function FormCard({
 						>
 							{code}
 						</div>
-						<h3 className='text-xl font-semibold text-secondary'>{title}</h3>
-						<ChevronRightIcon className={cn("h-6 w-6 transition-transform duration-200", isExpanded && "rotate-90")} />
+						<h3 className='min-w-0 wrap-break-word text-lg font-semibold text-secondary md:text-xl'>{title}</h3>
+						<ChevronRightIcon className={cn("h-6 w-6 shrink-0 transition-transform duration-200", isExpanded && "rotate-90")} />
 						<TooltipProvider>
 							<Tooltip>
 								<TooltipTrigger asChild>
 									<InfoIcon
-										className='h-5 w-5 text-muted-foreground hover:text-foreground transition-colors cursor-help'
+										className='hidden md:inline-flex h-5 w-5 shrink-0 text-muted-foreground hover:text-foreground transition-colors cursor-help'
 										onClick={(e) => {
 											e.stopPropagation()
 											toggleExpand()
@@ -132,11 +132,11 @@ export function FormCard({
 							</Tooltip>
 						</TooltipProvider>
 					</div>
-					<div className='flex items-center gap-2'>
+					<div className='hidden md:flex w-full items-center gap-2 md:w-auto md:justify-end'>
 						{hasHelpButton && (
 							<Button
 								type='button'
-								className='flex gap-2'
+								className='flex h-auto min-h-10 max-w-full flex-wrap justify-start gap-2 whitespace-normal text-left md:min-h-9'
 								variant='outline'
 								size='default'
 								onClick={(e) => {
@@ -155,8 +155,8 @@ export function FormCard({
 
 			<CardContent>
 				<div className='space-y-0'>
-					<div className='flex justify-between items-center'>
-						<div className='flex gap-2'>
+					<div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
+						<div className='flex flex-wrap gap-2'>
 							<Badge variant='secondary' className={STATUS_CONFIG[status].className}>
 								{STATUS_CONFIG[status].label}
 							</Badge>
@@ -178,7 +178,7 @@ export function FormCard({
 							)}
 						</div>
 
-						<div className='text-sm text-muted-foreground text-right min-h-10'>
+						<div className='min-h-10 wrap-break-word text-left text-sm text-muted-foreground md:text-right'>
 							<div>
 								Status: <span className='font-medium'>{STATUS_CONFIG[status].label}</span>
 							</div>
@@ -206,7 +206,7 @@ export function FormCard({
 			</CardContent>
 
 			<CardFooter>
-				<div className='w-full text-sm text-muted-foreground'>
+				<div className='w-full wrap-break-word text-sm text-muted-foreground'>
 					Last updated by {contributor.name}: {updatedDate}
 				</div>
 			</CardFooter>

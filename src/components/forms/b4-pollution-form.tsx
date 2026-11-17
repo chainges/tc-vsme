@@ -2,6 +2,7 @@ import { useStore, useStore as useYearStore } from "@tanstack/react-store"
 import { Plus, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { POLLUTANTS } from "@/data/pollutants"
 import { FormButtons } from "@/hooks/tanstack-form"
 import { useFormSubmission } from "@/hooks/use-form-submission"
@@ -45,7 +46,7 @@ export function B4PollutionForm() {
 	}
 
 	if (isLoading) {
-		return <div className='flex items-center justify-center p-8 text-muted-foreground'>Loading...</div>
+		return <LoadingSkeleton />
 	}
 
 	return (

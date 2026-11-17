@@ -28,7 +28,7 @@ export function HelpSheet({
 		<Sheet open={open} onOpenChange={onOpenChange}>
 			<SheetContent
 				showClose={true}
-				className="sm:max-w-md md:max-w-2xl lg:max-w-3xl xl:max-w-4xl"
+				className="w-[calc(100vw-1rem)] sm:w-3/4 sm:max-w-md md:max-w-2xl lg:max-w-3xl xl:max-w-4xl"
 			>
 				<SheetHeader>
 					<SheetTitle></SheetTitle>

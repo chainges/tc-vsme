@@ -41,6 +41,7 @@ import { Route as DemoLayoutDemoGuitarsIndexRouteImport } from './routes/_demoLa
 import { Route as AppLayoutAppTargetsIndexRouteImport } from './routes/_appLayout/app/targets/index'
 import { Route as AppLayoutAppSocialIndexRouteImport } from './routes/_appLayout/app/social/index'
 import { Route as AppLayoutAppSettingsIndexRouteImport } from './routes/_appLayout/app/settings/index'
+import { Route as AppLayoutAppReportsIndexRouteImport } from './routes/_appLayout/app/reports/index'
 import { Route as AppLayoutAppGovernanceIndexRouteImport } from './routes/_appLayout/app/governance/index'
 import { Route as AppLayoutAppGenerateIndexRouteImport } from './routes/_appLayout/app/generate/index'
 import { Route as AppLayoutAppGeneralIndexRouteImport } from './routes/_appLayout/app/general/index'
@@ -227,6 +228,12 @@ const AppLayoutAppSettingsIndexRoute =
     path: '/app/settings/',
     getParentRoute: () => AppLayoutRouteRoute,
   } as any)
+const AppLayoutAppReportsIndexRoute =
+  AppLayoutAppReportsIndexRouteImport.update({
+    id: '/app/reports/',
+    path: '/app/reports/',
+    getParentRoute: () => AppLayoutRouteRoute,
+  } as any)
 const AppLayoutAppGovernanceIndexRoute =
   AppLayoutAppGovernanceIndexRouteImport.update({
     id: '/app/governance/',
@@ -397,6 +404,7 @@ export interface FileRoutesByFullPath {
   '/app/general/': typeof AppLayoutAppGeneralIndexRoute
   '/app/generate/': typeof AppLayoutAppGenerateIndexRoute
   '/app/governance/': typeof AppLayoutAppGovernanceIndexRoute
+  '/app/reports/': typeof AppLayoutAppReportsIndexRoute
   '/app/settings/': typeof AppLayoutAppSettingsIndexRoute
   '/app/social/': typeof AppLayoutAppSocialIndexRoute
   '/app/targets/': typeof AppLayoutAppTargetsIndexRoute
@@ -451,6 +459,7 @@ export interface FileRoutesByTo {
   '/app/general': typeof AppLayoutAppGeneralIndexRoute
   '/app/generate': typeof AppLayoutAppGenerateIndexRoute
   '/app/governance': typeof AppLayoutAppGovernanceIndexRoute
+  '/app/reports': typeof AppLayoutAppReportsIndexRoute
   '/app/settings': typeof AppLayoutAppSettingsIndexRoute
   '/app/social': typeof AppLayoutAppSocialIndexRoute
   '/app/targets': typeof AppLayoutAppTargetsIndexRoute
@@ -508,6 +517,7 @@ export interface FileRoutesById {
   '/_appLayout/app/general/': typeof AppLayoutAppGeneralIndexRoute
   '/_appLayout/app/generate/': typeof AppLayoutAppGenerateIndexRoute
   '/_appLayout/app/governance/': typeof AppLayoutAppGovernanceIndexRoute
+  '/_appLayout/app/reports/': typeof AppLayoutAppReportsIndexRoute
   '/_appLayout/app/settings/': typeof AppLayoutAppSettingsIndexRoute
   '/_appLayout/app/social/': typeof AppLayoutAppSocialIndexRoute
   '/_appLayout/app/targets/': typeof AppLayoutAppTargetsIndexRoute
@@ -564,6 +574,7 @@ export interface FileRouteTypes {
     | '/app/general/'
     | '/app/generate/'
     | '/app/governance/'
+    | '/app/reports/'
     | '/app/settings/'
     | '/app/social/'
     | '/app/targets/'
@@ -618,6 +629,7 @@ export interface FileRouteTypes {
     | '/app/general'
     | '/app/generate'
     | '/app/governance'
+    | '/app/reports'
     | '/app/settings'
     | '/app/social'
     | '/app/targets'
@@ -674,6 +686,7 @@ export interface FileRouteTypes {
     | '/_appLayout/app/general/'
     | '/_appLayout/app/generate/'
     | '/_appLayout/app/governance/'
+    | '/_appLayout/app/reports/'
     | '/_appLayout/app/settings/'
     | '/_appLayout/app/social/'
     | '/_appLayout/app/targets/'
@@ -932,6 +945,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLayoutAppSettingsIndexRouteImport
       parentRoute: typeof AppLayoutRouteRoute
     }
+    '/_appLayout/app/reports/': {
+      id: '/_appLayout/app/reports/'
+      path: '/app/reports'
+      fullPath: '/app/reports/'
+      preLoaderRoute: typeof AppLayoutAppReportsIndexRouteImport
+      parentRoute: typeof AppLayoutRouteRoute
+    }
     '/_appLayout/app/governance/': {
       id: '/_appLayout/app/governance/'
       path: '/app/governance'
@@ -1097,6 +1117,7 @@ interface AppLayoutRouteRouteChildren {
   AppLayoutAppGeneralIndexRoute: typeof AppLayoutAppGeneralIndexRoute
   AppLayoutAppGenerateIndexRoute: typeof AppLayoutAppGenerateIndexRoute
   AppLayoutAppGovernanceIndexRoute: typeof AppLayoutAppGovernanceIndexRoute
+  AppLayoutAppReportsIndexRoute: typeof AppLayoutAppReportsIndexRoute
   AppLayoutAppSettingsIndexRoute: typeof AppLayoutAppSettingsIndexRoute
   AppLayoutAppSocialIndexRoute: typeof AppLayoutAppSocialIndexRoute
   AppLayoutAppTargetsIndexRoute: typeof AppLayoutAppTargetsIndexRoute
@@ -1110,6 +1131,7 @@ const AppLayoutRouteRouteChildren: AppLayoutRouteRouteChildren = {
   AppLayoutAppGeneralIndexRoute: AppLayoutAppGeneralIndexRoute,
   AppLayoutAppGenerateIndexRoute: AppLayoutAppGenerateIndexRoute,
   AppLayoutAppGovernanceIndexRoute: AppLayoutAppGovernanceIndexRoute,
+  AppLayoutAppReportsIndexRoute: AppLayoutAppReportsIndexRoute,
   AppLayoutAppSettingsIndexRoute: AppLayoutAppSettingsIndexRoute,
   AppLayoutAppSocialIndexRoute: AppLayoutAppSocialIndexRoute,
   AppLayoutAppTargetsIndexRoute: AppLayoutAppTargetsIndexRoute,

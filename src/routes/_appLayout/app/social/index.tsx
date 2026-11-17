@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
 import { api } from 'convex/_generated/api'
 import { useQuery } from 'convex/react'
+import { UsersRound } from 'lucide-react'
 import { B8WorkforceForm } from '@/components/forms/social/B8Form'
 import { B9HealthSafetyForm } from '@/components/forms/social/B9Form'
 import { B10CompensationForm } from '@/components/forms/social/B10Form'
@@ -13,6 +14,7 @@ import {
 	FormCard,
 	type FormStatus,
 } from '@/components/ui/expandable-card-simple'
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { useOrgGuard } from '@/hooks/use-org-guard'
 import { yearStore } from '@/lib/year-store'
 import { m } from '@/paraglide/messages'
@@ -96,64 +98,77 @@ function SocialPage() {
 
 	// Show loading state
 	if (isOrgLoading || formSections === undefined) {
-		return <div>Loading...</div>
+		return <LoadingSkeleton variant='cards' count={showComprehensiveModule ? 6 : 3} />
 	}
 
 	return (
-		<div className='flex flex-col gap-4 md:grid-cols-1 mt-4 max-w-6xl w-full mx-auto'>
-			<h1 className='text-2xl font-bold'>Social Reporting</h1>
-			<h3 className='text-lg text-muted-foreground'>Workforce and social impact metrics</h3>
+		<div className='flex flex-col gap-4 md:grid-cols-1 px-4 pb-8 pt-7 md:px-6 lg:px-8 w-full mx-auto'>
+			<div>
+				<h1 className='flex items-center gap-2.5 text-xl font-semibold'>
+					<UsersRound className='size-5 text-primary' />
+					Social Reporting
+				</h1>
+				<p className='mt-1 text-sm text-muted-foreground'>Workforce and social impact metrics</p>
+			</div>
 
-			<FormCard
-				title={m["social.B8.title"]()}
-				updatedDate={formatDate(workforce?.lastModifiedAt)}
-				toolTip={m["social.B8.tooltip"]()}
-				status={(workforce?.status ?? "not_started") as FormStatus}
-				contributor={workforce?.contributor || { name: "Unknown" }}
-				code='B8'
-				module='Basic Module'
-				version={workforce?.versions?.length ? workforce.versions[workforce.versions.length - 1]?.version : undefined}
-			>
-				<B8WorkforceForm
-					totalEmployees={totalEmployees}
-					companyCountry={companyCountry}
-					generalFormData={generalData}
-				/>
-			</FormCard>
+			{isOrgLoading || formSections === undefined ? (
+				<LoadingSkeleton variant='cards' count={showComprehensiveModule ? 6 : 3} />
+			) : (
+				<>
+					<FormCard
+						title={m["social.B8.title"]()}
+						updatedDate={formatDate(workforce?.lastModifiedAt)}
+						toolTip={m["social.B8.tooltip"]()}
+						status={(workforce?.status ?? "not_started") as FormStatus}
+						contributor={workforce?.contributor || { name: "Unknown" }}
+						code='B8'
+						module='Basic Module'
+						version={
+							workforce?.versions?.length ? workforce.versions[workforce.versions.length - 1]?.version : undefined
+						}
+					>
+						<B8WorkforceForm
+							totalEmployees={totalEmployees}
+							companyCountry={companyCountry}
+							generalFormData={generalData}
+						/>
+					</FormCard>
 
-			<FormCard
-				title={m["social.B9.title"]()}
-				updatedDate={formatDate(healthSafety?.lastModifiedAt)}
-				toolTip={m["social.B9.tooltip"]()}
-				status={(healthSafety?.status ?? "not_started") as FormStatus}
-				contributor={healthSafety?.contributor || { name: "Unknown" }}
-				code='B9'
-				module='Basic Module'
-				version={
-					healthSafety?.versions?.length ? healthSafety.versions[healthSafety.versions.length - 1]?.version : undefined
-				}
-			>
-				<B9HealthSafetyForm totalEmployees={totalEmployees} />
-			</FormCard>
+					<FormCard
+						title={m["social.B9.title"]()}
+						updatedDate={formatDate(healthSafety?.lastModifiedAt)}
+						toolTip={m["social.B9.tooltip"]()}
+						status={(healthSafety?.status ?? "not_started") as FormStatus}
+						contributor={healthSafety?.contributor || { name: "Unknown" }}
+						code='B9'
+						module='Basic Module'
+						version={
+							healthSafety?.versions?.length
+								? healthSafety.versions[healthSafety.versions.length - 1]?.version
+								: undefined
+						}
+					>
+						<B9HealthSafetyForm totalEmployees={totalEmployees} />
+					</FormCard>
 
-			<FormCard
-				title={m["social.B10.title"]()}
-				updatedDate={formatDate(compensationCollective?.lastModifiedAt)}
-				toolTip={m["social.B10.tooltip"]()}
-				status={(compensationCollective?.status ?? "not_started") as FormStatus}
-				contributor={compensationCollective?.contributor || { name: "Unknown" }}
-				code='B10'
-				module='Basic Module'
-				version={
-					compensationCollective?.versions?.length
-						? compensationCollective.versions[compensationCollective.versions.length - 1]?.version
-						: undefined
-				}
-			>
-				<B10CompensationForm totalEmployees={totalEmployees} />
-			</FormCard>
+					<FormCard
+						title={m["social.B10.title"]()}
+						updatedDate={formatDate(compensationCollective?.lastModifiedAt)}
+						toolTip={m["social.B10.tooltip"]()}
+						status={(compensationCollective?.status ?? "not_started") as FormStatus}
+						contributor={compensationCollective?.contributor || { name: "Unknown" }}
+						code='B10'
+						module='Basic Module'
+						version={
+							compensationCollective?.versions?.length
+								? compensationCollective.versions[compensationCollective.versions.length - 1]?.version
+								: undefined
+						}
+					>
+						<B10CompensationForm totalEmployees={totalEmployees} />
+					</FormCard>
 
-			{/* <FormCard
+					{/* <FormCard
 				title="Arbeid-privatliv-balanse"
 				updatedDate={formatDate(workLifeBalance?.lastModifiedAt)}
 				toolTip="Rapporter foreldrepermisjon og relaterte ordninger."
@@ -171,61 +186,63 @@ function SocialPage() {
 				<B11WorkLifeBalanceForm />
 			</FormCard> */}
 
-			{showComprehensiveModule && (
-				<>
-					<FormCard
-						title={m["social.C5.title"]()}
-						updatedDate={formatDate(additionalWorkforce?.lastModifiedAt)}
-						toolTip={m["social.C5.tooltip"]()}
-						status={(additionalWorkforce?.status ?? "not_started") as FormStatus}
-						contributor={additionalWorkforce?.contributor || { name: "Unknown" }}
-						code='C5'
-						isVolunteer={isMicroUnderTaking}
-						module='Comprehensive Module'
-						version={
-							additionalWorkforce?.versions?.length
-								? additionalWorkforce.versions[additionalWorkforce.versions.length - 1]?.version
-								: undefined
-						}
-					>
-						<C5AdditionalWorkforceForm totalEmployees={totalEmployees} />
-					</FormCard>
+					{showComprehensiveModule && (
+						<>
+							<FormCard
+								title={m["social.C5.title"]()}
+								updatedDate={formatDate(additionalWorkforce?.lastModifiedAt)}
+								toolTip={m["social.C5.tooltip"]()}
+								status={(additionalWorkforce?.status ?? "not_started") as FormStatus}
+								contributor={additionalWorkforce?.contributor || { name: "Unknown" }}
+								code='C5'
+								isVolunteer={isMicroUnderTaking}
+								module='Comprehensive Module'
+								version={
+									additionalWorkforce?.versions?.length
+										? additionalWorkforce.versions[additionalWorkforce.versions.length - 1]?.version
+										: undefined
+								}
+							>
+								<C5AdditionalWorkforceForm totalEmployees={totalEmployees} />
+							</FormCard>
 
-					<FormCard
-						title={m["social.C6.title"]()}
-						updatedDate={formatDate(humanRightsPolicies?.lastModifiedAt)}
-						toolTip={m["social.C6.tooltip"]()}
-						isVolunteer={isMicroUnderTaking}
-						status={(humanRightsPolicies?.status ?? "not_started") as FormStatus}
-						contributor={humanRightsPolicies?.contributor || { name: "Unknown" }}
-						code='C6'
-						module='Comprehensive Module'
-						version={
-							humanRightsPolicies?.versions?.length
-								? humanRightsPolicies.versions[humanRightsPolicies.versions.length - 1]?.version
-								: undefined
-						}
-					>
-						<C6HumanRightsPoliciesForm />
-					</FormCard>
+							<FormCard
+								title={m["social.C6.title"]()}
+								updatedDate={formatDate(humanRightsPolicies?.lastModifiedAt)}
+								toolTip={m["social.C6.tooltip"]()}
+								isVolunteer={isMicroUnderTaking}
+								status={(humanRightsPolicies?.status ?? "not_started") as FormStatus}
+								contributor={humanRightsPolicies?.contributor || { name: "Unknown" }}
+								code='C6'
+								module='Comprehensive Module'
+								version={
+									humanRightsPolicies?.versions?.length
+										? humanRightsPolicies.versions[humanRightsPolicies.versions.length - 1]?.version
+										: undefined
+								}
+							>
+								<C6HumanRightsPoliciesForm />
+							</FormCard>
 
-					<FormCard
-						title={m["social.C7.title"]()}
-						updatedDate={formatDate(seriousHumanRightsIncidents?.lastModifiedAt)}
-						toolTip={m["social.C7.tooltip"]()}
-						isVolunteer={isMicroUnderTaking}
-						status={(seriousHumanRightsIncidents?.status ?? "not_started") as FormStatus}
-						contributor={seriousHumanRightsIncidents?.contributor || { name: "Unknown" }}
-						code='C7'
-						module='Comprehensive Module'
-						version={
-							seriousHumanRightsIncidents?.versions?.length
-								? seriousHumanRightsIncidents.versions[seriousHumanRightsIncidents.versions.length - 1]?.version
-								: undefined
-						}
-					>
-						<C7SeriousHumanRightsForm />
-					</FormCard>
+							<FormCard
+								title={m["social.C7.title"]()}
+								updatedDate={formatDate(seriousHumanRightsIncidents?.lastModifiedAt)}
+								toolTip={m["social.C7.tooltip"]()}
+								isVolunteer={isMicroUnderTaking}
+								status={(seriousHumanRightsIncidents?.status ?? "not_started") as FormStatus}
+								contributor={seriousHumanRightsIncidents?.contributor || { name: "Unknown" }}
+								code='C7'
+								module='Comprehensive Module'
+								version={
+									seriousHumanRightsIncidents?.versions?.length
+										? seriousHumanRightsIncidents.versions[seriousHumanRightsIncidents.versions.length - 1]?.version
+										: undefined
+								}
+							>
+								<C7SeriousHumanRightsForm />
+							</FormCard>
+						</>
+					)}
 				</>
 			)}
 		</div>

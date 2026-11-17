@@ -704,12 +704,10 @@ export default defineSchema({
     // Generated file information
     storage: v.optional(
       v.object({
-        provider: v.literal("gcs"),
         bucket: v.string(),
         objectKey: v.string(),
         fileName: v.string(),
-        contentType: v.string(),
-        size: v.number(),
+        downloadUrl: v.string()
       })
     ),
 

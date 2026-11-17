@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { NumberFieldReadOnly } from '@/components/form-fields/NumberFieldReadOnly'
 import { Card, CardContent } from '@/components/ui/card'
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
 import {
@@ -86,11 +87,7 @@ export function B9HealthSafetyForm({ totalEmployees = 0 }: B9HealthSafetyFormPro
 	}, [workAccidents, knowExactHoursWorked, totalHoursWorked, totalEmployees])
 
 	if (isLoading) {
-		return (
-			<div className="flex items-center justify-center p-8 text-muted-foreground">
-				{m["social.B9.loading"]()}
-			</div>
-		)
+		return <LoadingSkeleton />
 	}
 
 	return (

@@ -1,26 +1,34 @@
 // This is the layout file of the app
 
-import { convexQuery } from "@convex-dev/react-query"
-import { useQuery } from "@tanstack/react-query"
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
-import { useStore } from "@tanstack/react-store"
-import { api } from "convex/_generated/api"
-import { AppSidebar } from "@/components/app-sidebar"
-import { type Language, LanguageSwitcher } from "@/components/LanguageSwitcher"
-import { ThemeSwitcher } from "@/components/ThemeSwitcher"
+import { convexQuery } from '@convex-dev/react-query'
+import { useQuery } from '@tanstack/react-query'
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { useStore } from '@tanstack/react-store'
+import { api } from 'convex/_generated/api'
+import { useConvexAuth } from 'convex/react'
+import { TriangleAlert } from 'lucide-react'
+import { useState } from 'react'
+import { AppSidebar } from '@/components/app-sidebar'
+import { type Language, LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { ThemeSwitcher } from '@/components/ThemeSwitcher'
 import {
 	Breadcrumb,
 	BreadcrumbItem,
 	BreadcrumbList,
 	BreadcrumbPage,
 	BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import XbrlGenerationProgress from "@/components/XbrlGenerationProgress"
-import { getAuthContext } from "@/lib/auth"
-import { reportStore } from "@/lib/report/report-store"
-import { getLocale, setLocale } from "@/paraglide/runtime"
+} from '@/components/ui/breadcrumb'
+import { Separator } from '@/components/ui/separator'
+import {
+	SidebarInset,
+	SidebarProvider,
+	SidebarTrigger,
+} from '@/components/ui/sidebar'
+import XbrlGenerationProgress from '@/components/XbrlGenerationProgress'
+import XbrlReportResultDialog from '@/components/XbrlReportResultDialog'
+import { getAuthContext } from '@/lib/auth'
+import { reportStore } from '@/lib/report/report-store'
+import { getLocale, setLocale } from '@/paraglide/runtime'
 
 /**
  * Protected app layout route with VSME permission checks.
@@ -37,7 +45,7 @@ import { getLocale, setLocale } from "@/paraglide/runtime"
  * 3. Needs org setup (hasVsme but no org or no vsmeDb) → redirect to /create-organization
  * 4. Full access (orgHasVsme + vsmeDb) → allow dashboard access
  */
-export const Route = createFileRoute("/_appLayout")({
+export const Route = createFileRoute('/_appLayout')({
 	component: RouteComponent,
 	beforeLoad: async () => {
 		// Fetch full authentication context with metadata
@@ -48,21 +56,19 @@ export const Route = createFileRoute("/_appLayout")({
 		// const needsOrgSetup = authContext?.needsOrgSetup
 		// const vsmeDb = authContext?.vsmeDb
 
-
-
 		// Check 1: User must be authenticated
 		if (!authContext) {
-			throw redirect({ to: "/sign-in" })
+			throw redirect({ to: '/sign-in' })
 		}
 
 		// Check 2: User must have VSME access (either personal or org-level)
 		if (!authContext.hasVsme && !authContext.orgHasVsme) {
-			throw redirect({ to: "/" })
+			throw redirect({ to: '/' })
 		}
 
 		// Check 3: User must complete organization setup if needed
 		if (authContext.needsOrgSetup) {
-			throw redirect({ to: "/create-organization" })
+			throw redirect({ to: '/create-organization' })
 		}
 
 		// Pass auth context to child routes
@@ -71,8 +77,8 @@ export const Route = createFileRoute("/_appLayout")({
 })
 
 const languages: Language[] = [
-	{ code: "en", label: "English" },
-	{ code: "no", label: "Norsk" },
+	{ code: 'en', label: 'English' },
+	{ code: 'no', label: 'Norsk' },
 ]
 
 function RouteComponent() {
@@ -86,58 +92,126 @@ function RouteComponent() {
 	const currentLocale = getLocale()
 
 	const reportId = useStore(reportStore, (state) => state.reportId)
+	const { isAuthenticated } = useConvexAuth()
 
-	const { data: report, isPending, error } = useQuery({
-		...convexQuery(api.reportMutations.getReportById, { reportId: reportId ?? "" }),
-		enabled: reportId !== null,
+	const [dismissedResultKeys, setDismissedResultKeys] = useState<Set<string>>(
+		() => new Set(),
+	)
+
+	const { data: report, error } = useQuery({
+		...convexQuery(
+			api.reportMutations.getReportById,
+			isAuthenticated && reportId != null ? { reportId } : 'skip',
+		),
+		gcTime: 0,
 	})
 
-	console.log(report, isPending, error)
+	const terminalStatus = !error && (report?.status === 'completed' || report?.status === 'failed') ? report.status : undefined
+	const resultKey =
+		terminalStatus && report
+			? `${report.reportId}:${terminalStatus}`
+			: undefined
+	const resultDialogOpen = Boolean(
+		resultKey && !dismissedResultKeys.has(resultKey),
+	)
+	const handleResultDialogChange = (open: boolean) => {
+		if (!open && resultKey) {
+			setDismissedResultKeys((previous) => new Set(previous).add(resultKey))
+		}
+	}
+	const reopenResultDialog = () => {
+		if (resultKey) {
+			setDismissedResultKeys((previous) => {
+				const next = new Set(previous)
+				next.delete(resultKey)
+				return next
+			})
+		}
+	}
 
 	return (
 		<SidebarProvider>
 			<AppSidebar />
 			<SidebarInset>
-				<header className='flex h-16 shrink-0 items-center justify-between gap-2 shadow transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12'>
-					<div className='flex items-center gap-2 px-4'>
-						<SidebarTrigger className='-ml-1' />
-						<Separator orientation='vertical' className='mr-2 h-4' />
-						<Breadcrumb>
+				<header className="flex h-16 shrink-0 items-center justify-between gap-2 shadow transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+					<div className="flex items-center gap-2 px-4">
+						<SidebarTrigger className="-ml-1 size-10 md:size-7" />
+						<Separator orientation="vertical" className="mr-2 h-4" />
+						{/* <Breadcrumb>
 							<BreadcrumbList>
 								<BreadcrumbItem>
 									<BreadcrumbPage>
-										{canAccessDashboard ? "Can access dashboard" : "Cannot access dashboard"}
+										{canAccessDashboard
+											? 'Can access dashboard'
+											: 'Cannot access dashboard'}
 									</BreadcrumbPage>
 								</BreadcrumbItem>
-								<BreadcrumbSeparator className='hidden md:block' />
+								<BreadcrumbSeparator className="hidden md:block" />
 								<BreadcrumbItem>
 									<BreadcrumbPage>
-										{needsOrgSetup ? `Needs setup? = ${needsOrgSetup}` : `Needs setup? = ${needsOrgSetup}`}
+										{needsOrgSetup
+											? `Needs setup? = ${needsOrgSetup}`
+											: `Needs setup? = ${needsOrgSetup}`}
 									</BreadcrumbPage>
 								</BreadcrumbItem>
-								<BreadcrumbSeparator className='hidden md:block' />
-								<BreadcrumbPage>{vsmeDb ? "Has VSME DB" : "Needs VSME DB"}</BreadcrumbPage>
+								<BreadcrumbSeparator className="hidden md:block" />
+								<BreadcrumbPage>
+									{vsmeDb ? 'Has VSME DB' : 'Needs VSME DB'}
+								</BreadcrumbPage>
 							</BreadcrumbList>
-						</Breadcrumb>
+						</Breadcrumb> */}
 					</div>
 
-					<div className='flex items-center gap-2 px-4'>
-						<div>
-							<XbrlGenerationProgress generationStatus="queued" isGenerating={true} />
-						</div>
+					<div className="flex items-center gap-2 px-4">
+						{error ? (
+							<output
+								title="Unable to load report status"
+								aria-label="Unable to load report status"
+							>
+								<TriangleAlert
+									aria-hidden="true"
+									className="size-4 text-destructive"
+								/>
+							</output>
+						) : null}
+						{report && !resultDialogOpen && (
+							<div>
+								<XbrlGenerationProgress
+									generationStatus={report.status}
+									isGenerating={
+										report.status === 'queued' ||
+										report.status === 'processing' ||
+										report.status === 'uploading'
+									}
+									onClose={() => {}}
+									onViewResult={reopenResultDialog}
+								/>
+							</div>
+						)}
+
 						<div>
 							<LanguageSwitcher
 								languages={languages}
 								value={currentLocale}
 								onChange={(code) => setLocale(code as typeof currentLocale)}
-								variant='ghost'
+								variant="ghost"
 								showIcon={true}
 							/>
 						</div>
 						<ThemeSwitcher />
 					</div>
 				</header>
-				<div className='flex flex-1 flex-col gap-4 p-4 pt-0'>
+				{terminalStatus && report && resultKey ? (
+					<XbrlReportResultDialog
+						key={report.reportId}
+						status={terminalStatus}
+						reportId={report.reportId}
+						downloadUrl={report.storage?.downloadUrl}
+						open={resultDialogOpen}
+						onOpenChange={handleResultDialogChange}
+					/>
+				) : null}
+				<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
 					<Outlet />
 				</div>
 			</SidebarInset>

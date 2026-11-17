@@ -3,6 +3,7 @@ import { Info } from 'lucide-react'
 import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Card, CardContent } from '@/components/ui/card'
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
 import {
@@ -50,7 +51,7 @@ export function C8SectorInvolvementForm() {
 	}
 
 	if (isLoading) {
-		return <div className="flex items-center justify-center p-8 text-muted-foreground">{m['governance.C8.loading']()}</div>
+		return <LoadingSkeleton />
 	}
 
 const syncExclusion = (value: boolean, currentField: keyof C8SectorInvolvementValues) => {

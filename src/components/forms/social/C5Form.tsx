@@ -3,6 +3,7 @@ import { Info } from 'lucide-react'
 import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Card, CardContent } from '@/components/ui/card'
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
 import {
@@ -73,11 +74,7 @@ export function C5AdditionalWorkforceForm({
 		}
 
 	if (isLoading) {
-		return (
-			<div className="flex items-center justify-center p-8 text-muted-foreground">
-				Loading...
-			</div>
-		)
+		return <LoadingSkeleton />
 	}
 
 	return (

@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
 import { api } from 'convex/_generated/api'
 import { useQuery } from 'convex/react'
+import { Sprout } from 'lucide-react'
 import { useState } from 'react'
 import { B3EnergyEmissionsForm } from '@/components/forms/b3-energy-emissions'
 import { B4PollutionForm } from '@/components/forms/b4-pollution-form'
@@ -15,6 +16,7 @@ import {
 	FormCard,
 	type FormStatus,
 } from '@/components/ui/expandable-card-simple'
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { useOrgGuard } from '@/hooks/use-org-guard'
 import { yearStore } from '@/lib/year-store'
 import { m } from '@/paraglide/messages'
@@ -117,185 +119,201 @@ function EnvironmentalPage() {
 	const climateRiskAnalysis = formSections?.climateRiskAnalysis
 
 	// Show loading state
-	if (
-		isOrgLoading ||
-		formSections === undefined ||
-		generalCompanyInfo === undefined
-	) {
-		return <div>Loading...</div>
-	}
+	// if (
+	// 	isOrgLoading ||
+	// 	formSections === undefined ||
+	// 	generalCompanyInfo === undefined
+	// ) {
+	// 	return <LoadingSkeleton variant='cards' count={showComprehensiveModule ? 7 : 5} />
+	// }
 
 	return (
-		<div className='flex flex-col gap-4 md:grid-cols-1 mt-4 max-w-6xl w-full mx-auto'>
-			<h1 className='text-2xl font-bold'>{m["environmental.title"]()}</h1>
-			<h3 className='text-lg text-muted-foreground'>{m["environmental.description"]()}</h3>
-			<FormCard
-				title={m["environmental.B3.title"]()}
-				updatedDate={formatDate(energyEmissions?.lastModifiedAt)}
-				toolTip={m["environmental.B3.tooltip"]()}
-				status={(energyEmissions?.status ?? "not_started") as FormStatus}
-				contributor={energyEmissions?.contributor || { name: "Unknown" }}
-				code='B3'
-				isVolunteer={isMicroUnderTaking}
-				buttonText={m["environmental.B3.buttonText"]()}
-				onClick={() => setEnergyHelpOpen(true)}
-				version={
-					energyEmissions?.versions?.length
-						? energyEmissions.versions[energyEmissions.versions.length - 1]?.version
-						: undefined
-				}
-			>
-				<B3EnergyEmissionsForm />
-			</FormCard>
+		<div className='flex flex-col gap-4 md:grid-cols-1 px-4 pb-8 pt-7 md:px-6 lg:px-8 w-full mx-auto'>
+			<div>
+				<h1 className='flex items-center gap-2.5 text-xl font-semibold'>
+					<Sprout className='size-5 text-primary' />
+					{m["environmental.title"]()}
+				</h1>
+				<p className='mt-1 text-sm text-muted-foreground'>{m["environmental.description"]()}</p>
+			</div>
 
-			<FormCard
-				title={m["environmental.B4.title"]()}
-				updatedDate={formatDate(pollution?.lastModifiedAt)}
-				toolTip={m["environmental.B4.tooltip"]()}
-				status={(pollution?.status ?? "not_started") as FormStatus}
-				contributor={pollution?.contributor || { name: "Unknown" }}
-				code='B4'
-				buttonText={m["environmental.B4.buttonText"]()}
-				onClick={() => setPollutionHelpOpen(true)}
-				version={pollution?.versions?.length ? pollution.versions[pollution.versions.length - 1]?.version : undefined}
-			>
-				<B4PollutionForm />
-			</FormCard>
-
-			<FormCard
-				title={m["environmental.B5.title"]()}
-				updatedDate={formatDate(biodiversity?.lastModifiedAt)}
-				toolTip={m["environmental.B5.tooltip"]()}
-				status={(biodiversity?.status ?? "not_started") as FormStatus}
-				contributor={biodiversity?.contributor || { name: "Unknown" }}
-				code='B5'
-				module='Basic Module'
-				buttonText={m["environmental.B5.buttonText"]()}
-				onClick={() => setBiodiversityHelpOpen(true)}
-				version={
-					biodiversity?.versions?.length ? biodiversity.versions[biodiversity.versions.length - 1]?.version : undefined
-				}
-			>
-				<B5BiodiversityForm properties={properties} />
-			</FormCard>
-
-			<FormCard
-				title={m["environmental.B6.title"]()}
-				updatedDate={formatDate(waterManagement?.lastModifiedAt)}
-				toolTip={m["environmental.B6.tooltip"]()}
-				isVolunteer={isMicroUnderTaking}
-				status={(waterManagement?.status ?? "not_started") as FormStatus}
-				contributor={waterManagement?.contributor || { name: "Unknown" }}
-				code='B6'
-				module='Basic Module'
-				buttonText={m["environmental.B6.buttonText"]()}
-				onClick={() => setWaterHelpOpen(true)}
-				version={
-					waterManagement?.versions?.length
-						? waterManagement.versions[waterManagement.versions.length - 1]?.version
-						: undefined
-				}
-			>
-				<B6WaterManagementForm />
-			</FormCard>
-
-			<FormCard
-				title={m["environmental.B7.title"]()}
-				updatedDate={formatDate(resourceUseCircularEconomy?.lastModifiedAt)}
-				toolTip={m["environmental.B7.tooltip"]()}
-				status={(resourceUseCircularEconomy?.status ?? "not_started") as FormStatus}
-				isVolunteer={isMicroUnderTaking}
-				contributor={resourceUseCircularEconomy?.contributor || { name: "Unknown" }}
-				code='B7'
-				module='Basic Module'
-				buttonText={m["environmental.B7.buttonText"]()}
-				onClick={() => setCircularHelpOpen(true)}
-				version={
-					resourceUseCircularEconomy?.versions?.length
-						? resourceUseCircularEconomy.versions[resourceUseCircularEconomy.versions.length - 1]?.version
-						: undefined
-				}
-			>
-				<B7ResourceUseCircularEconomyForm />
-			</FormCard>
-
-			<HelpSheet
-				open={isCircularHelpOpen}
-				onOpenChange={setCircularHelpOpen}
-				title='Veiledning for sirkulærøkonomi'
-				description='Informasjon om sirkulærøkonomiske prinsipper og praktisk veiledning for avfallshåndtering.'
-			>
-				<CircularHelp />
-			</HelpSheet>
-
-			<HelpSheet
-				open={isEnergyHelpOpen}
-				onOpenChange={setEnergyHelpOpen}
-				title='Veiledning for energiforbruk og utslipp'
-				description='Informasjon om energiforbruk, utslippsberegninger og energikilder.'
-			>
-				<EnergyHelp />
-			</HelpSheet>
-
-			<HelpSheet
-				open={isPollutionHelpOpen}
-				onOpenChange={setPollutionHelpOpen}
-				title='Veiledning for forurensningsrapportering'
-				description='Informasjon om rapporteringsplikt for forurensende stoffer.'
-			>
-				<PollutionHelp />
-			</HelpSheet>
-
-			<HelpSheet
-				open={isWaterHelpOpen}
-				onOpenChange={setWaterHelpOpen}
-				title='Veiledning for vannforvaltning'
-				description='Informasjon om vannforvaltning og praktisk veiledning for vannuttak og utslipp.'
-			>
-				<WaterHelp />
-			</HelpSheet>
-
-			<HelpSheet
-				open={isBiodiversityHelpOpen}
-				onOpenChange={setBiodiversityHelpOpen}
-				title='Veiledning for arealbeslag og biologisk mangfold'
-				description='Informasjon om arealbeslag, forseglet areal og naturmangfold.'
-			>
-				<BiodiversityHelp />
-			</HelpSheet>
-
-			{showComprehensiveModule && (
+			{isOrgLoading || formSections === undefined || generalCompanyInfo === undefined ? (
+				<LoadingSkeleton variant='cards' count={showComprehensiveModule ? 7 : 5} />
+			) : (
 				<>
 					<FormCard
-						title={m["environmental.C3.title"]()}
-						updatedDate={formatDate(targetsData?.lastModifiedAt)}
-						toolTip={m["environmental.C3.tooltip"]()}
-						status={targetsData ? "submitted" : "not_started"}
-						contributor={targetsData?.contributor || { name: "Unknown" }}
+						title={m["environmental.B3.title"]()}
+						updatedDate={formatDate(energyEmissions?.lastModifiedAt)}
+						toolTip={m["environmental.B3.tooltip"]()}
+						status={(energyEmissions?.status ?? "not_started") as FormStatus}
+						contributor={energyEmissions?.contributor || { name: "Unknown" }}
+						code='B3'
 						isVolunteer={isMicroUnderTaking}
-						code='C3'
-						module='Comprehensive Module'
-					>
-						<C3TargetsForm targets={targetsData} isLoading={targetsData === undefined} />
-					</FormCard>
-
-					<FormCard
-						title={m["environmental.C4.title"]()}
-						updatedDate={formatDate(climateRiskAnalysis?.lastModifiedAt)}
-						toolTip={m["environmental.C4.tooltip"]()}
-						status={(climateRiskAnalysis?.status ?? "not_started") as FormStatus}
-						contributor={climateRiskAnalysis?.contributor || { name: "Unknown" }}
-						code='C4'
-						isVolunteer={isMicroUnderTaking}
-						module='Comprehensive Module'
+						buttonText={m["environmental.B3.buttonText"]()}
+						onClick={() => setEnergyHelpOpen(true)}
 						version={
-							climateRiskAnalysis?.versions?.length
-								? climateRiskAnalysis.versions[climateRiskAnalysis.versions.length - 1]?.version
+							energyEmissions?.versions?.length
+								? energyEmissions.versions[energyEmissions.versions.length - 1]?.version
 								: undefined
 						}
 					>
-						<C4ClimateRiskForm />
+						<B3EnergyEmissionsForm />
 					</FormCard>
+
+					<FormCard
+						title={m["environmental.B4.title"]()}
+						updatedDate={formatDate(pollution?.lastModifiedAt)}
+						toolTip={m["environmental.B4.tooltip"]()}
+						status={(pollution?.status ?? "not_started") as FormStatus}
+						contributor={pollution?.contributor || { name: "Unknown" }}
+						code='B4'
+						buttonText={m["environmental.B4.buttonText"]()}
+						onClick={() => setPollutionHelpOpen(true)}
+						version={
+							pollution?.versions?.length ? pollution.versions[pollution.versions.length - 1]?.version : undefined
+						}
+					>
+						<B4PollutionForm />
+					</FormCard>
+
+					<FormCard
+						title={m["environmental.B5.title"]()}
+						updatedDate={formatDate(biodiversity?.lastModifiedAt)}
+						toolTip={m["environmental.B5.tooltip"]()}
+						status={(biodiversity?.status ?? "not_started") as FormStatus}
+						contributor={biodiversity?.contributor || { name: "Unknown" }}
+						code='B5'
+						module='Basic Module'
+						buttonText={m["environmental.B5.buttonText"]()}
+						onClick={() => setBiodiversityHelpOpen(true)}
+						version={
+							biodiversity?.versions?.length
+								? biodiversity.versions[biodiversity.versions.length - 1]?.version
+								: undefined
+						}
+					>
+						<B5BiodiversityForm properties={properties} />
+					</FormCard>
+
+					<FormCard
+						title={m["environmental.B6.title"]()}
+						updatedDate={formatDate(waterManagement?.lastModifiedAt)}
+						toolTip={m["environmental.B6.tooltip"]()}
+						isVolunteer={isMicroUnderTaking}
+						status={(waterManagement?.status ?? "not_started") as FormStatus}
+						contributor={waterManagement?.contributor || { name: "Unknown" }}
+						code='B6'
+						module='Basic Module'
+						buttonText={m["environmental.B6.buttonText"]()}
+						onClick={() => setWaterHelpOpen(true)}
+						version={
+							waterManagement?.versions?.length
+								? waterManagement.versions[waterManagement.versions.length - 1]?.version
+								: undefined
+						}
+					>
+						<B6WaterManagementForm />
+					</FormCard>
+
+					<FormCard
+						title={m["environmental.B7.title"]()}
+						updatedDate={formatDate(resourceUseCircularEconomy?.lastModifiedAt)}
+						toolTip={m["environmental.B7.tooltip"]()}
+						status={(resourceUseCircularEconomy?.status ?? "not_started") as FormStatus}
+						isVolunteer={isMicroUnderTaking}
+						contributor={resourceUseCircularEconomy?.contributor || { name: "Unknown" }}
+						code='B7'
+						module='Basic Module'
+						buttonText={m["environmental.B7.buttonText"]()}
+						onClick={() => setCircularHelpOpen(true)}
+						version={
+							resourceUseCircularEconomy?.versions?.length
+								? resourceUseCircularEconomy.versions[resourceUseCircularEconomy.versions.length - 1]?.version
+								: undefined
+						}
+					>
+						<B7ResourceUseCircularEconomyForm />
+					</FormCard>
+
+					<HelpSheet
+						open={isCircularHelpOpen}
+						onOpenChange={setCircularHelpOpen}
+						title='Veiledning for sirkulærøkonomi'
+						description='Informasjon om sirkulærøkonomiske prinsipper og praktisk veiledning for avfallshåndtering.'
+					>
+						<CircularHelp />
+					</HelpSheet>
+
+					<HelpSheet
+						open={isEnergyHelpOpen}
+						onOpenChange={setEnergyHelpOpen}
+						title='Veiledning for energiforbruk og utslipp'
+						description='Informasjon om energiforbruk, utslippsberegninger og energikilder.'
+					>
+						<EnergyHelp />
+					</HelpSheet>
+
+					<HelpSheet
+						open={isPollutionHelpOpen}
+						onOpenChange={setPollutionHelpOpen}
+						title='Veiledning for forurensningsrapportering'
+						description='Informasjon om rapporteringsplikt for forurensende stoffer.'
+					>
+						<PollutionHelp />
+					</HelpSheet>
+
+					<HelpSheet
+						open={isWaterHelpOpen}
+						onOpenChange={setWaterHelpOpen}
+						title='Veiledning for vannforvaltning'
+						description='Informasjon om vannforvaltning og praktisk veiledning for vannuttak og utslipp.'
+					>
+						<WaterHelp />
+					</HelpSheet>
+
+					<HelpSheet
+						open={isBiodiversityHelpOpen}
+						onOpenChange={setBiodiversityHelpOpen}
+						title='Veiledning for arealbeslag og biologisk mangfold'
+						description='Informasjon om arealbeslag, forseglet areal og naturmangfold.'
+					>
+						<BiodiversityHelp />
+					</HelpSheet>
+
+					{showComprehensiveModule && (
+						<>
+							<FormCard
+								title={m["environmental.C3.title"]()}
+								updatedDate={formatDate(targetsData?.lastModifiedAt)}
+								toolTip={m["environmental.C3.tooltip"]()}
+								status={targetsData ? "submitted" : "not_started"}
+								contributor={targetsData?.contributor || { name: "Unknown" }}
+								isVolunteer={isMicroUnderTaking}
+								code='C3'
+								module='Comprehensive Module'
+							>
+								<C3TargetsForm targets={targetsData} isLoading={targetsData === undefined} />
+							</FormCard>
+
+							<FormCard
+								title={m["environmental.C4.title"]()}
+								updatedDate={formatDate(climateRiskAnalysis?.lastModifiedAt)}
+								toolTip={m["environmental.C4.tooltip"]()}
+								status={(climateRiskAnalysis?.status ?? "not_started") as FormStatus}
+								contributor={climateRiskAnalysis?.contributor || { name: "Unknown" }}
+								code='C4'
+								isVolunteer={isMicroUnderTaking}
+								module='Comprehensive Module'
+								version={
+									climateRiskAnalysis?.versions?.length
+										? climateRiskAnalysis.versions[climateRiskAnalysis.versions.length - 1]?.version
+										: undefined
+								}
+							>
+								<C4ClimateRiskForm />
+							</FormCard>
+						</>
+					)}
 				</>
 			)}
 		</div>

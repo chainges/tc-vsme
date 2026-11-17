@@ -22,12 +22,10 @@ const reportStage = v.union(
 );
 
 const storageValidator = v.object({
-  provider: v.literal("gcs"),
   bucket: v.string(),
   objectKey: v.string(),
+  downloadUrl: v.string(),
   fileName: v.string(),
-  contentType: v.string(),
-  size: v.number(),
 });
 
 async function getActiveOrganizationMembership(ctx: MutationCtx | QueryCtx) {
@@ -111,6 +109,7 @@ export const updateProgress = mutation({
   args: {
     reportId: v.string(),
     status: reportStage,
+    error: v.optional(v.string())
   },
 
   handler: async (ctx, args) => {
@@ -137,6 +136,7 @@ export const updateProgress = mutation({
     await ctx.db.patch(report._id, {
       status: args.status,
       startedAt: report.startedAt ?? now,
+      error: args.error ?? undefined,
     });
 
     return { success: true };
@@ -155,9 +155,9 @@ export const completeReport = mutation({
   },
 
   handler: async (ctx, args) => {
-    if (!Number.isSafeInteger(args.storage.size) || args.storage.size < 0) {
-      throw new Error("Storage size must be a non-negative integer");
-    }
+    // if (!Number.isSafeInteger(args.storage.size) || args.storage.size < 0) {
+    //   throw new Error("Storage size must be a non-negative integer");
+    // }
 
     const report = await ctx.db
       .query("reports")
@@ -216,5 +216,25 @@ export const getReportById = query({
     }
 
     return report;
+  },
+});
+
+export const getReportsByOrgId = query({
+  args: {
+    
+  },
+
+  handler: async (ctx, args) => {
+
+    const { orgId } = await getActiveOrganizationMembership(ctx);
+
+    const reports = await ctx.db
+      .query("reports")
+      .withIndex("by_org", (q) =>
+        q.eq("orgId", orgId)
+      )
+      .collect();
+
+    return reports;
   },
 });

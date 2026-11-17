@@ -1,5 +1,6 @@
 import { useStore, useStore as useYearStore } from '@tanstack/react-store'
 import { Card, CardContent } from '@/components/ui/card'
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
 import {
@@ -43,11 +44,7 @@ export function C4ClimateRiskForm() {
 	}
 
 	if (isLoading) {
-		return (
-			<div className="flex items-center justify-center p-8 text-muted-foreground">
-				{m["environmental.C4.loading"]()}
-			</div>
-		)
+		return <LoadingSkeleton />
 	}
 
 	return (

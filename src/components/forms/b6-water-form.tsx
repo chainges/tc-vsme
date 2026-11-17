@@ -2,6 +2,7 @@ import { useStore } from '@tanstack/react-form'
 import { useStore as useYearStore } from '@tanstack/react-store'
 import { NumberFieldReadOnly } from '@/components/form-fields/NumberFieldReadOnly'
 import { Card, CardContent } from '@/components/ui/card'
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
 import {
@@ -63,11 +64,7 @@ export function B6WaterManagementForm() {
 	const waterConsumption = (withdrawal ?? 0) - (discharge ?? 0)
 
 	if (isLoading) {
-		return (
-			<div className="flex items-center justify-center p-8 text-muted-foreground">
-				Loading...
-			</div>
-		)
+		return <LoadingSkeleton />
 	}
 
 	return (

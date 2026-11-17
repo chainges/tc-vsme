@@ -4,6 +4,7 @@ import { AlertTriangleIcon, LeafIcon, Plus, RecycleIcon, RefreshCwIcon, Trash2, 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import EWC from "@/data/EWC"
 import { FormButtons } from "@/hooks/tanstack-form"
@@ -81,7 +82,7 @@ export function B7ResourceUseCircularEconomyForm() {
 	}
 
 	if (isLoading) {
-		return <div className='flex items-center justify-center p-8 text-muted-foreground'>Loading...</div>
+		return <LoadingSkeleton />
 	}
 
 	return (

@@ -3,6 +3,7 @@ node_modules
 dist
 dist-ssr
 *.local
+*.staging
 count.txt
 .env
 .nitro
@@ -17,4 +18,4 @@ convex/_generated
 .content-collections/generated/index.js
 .dev.vars*
 context/transcripts/
-.memsearch/
+.memsearch/.env.staging

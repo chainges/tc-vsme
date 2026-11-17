@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { useMemo } from 'react'
 import { Button } from '@/components/ui/button'
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
 import { useOrgGuard } from '@/hooks/use-org-guard'
@@ -123,7 +124,7 @@ export function B1GeneralForm() {
 			employees: 0,
 			EmployeeCountingMethodology: 'vsme:AtTheEndOfTheReportingPeriodMember',
 			TypeOfNumberOfEmployees: 'vsme:HeadcountMember',
-			country: 'NOR',
+			country: 'NO',
 			reportType: false,
 			subsidiaries: [],
 			contactPersonName: '',
@@ -186,11 +187,7 @@ export function B1GeneralForm() {
 	const isFormLoading = isLoading || isMongoLoading
 
 	if (isFormLoading) {
-		return (
-			<div className="p-8 text-center text-muted-foreground">
-				Loading form data...
-			</div>
-		)
+		return <LoadingSkeleton />
 	}
 	//console.log(orgData)
 

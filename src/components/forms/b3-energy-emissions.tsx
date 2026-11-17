@@ -5,6 +5,7 @@ import { History, Info, ZapIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from "@/hooks/tanstack-form"
 import { useFormSubmission } from "@/hooks/use-form-submission"
 import { useOrgGuard } from "@/hooks/use-org-guard"
@@ -253,7 +254,7 @@ export function B3EnergyEmissionsForm() {
 	}
 
 	if (isLoading || isFetchingMongo) {
-		return <div className='p-8 text-center text-muted-foreground'>{m["environmental.B3.loadingFormData"]()}</div>
+		return <LoadingSkeleton />
 	}
 
 	return (
@@ -391,7 +392,7 @@ export function B3EnergyEmissionsForm() {
 							</AlertDescription>
 						</Alert>
 
-						<SectionHeading
+						{/* <SectionHeading
 							title={"Carbon Emissions"}
 							description={
 								"Gross operational greenhouse gas emissions in tCO₂eq, covering direct Scope 1 and indirect Scope 2 energy emissions."
@@ -401,7 +402,7 @@ export function B3EnergyEmissionsForm() {
 							confidentialArea={confidentialAreaValues.estimatedGreenhouseGasEmissions}
 							confidentialAreas={confidentialAreas}
 							onConfidentialChange={(areas) => form.setFieldValue("confidentialAreas", areas)}
-						/>
+						/> */}
 
 						<SectionHeading
 							title={m["environmental.B3.emissionsIntensityLabel"]()}

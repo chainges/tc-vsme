@@ -9,6 +9,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card'
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
@@ -43,7 +44,7 @@ function ScopeOption({
 	return (
 		<label
 			htmlFor={value}
-			className="flex cursor-pointer gap-3 rounded-xl border p-4 has-data-[state=checked]:border-primary has-data-[state=checked]:bg-primary/5"
+			className="flex cursor-pointer gap-3 rounded-xl border border-success/35 p-4 has-data-[state=checked]:bg-success/[0.04]"
 		>
 			<RadioGroupItem id={value} value={value} />
 			<span className="space-y-1">
@@ -60,51 +61,47 @@ function ScopeOption({
 
 function ModuleInfoBox() {
 	return (
-		<Card className="border-blue-300! bg-info-background! text-card-foreground shadow-xs dark:border-blue-900/60 dark:bg-blue-950/20">
-			<CardHeader className="pb-4">
-				<CardTitle className="flex items-center gap-2.5 text-lg font-semibold tracking-tight text-slate-900! dark:text-slate-100">
-					<Info className="size-5 shrink-0 text-blue-600! dark:text-blue-400!" />
+		<Card>
+			<CardHeader className='pb-4'>
+				<CardTitle className='flex items-center gap-2.5 text-lg font-semibold tracking-tight text-black dark:text-white'>
+					<Info className='size-5 shrink-0' />
 					General Guidelines &amp; Compliance Rules
 				</CardTitle>
-				<CardDescription className="text-sm leading-relaxed text-slate-600! dark:text-slate-400!">
-					Four core rules govern how EFRAG expects this report to be completed.
-					Get these right and every downstream disclosure stays compliant.
+				<CardDescription className='text-sm leading-relaxed text-slate-600! dark:text-slate-400!'>
+					Four core rules govern how EFRAG expects this report to be completed. Get these right and every downstream
+					disclosure stays compliant.
 				</CardDescription>
 			</CardHeader>
-			<CardContent className="grid gap-3.5 sm:grid-cols-2">
+			<CardContent className='grid gap-3.5 sm:grid-cols-2'>
 				{[
 					[
-						'Rule 1',
-						'Module Completeness',
-						'A module you select must be completed in its entirety — no picking and choosing.',
+						"Rule 1",
+						"Module Completeness",
+						"A module you select must be completed in its entirety — no picking and choosing.",
 					],
 					[
-						'Rule 2',
-						'“If Applicable” Principle',
+						"Rule 2",
+						"“If Applicable” Principle",
 						"If a disclosure doesn't apply to your operations, leaving it blank signals it's not applicable to readers and XBRL parsers.",
 					],
 					[
-						'Rule 3',
-						'Voluntary Data Points',
-						'Fields marked voluntary — or bracketed for undertakings with ≤10 employees — may stay blank without affecting compliance.',
+						"Rule 3",
+						"Voluntary Data Points",
+						"Fields marked voluntary — or bracketed for undertakings with ≤10 employees — may stay blank without affecting compliance.",
 					],
 					[
-						'Rule 4',
-						'Confidentiality',
-						'Omit a disclosure only in exceptional cases — commercial prejudice, trade secrets, classified info, or legal privacy obligations',
+						"Rule 4",
+						"Confidentiality",
+						"Omit a disclosure only in exceptional cases — commercial prejudice, trade secrets, classified info, or legal privacy obligations",
 					],
 				].map(([rule, title, description]) => (
 					<div
 						key={rule}
-						className="rounded-xl bg-white p-4 shadow-xs transition-all duration-150 hover:border-blue-300 hover:shadow-sm dark:border-blue-950 dark:bg-card dark:hover:border-blue-800"
+						className='rounded-xl bg-white dark:bg-success/[0.04] p-4 shadow-xs transition-all duration-150 hover:shadow-sm border border-success/35'
 					>
-						<p className="text-xs font-semibold tracking-wide text-blue-600 dark:text-blue-400">
-							{rule}
-						</p>
-						<h3 className="mt-1 text-sm font-semibold tracking-tight text-slate-900! dark:text-slate-100">
-							{title}
-						</h3>
-						<p className="mt-2 text-xs leading-relaxed text-slate-600 sm:text-sm dark:text-slate-400">
+						<p className='text-xs font-extrabold tracking-wide text-primary'>{rule}</p>
+						<h3 className='mt-1 text-sm font-semibold tracking-tight text-slate-900 dark:text-white'>{title}</h3>
+						<p className='mt-2 text-xs leading-relaxed text-muted-foreground sm:text-sm'>
 							{description}
 						</p>
 					</div>
@@ -152,9 +149,7 @@ export function B1BasicForm() {
 	)
 
 	if (isLoading)
-		return (
-			<div className="p-8 text-center text-muted-foreground">Loading...</div>
-		)
+		return <LoadingSkeleton />
 
 	return (
 		<form.AppForm>

@@ -39,7 +39,16 @@ export function LanguageSwitcher({
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button variant={variant} size="sm" className={cn('gap-2', className)}>
+				<Button
+					variant={variant}
+					size="sm"
+					aria-label={`Select language, current language ${displayLabel}`}
+					className={cn(
+						'gap-2',
+						showIcon && 'min-h-10 min-w-10 md:min-h-8 md:min-w-0',
+						className,
+					)}
+				>
 					{showIcon ? <Globe className="size-4" /> : displayLabel}
 					{!showIcon && <ChevronDown className="size-4" />}
 				</Button>

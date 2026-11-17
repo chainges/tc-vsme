@@ -9,6 +9,12 @@ bun install
 bun dev
 ```
 
+## XBRL Bug Reports
+
+Configure `WEB3FORMS_ACCESS_KEY` in the Cloudflare Worker environment with a Web3Forms access key registered to `ua63510@gmail.com`. Configure it separately for staging and production. For local development, set the same variable in `.dev.vars` or the local environment used by the dev server.
+
+The access key is sent to the browser for Web3Forms submissions and is not a secret. The destination address is determined by the key's Web3Forms configuration, not by an email field in the submission. Configure Web3Forms spam protection and domain restrictions as available.
+
 # Building For Production
 
 To build this application for production:

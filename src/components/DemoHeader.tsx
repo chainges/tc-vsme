@@ -33,7 +33,7 @@ export default function DemoHeader() {
 
 	return (
 		<>
-			<header className="p-4 gap-4 flex items-center bg-gray-800 text-white shadow-lg">
+			<header className="p-4 gap-2 sm:gap-4 flex flex-wrap items-center bg-gray-800 text-white shadow-lg">
 				<Button
 					type="button"
 					onClick={() => setIsOpen(true)}
@@ -42,7 +42,7 @@ export default function DemoHeader() {
 				>
 					<Menu size={24} />
 				</Button>
-				<h1 className="ml-4 text-xl font-semibold">
+				<h1 className="ml-0 text-xl font-semibold sm:ml-4">
 					<Link to="/">
 						<img
 							src="/tanstack-word-logo-white.svg"

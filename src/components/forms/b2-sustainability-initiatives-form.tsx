@@ -5,6 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { sustainabilityIssues } from "@/data/initiatives"
 import { FormButtons } from "@/hooks/tanstack-form"
 import { useFormSubmission } from "@/hooks/use-form-submission"
@@ -124,15 +125,15 @@ export function B2SustainabilityInitiativesForm() {
 	}
 
 	if (isLoading) {
-		return <div className='flex items-center justify-center p-8 text-muted-foreground'>Loading...</div>
+		return <LoadingSkeleton />
 	}
 
 	return (
 		<>
 			<Alert variant='info' className='mb-6'>
-				<Info />
-				<AlertTitle>{m["general.B2.sustainabilityTitle"]()}</AlertTitle>
-				<AlertDescription>
+				<Info className="mr-1" />
+				<AlertTitle className="font-bold">{m["general.B2.sustainabilityTitle"]()}</AlertTitle>
+				<AlertDescription className="mt-1">
 					{m["general.B2.sustainabilityDescription"]()}{" "}
 					<a
 						className='underline'

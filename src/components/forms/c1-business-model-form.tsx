@@ -1,5 +1,6 @@
 import { useStore as useYearStore } from "@tanstack/react-store"
 import { useQuery } from "convex/react"
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from "@/hooks/tanstack-form"
 import { useFormSubmission } from "@/hooks/use-form-submission"
 import { useOrgGuard } from "@/hooks/use-org-guard"
@@ -44,7 +45,7 @@ export function C1BusinessModelForm() {
 	}
 
 	if (isLoading || !orgData) {
-		return <div className='flex items-center justify-center p-8 text-muted-foreground'>Loading...</div>
+		return <LoadingSkeleton />
 	}
 
 	return (

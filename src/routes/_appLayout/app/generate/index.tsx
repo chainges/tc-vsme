@@ -41,6 +41,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
 import { useOrgGuard } from "@/hooks/use-org-guard";
 import { generateXbrl } from "@/lib/report/generate-xbrl";
 import { reportStore } from "@/lib/report/report-store";
@@ -96,140 +97,145 @@ function ReportReadiness() {
     onError: () => {toast.error("Could not reach the report service");console.log("Error reaching report service");},
   });
 
-  if (readiness === undefined) return <div className='mt-8 text-sm text-muted-foreground'>Loading...</div>;
-
-  const moduleByCode = new Map(readiness.modules.map((m) => [m.code, m]));
+  const moduleByCode = new Map(readiness?.modules.map((m) => [m.code, m]) ?? []);
   const areas = READINESS_AREAS.map((area) => {
     const codes = modulesInArea(area.id);
     const required = codes.filter((code) => moduleByCode.get(code)?.state !== "not_required");
     const done = required.filter((code) => moduleByCode.get(code)?.state === "complete");
     return { ...area, codes, required, done, filled: done.length === required.length };
   });
-  const ready = readiness.canGenerate;
+  const ready = readiness?.canGenerate;
   const completed = areas.filter((area) => area.filled).length;
-  const blocking = readiness.modules.filter((m) => m.state === "missing" || m.state === "invalid");
+  const blocking = readiness?.modules.filter((m) => m.state === "missing" || m.state === "invalid") ?? [];
 
   return (
-		<section className='mt-8 border-t border-border pt-7' aria-labelledby='readiness-title'>
+		<section className='border-t border-border px-4 pb-8 pt-7 md:px-6 lg:px-8' aria-labelledby='readiness-title'>
 			<div className='flex flex-wrap items-center justify-between gap-3'>
 				<h2 id='readiness-title' className='flex items-center gap-2 text-lg font-semibold text-foreground'>
-					<FileCode2 className='size-5 text-info' />
+					<FileCode2 className='size-5 text-primary' />
 					Report readiness
 				</h2>
 				<span className={ready ? "text-sm font-medium text-success" : "text-sm text-muted-foreground"}>
 					{completed} of 4 complete
 				</span>
 			</div>
-			<div className='mt-5 grid gap-3 sm:grid-cols-2'>
-				{areas.map((area, index) => {
-					const AreaIcon = icons[index] ?? Info
-					return (
-						<Card
-							key={area.id}
-							className={`flex min-w-0 flex-col border shadow-xs transition-all duration-150 ${area.filled ? "border-success/35 bg-success/[0.04]" : "border-blue-100 bg-white dark:border-blue-950 dark:bg-card"}`}
-						>
-							<CardHeader className='flex flex-row items-center justify-between gap-2 space-y-0 p-4'>
-								<div className='flex min-w-0 items-center gap-2.5'>
-									<span
-										className={`flex size-9 shrink-0 items-center justify-center rounded-lg ${area.filled ? "bg-success/10 text-success" : "bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400"}`}
-									>
-										<AreaIcon className='size-4.5' />
-									</span>
-									<div className='min-w-0'>
-										<CardTitle className='truncate text-sm leading-tight dark:text-slate-100! text-slate-900! '>
-											{area.title}
-										</CardTitle>
-										<CardDescription
-											className={`mt-1 text-xs ${area.filled ? "text-success" : "text-muted-foreground"}`}
-										>
-											{area.done.length} of {area.required.length} required modules complete
-										</CardDescription>
-									</div>
-								</div>
-								{area.filled ? (
-									<CheckCircle2 className='size-5 shrink-0 text-success' />
-								) : (
-									<Circle className='size-5 shrink-0 text-blue-200 dark:text-blue-900' />
-								)}
-							</CardHeader>
-							<CardContent className='flex flex-wrap gap-1.5 p-4 pt-3'>
-								{area.codes.map((code) => {
-									const state = moduleByCode.get(code)?.state ?? "missing"
-									const ModuleIcon = MODULE_ICONS[code] ?? FileText
-									return (
-										<Link
-											key={code}
-											to={area.route}
-											title={moduleTitle(code)}
-											aria-label={`${code} — ${STATE_LABEL[state]}: ${moduleTitle(code)}. Open form.`}
-											className={`group flex items-center gap-1.5 rounded-lg border px-2 py-1 text-xs font-semibold transition-all duration-150 focus-visible:ring-2 focus-visible:ring-info/50 focus-visible:outline-none ${
-												state === "complete"
-													? "border-success/40 bg-success/10 text-success hover:border-success/60 hover:bg-success/15"
-													: state === "invalid"
-														? "border-destructive/40 bg-destructive/10 text-destructive"
-														: state === "not_required"
-															? "border-border bg-muted/40 text-muted-foreground opacity-60"
-															: "border-blue-100 bg-background text-slate-500 hover:border-blue-300 hover:text-blue-600 dark:border-blue-950 dark:bg-card dark:text-slate-400 dark:hover:border-blue-800 dark:hover:text-blue-400"
-											}`}
-										>
-											<ModuleIcon className='size-3.5 shrink-0' />
-											{code}
-											{state === "complete" ? (
-												<CheckCircle2 className='size-3 opacity-80' />
-											) : state === "invalid" ? (
-												<AlertTriangle className='size-3' />
-											) : (
-												<Circle className='size-2.5 opacity-50' />
-											)}
-										</Link>
-									)
-								})}
-							</CardContent>
-							<CardFooter className='mt-auto p-4 pt-0'>
-								<Button
-									asChild
-									variant='ghost'
-									size='sm'
-									className='h-7 self-start px-0 text-info hover:bg-transparent hover:text-info/80'
+
+			{readiness === undefined ? (
+				<LoadingSkeleton variant='readiness' count={READINESS_AREAS.length} />
+			) : (
+				<>
+					<div className='mt-5 grid gap-3 sm:grid-cols-2'>
+						{areas.map((area, index) => {
+							const AreaIcon = icons[index] ?? Info
+							return (
+								<Card
+									key={area.id}
+									className={`flex min-w-0 flex-col border shadow-xs transition-all duration-150 ${area.filled ? "border-success/35 bg-success/[0.04]" : "border-blue-100 bg-white dark:border-red-500/35 dark:bg-red-500/4"}`}
 								>
-									<Link to={area.route}>
-										{area.filled ? "Edit information" : "Fill information"}
-										{area.filled ? <Pencil /> : <ArrowRight />}
-									</Link>
-								</Button>
-							</CardFooter>
-						</Card>
-					)
-				})}
-			</div>
-			{blocking.length > 0 && (
-				<ul className='mt-4 space-y-1 text-xs text-muted-foreground'>
-					{blocking.map((m) => (
-						<li key={m.code}>
-							<span className='font-semibold'>{m.code}</span> {STATE_LABEL[m.state]}
-							{m.issues.length > 0 && <span> — {m.issues.join("; ")}</span>}
-						</li>
-					))}
-				</ul>
-			)}
-			<div className='mt-5 flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between'>
-				<p aria-live='polite' className='flex items-center gap-2 text-xs text-muted-foreground'>
-					{ready ? (
-						<CheckCircle2 className='size-4 shrink-0 text-success' />
-					) : (
-						<LockKeyhole className='size-4 shrink-0' />
+									<CardHeader className='flex flex-row items-center justify-between gap-2 space-y-0 p-4'>
+										<div className='flex min-w-0 items-center gap-2.5'>
+											<span
+												className={`flex size-9 shrink-0 items-center justify-center rounded-lg ${area.filled ? "bg-success/10 text-success" : "bg-blue-50 text-red-600 dark:bg-red-950/50 dark:text-red-400"}`}
+											>
+												<AreaIcon className='size-4.5' />
+											</span>
+											<div className='min-w-0'>
+												<CardTitle className='truncate text-sm leading-tight dark:text-slate-100! text-slate-900! '>
+													{area.title}
+												</CardTitle>
+												<CardDescription
+													className={`mt-1 text-xs ${area.filled ? "text-success" : "text-muted-foreground"}`}
+												>
+													{area.done.length} of {area.required.length} required modules complete
+												</CardDescription>
+											</div>
+										</div>
+										{area.filled ? (
+											<CheckCircle2 className='size-5 shrink-0 text-success' />
+										) : (
+											<Circle className='size-5 shrink-0 text-red-200 dark:text-red-900' />
+										)}
+									</CardHeader>
+									<CardContent className='flex flex-wrap gap-1.5 p-4 pt-3'>
+										{area.codes.map((code) => {
+											const state = moduleByCode.get(code)?.state ?? "missing"
+											const ModuleIcon = MODULE_ICONS[code] ?? FileText
+											return (
+												<Link
+													key={code}
+													to={area.route}
+													title={moduleTitle(code)}
+													aria-label={`${code} — ${STATE_LABEL[state]}: ${moduleTitle(code)}. Open form.`}
+													className={`group flex items-center gap-1.5 rounded-lg border px-2 py-1 text-xs font-semibold transition-all duration-150 focus-visible:ring-2 focus-visible:ring-info/50 focus-visible:outline-none ${
+														state === "complete"
+															? "border-success/40 bg-success/10 text-success hover:border-success/60 hover:bg-success/15"
+															: state === "invalid"
+																? "border-destructive/40 bg-destructive/10 text-destructive"
+																: state === "not_required"
+																	? "border-border bg-muted/40 text-muted-foreground opacity-60"
+																	: "border-red-100 bg-background text-slate-500 hover:border-red-300 hover:text-red-600 dark:border-red-950 dark:bg-card dark:text-slate-400 dark:hover:border-red-800 dark:hover:text-red-400"
+													}`}
+												>
+													<ModuleIcon className='size-3.5 shrink-0' />
+													{code}
+													{state === "complete" ? (
+														<CheckCircle2 className='size-3 opacity-80' />
+													) : state === "invalid" ? (
+														<AlertTriangle className='size-3' />
+													) : (
+														<Circle className='size-2.5 opacity-50' />
+													)}
+												</Link>
+											)
+										})}
+									</CardContent>
+									<CardFooter className='mt-auto p-4 pt-0'>
+										<Button
+											asChild
+											variant='ghost'
+											size='sm'
+											className='h-7 self-start px-0 text-info hover:bg-transparent hover:text-info/80'
+										>
+											<Link to={area.route}>
+												{area.filled ? "Edit information" : "Fill information"}
+												{area.filled ? <Pencil /> : <ArrowRight />}
+											</Link>
+										</Button>
+									</CardFooter>
+								</Card>
+							)
+						})}
+					</div>
+					{blocking.length > 0 && (
+						<ul className='mt-4 space-y-1 text-xs text-muted-foreground'>
+							{blocking.map((m) => (
+								<li key={m.code}>
+									<span className='font-semibold'>{m.code}</span> {STATE_LABEL[m.state]}
+									{m.issues.length > 0 && <span> — {m.issues.join("; ")}</span>}
+								</li>
+							))}
+						</ul>
 					)}
-					{ready ? "All required information is submitted." : "Submit all required modules to unlock generation."}
-				</p>
-				<Button
-					disabled={!ready || generate.isPending}
-					onClick={() => generate.mutate()}
-					className='shrink-0 bg-info-background! text-info-foreground! hover:bg-info/90!'
-				>
-					{generate.isPending ? <Loader2 className='animate-spin' /> : <FileCode2 />}
-					Generate XBRL Report
-				</Button>
-			</div>
+					<div className='mt-5 flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between'>
+						<p aria-live='polite' className='flex items-center gap-2 text-xs text-muted-foreground'>
+							{ready ? (
+								<CheckCircle2 className='size-4 shrink-0 text-success' />
+							) : (
+								<LockKeyhole className='size-4 shrink-0' />
+							)}
+							{ready ? "All required information is submitted." : "Submit all required modules to unlock generation."}
+						</p>
+						<Button
+							disabled={!ready || generate.isPending}
+							onClick={() => generate.mutate()}
+							className='shrink-0 bg-sidebar-active! text-white! cursor-pointer disabled:opacity-50'
+						>
+							{generate.isPending ? <Loader2 className='animate-spin' /> : <FileCode2 />}
+							Generate XBRL Report
+						</Button>
+					</div>
+				</>
+			)}
 		</section>
 	)
 }

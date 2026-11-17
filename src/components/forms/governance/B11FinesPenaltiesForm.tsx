@@ -2,6 +2,7 @@ import { useStore } from '@tanstack/react-form'
 import { useStore as useYearStore } from '@tanstack/react-store'
 import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { Card, CardContent } from '@/components/ui/card'
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
 import {
@@ -46,11 +47,7 @@ export function B11FinesPenaltiesForm() {
 	}
 
 	if (isLoading) {
-		return (
-			<div className="flex items-center justify-center p-8 text-muted-foreground">
-				{m["governance.B11.loading"]()}
-			</div>
-		)
+		return <LoadingSkeleton />
 	}
 
 	return (

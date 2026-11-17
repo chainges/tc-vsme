@@ -1,6 +1,7 @@
 import { useNavigate } from '@tanstack/react-router'
 import { ArrowRightIcon, TargetIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import {
 	Table,
 	TableBody,
@@ -249,13 +250,7 @@ export function C3TargetsForm({ targets, isLoading }: C3TargetsFormProps) {
 	const hasTargets = targets !== null && targets !== undefined
 
 	if (isLoading) {
-		return (
-			<div className="flex items-center justify-center py-8">
-				<div className="animate-pulse text-muted-foreground">
-					Loading targets...
-				</div>
-			</div>
-		)
+		return <LoadingSkeleton />
 	}
 
 	if (!hasTargets) {

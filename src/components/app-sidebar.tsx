@@ -94,6 +94,10 @@ const data = {
 					url: '/app/generate',
 				},
 				{
+					title: 'Reports',
+					url: '/app/reports',
+				},
+				{
 					title: 'Settings',
 					url: '/app/settings',
 				},

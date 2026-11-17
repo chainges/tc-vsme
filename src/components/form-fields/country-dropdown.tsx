@@ -53,7 +53,7 @@ const CountryDropdownComponent = (
 				country.emoji &&
 				country.status !== 'deleted' &&
 				country.ioc !== 'PRK' &&
-				country.alpha3,
+				country.alpha2,
 		),
 		onChange,
 		defaultValue,

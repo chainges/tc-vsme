@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { Alert, AlertDescription, AlertTitle,  } from '@/components/ui/alert'
 import { Card, CardContent } from '@/components/ui/card'
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
 import {
@@ -35,7 +36,7 @@ export function B10CompensationForm({
 }: B10CompensationFormProps) {
 	const reportingYear = useYearStore(yearStore, (state) => state.selectedYear)
 
-	const { form, status, isSaving,saveDraft, submit, reopen } =
+	const { form, status, isSaving, isLoading, saveDraft, submit, reopen } =
 		useFormSubmission<B10CompensationFormValues>({
 			table: 'formSocial',
 			reportingYear,
@@ -121,6 +122,8 @@ export function B10CompensationForm({
 		}
 	}, [displayValue, collectiveBargainingShare, form])
 
+	if (isLoading) return <LoadingSkeleton />
+
 	return (
 		<form.AppForm>
 			<form
@@ -145,7 +148,7 @@ export function B10CompensationForm({
 										<field.SwitchField label='' description={m["social.B10.minimumWageLiabilityDescription"]()} />
 									)}
 								</form.AppField>
-								<span className='text-sm'>{minimumWageLiability ? m["social.B10.yes"]() : m["social.B10.no"]()}</span>
+								
 							</div>
 						</CardContent>
 					</Card>

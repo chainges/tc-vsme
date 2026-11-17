@@ -11,6 +11,7 @@ import SectionHeading from '@/components/SectionHeading'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import {
 	Table,
 	TableBody,
@@ -265,11 +266,7 @@ export function B8WorkforceForm({
 	}
 
 	if (isLoading) {
-		return (
-			<div className="flex items-center justify-center p-8 text-muted-foreground">
-				{m["social.B8.loading"]()}
-			</div>
-		)
+		return <LoadingSkeleton />
 	}
 
 	return (

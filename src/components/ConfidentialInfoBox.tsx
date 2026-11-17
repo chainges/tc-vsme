@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 import { m } from "@/paraglide/messages"
 import { Switch } from "./ui/switch"
 
-const infoBoxVariants = cva("flex justify-between items-center p-5 rounded-2xl border", {
+const infoBoxVariants = cva("flex justify-between items-center bg-success/[0.04] border-success/35 p-5 rounded-2xl border", {
 	variants: {
 		variant: {
 			basic: "",
@@ -35,17 +35,11 @@ export default function ConfidentialInfoBox({
 }: ConfidentialInfoBoxProps) {
 	return (
 		<div
-			className={cn(
-				infoBoxVariants({
-					variant,
-					confidential: value,
-				}),
-				className,
-			)}
+			className="flex justify-between items-center bg-success/[0.04] border-success/35 p-5 rounded-2xl border"
 		>
 			<div>
 				<div className='flex items-center text-md'>
-					<Lock className='mr-2 h-5 w-5 text-confidential-text' />
+					<Lock className='mr-2 h-5 w-5 text-confidential-text dark:text-success' />
 
 					<h3 className='text-sm font-bold text-confidential-text'>{m["common.confidentialBoxTitle"]()}</h3>
 				</div>

@@ -224,6 +224,6 @@ describe('C7SeriousHumanRightsForm', () => {
 
 		render(<C7SeriousHumanRightsForm />)
 
-		expect(screen.getByText('Loading...')).toBeTruthy()
+		expect(screen.getByRole('status', { name: 'Loading' })).toBeTruthy()
 	})
 })

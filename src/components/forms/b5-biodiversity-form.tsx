@@ -3,6 +3,7 @@ import { useStore as useYearStore } from '@tanstack/react-store'
 import { LandPlotIcon, MapPinIcon } from 'lucide-react'
 import { useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
 import type { PropertyLocation } from '@/lib/forms/schemas/b1-general-schema'
@@ -91,11 +92,7 @@ export function B5BiodiversityForm({ properties }: B5BiodiversityFormProps) {
 	}, [form, siteDefaults, sites])
 
 	if (isLoading) {
-		return (
-			<div className="flex items-center justify-center p-8 text-muted-foreground">
-				Loading...
-			</div>
-		)
+		return <LoadingSkeleton />
 	}
 
 	return (
