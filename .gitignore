@@ -19,3 +19,5 @@ convex/_generated
 .dev.vars*
 context/transcripts/
 .memsearch/.env.staging
+.secrets.staging.env
+.secrets.production.env

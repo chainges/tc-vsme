@@ -16,11 +16,7 @@ import { Route as CreateOrganizationRouteImport } from './routes/create-organiza
 import { Route as DemoLayoutRouteRouteImport } from './routes/_demoLayout/route'
 import { Route as AppLayoutRouteRouteImport } from './routes/_appLayout/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as TalksIndexRouteImport } from './routes/talks.index'
-import { Route as SpeakersIndexRouteImport } from './routes/speakers.index'
 import { Route as ScheduleIndexRouteImport } from './routes/schedule.index'
-import { Route as TalksSlugRouteImport } from './routes/talks.$slug'
-import { Route as SpeakersSlugRouteImport } from './routes/speakers.$slug'
 import { Route as DemoI18nRouteImport } from './routes/demo.i18n'
 import { Route as ApiRemyChatRouteImport } from './routes/api.remy-chat'
 import { Route as DemoLayoutAboutRouteImport } from './routes/_demoLayout/about'
@@ -98,29 +94,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TalksIndexRoute = TalksIndexRouteImport.update({
-  id: '/talks/',
-  path: '/talks/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SpeakersIndexRoute = SpeakersIndexRouteImport.update({
-  id: '/speakers/',
-  path: '/speakers/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ScheduleIndexRoute = ScheduleIndexRouteImport.update({
   id: '/schedule/',
   path: '/schedule/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TalksSlugRoute = TalksSlugRouteImport.update({
-  id: '/talks/$slug',
-  path: '/talks/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SpeakersSlugRoute = SpeakersSlugRouteImport.update({
-  id: '/speakers/$slug',
-  path: '/speakers/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoI18nRoute = DemoI18nRouteImport.update({
@@ -373,11 +349,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof DemoLayoutAboutRoute
   '/api/remy-chat': typeof ApiRemyChatRoute
   '/demo/i18n': typeof DemoI18nRoute
-  '/speakers/$slug': typeof SpeakersSlugRoute
-  '/talks/$slug': typeof TalksSlugRoute
   '/schedule/': typeof ScheduleIndexRoute
-  '/speakers/': typeof SpeakersIndexRoute
-  '/talks/': typeof TalksIndexRoute
   '/app/emissions': typeof AppLayoutAppEmissionsRoute
   '/app/order': typeof AppLayoutAppOrderRoute
   '/demo/ai-chat': typeof DemoLayoutDemoAiChatRoute
@@ -428,11 +400,7 @@ export interface FileRoutesByTo {
   '/about': typeof DemoLayoutAboutRoute
   '/api/remy-chat': typeof ApiRemyChatRoute
   '/demo/i18n': typeof DemoI18nRoute
-  '/speakers/$slug': typeof SpeakersSlugRoute
-  '/talks/$slug': typeof TalksSlugRoute
   '/schedule': typeof ScheduleIndexRoute
-  '/speakers': typeof SpeakersIndexRoute
-  '/talks': typeof TalksIndexRoute
   '/app/emissions': typeof AppLayoutAppEmissionsRoute
   '/app/order': typeof AppLayoutAppOrderRoute
   '/demo/ai-chat': typeof DemoLayoutDemoAiChatRoute
@@ -486,11 +454,7 @@ export interface FileRoutesById {
   '/_demoLayout/about': typeof DemoLayoutAboutRoute
   '/api/remy-chat': typeof ApiRemyChatRoute
   '/demo/i18n': typeof DemoI18nRoute
-  '/speakers/$slug': typeof SpeakersSlugRoute
-  '/talks/$slug': typeof TalksSlugRoute
   '/schedule/': typeof ScheduleIndexRoute
-  '/speakers/': typeof SpeakersIndexRoute
-  '/talks/': typeof TalksIndexRoute
   '/_appLayout/app/emissions': typeof AppLayoutAppEmissionsRoute
   '/_appLayout/app/order': typeof AppLayoutAppOrderRoute
   '/_demoLayout/demo/ai-chat': typeof DemoLayoutDemoAiChatRoute
@@ -543,11 +507,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/api/remy-chat'
     | '/demo/i18n'
-    | '/speakers/$slug'
-    | '/talks/$slug'
     | '/schedule/'
-    | '/speakers/'
-    | '/talks/'
     | '/app/emissions'
     | '/app/order'
     | '/demo/ai-chat'
@@ -598,11 +558,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/api/remy-chat'
     | '/demo/i18n'
-    | '/speakers/$slug'
-    | '/talks/$slug'
     | '/schedule'
-    | '/speakers'
-    | '/talks'
     | '/app/emissions'
     | '/app/order'
     | '/demo/ai-chat'
@@ -655,11 +611,7 @@ export interface FileRouteTypes {
     | '/_demoLayout/about'
     | '/api/remy-chat'
     | '/demo/i18n'
-    | '/speakers/$slug'
-    | '/talks/$slug'
     | '/schedule/'
-    | '/speakers/'
-    | '/talks/'
     | '/_appLayout/app/emissions'
     | '/_appLayout/app/order'
     | '/_demoLayout/demo/ai-chat'
@@ -712,11 +664,7 @@ export interface RootRouteChildren {
   SignUpRoute: typeof SignUpRoute
   ApiRemyChatRoute: typeof ApiRemyChatRoute
   DemoI18nRoute: typeof DemoI18nRoute
-  SpeakersSlugRoute: typeof SpeakersSlugRoute
-  TalksSlugRoute: typeof TalksSlugRoute
   ScheduleIndexRoute: typeof ScheduleIndexRoute
-  SpeakersIndexRoute: typeof SpeakersIndexRoute
-  TalksIndexRoute: typeof TalksIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -770,39 +718,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/talks/': {
-      id: '/talks/'
-      path: '/talks'
-      fullPath: '/talks/'
-      preLoaderRoute: typeof TalksIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/speakers/': {
-      id: '/speakers/'
-      path: '/speakers'
-      fullPath: '/speakers/'
-      preLoaderRoute: typeof SpeakersIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/schedule/': {
       id: '/schedule/'
       path: '/schedule'
       fullPath: '/schedule/'
       preLoaderRoute: typeof ScheduleIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/talks/$slug': {
-      id: '/talks/$slug'
-      path: '/talks/$slug'
-      fullPath: '/talks/$slug'
-      preLoaderRoute: typeof TalksSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/speakers/$slug': {
-      id: '/speakers/$slug'
-      path: '/speakers/$slug'
-      fullPath: '/speakers/$slug'
-      preLoaderRoute: typeof SpeakersSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/i18n': {
@@ -1221,11 +1141,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignUpRoute: SignUpRoute,
   ApiRemyChatRoute: ApiRemyChatRoute,
   DemoI18nRoute: DemoI18nRoute,
-  SpeakersSlugRoute: SpeakersSlugRoute,
-  TalksSlugRoute: TalksSlugRoute,
   ScheduleIndexRoute: ScheduleIndexRoute,
-  SpeakersIndexRoute: SpeakersIndexRoute,
-  TalksIndexRoute: TalksIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

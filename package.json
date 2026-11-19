@@ -14,6 +14,10 @@
     "build-storybook": "storybook build",
     "format": "biome format",
     "lint": "biome lint",
+    "build:staging": "cross-env CLOUDFLARE_ENV=staging bun run --bun vite build --mode staging",
+    "build:prod": "cross-env CLOUDFLARE_ENV=production bun run --bun vite build --mode production",
+    "Fdeploy:staging": "bun run build:staging && bunx wrangler deploy",
+    "Fdeploy:prod": "bun run build:prod && bunx wrangler deploy",
     "check": "biome check"
   },
   "dependencies": {
@@ -111,6 +115,7 @@
     "@vitejs/plugin-react": "^5.0.4",
     "babel-plugin-react-compiler": "^1.0.0",
     "convex-test": "^0.0.41",
+    "cross-env": "^10.1.0",
     "jsdom": "^27.0.0",
     "typescript": "^5.7.2",
     "vite": "^7.1.7",
