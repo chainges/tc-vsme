@@ -17,7 +17,7 @@ VITE_CONVEX_SITE_URL = "https://fine-echidna-604.convex.site"
 CLERK_ISSUER_URL = "https://clerk.gentle.cod-4.lcl.dev"
 
 [env.staging]
-name = "vsme-staging"    # ← This is what makes it a separate worker
+name = "tc-vsme-staging"    # ← This is what makes it a separate worker
 workers_dev = true
 
 
