@@ -30,12 +30,16 @@ export default {
 				})
 			}
 
+			console.log('[SERVER] Response received from handler', response)
+
 			console.log('[SERVER] Final status:', response.status)
 
 			if (response.status >= 500) {
 				const body = await response.clone().text()
 
 				console.error('[SERVER] Error response body:', body.slice(0, 1500))
+
+				
 			}
 
 			return response
