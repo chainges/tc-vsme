@@ -9,36 +9,71 @@ import { deLocalizeUrl, localizeUrl } from './paraglide/runtime'
 import { routeTree } from './routeTree.gen'
 
 // Create a new router instance
+
 export const getRouter = () => {
-	const rqContext = TanstackQuery.getContext()
+	console.log("[ROUTER DEBUG] 1. getRouter called")
 
-	const router = createRouter({
-		routeTree,
-		defaultPreload: 'intent',
-		defaultErrorComponent: DefaultCatchBoundary,
-		defaultNotFoundComponent: () => <NotFound />,
-		scrollRestoration: true,
-		context: {
-			...rqContext,
-		},
+	try {
+		console.log("[ROUTER DEBUG] 2. Creating query context")
 
-		// Paraglide URL rewrite docs: https://github.com/TanStack/router/tree/main/examples/react/i18n-paraglide#rewrite-url
-		rewrite: {
-			input: ({ url }) => deLocalizeUrl(url),
-			output: ({ url }) => localizeUrl(url),
-		},
-	})
+		const rqContext = TanstackQuery.getContext()
 
-	setupRouterSsrQueryIntegration({ router, queryClient: rqContext.queryClient })
-
-	if (!router.isServer) {
-		Sentry.init({
-			dsn: import.meta.env.VITE_SENTRY_DSN,
-			integrations: [],
-			tracesSampleRate: 1.0,
-			sendDefaultPii: true,
+		console.log("[ROUTER DEBUG] 3. Query context created", {
+			hasQueryClient: Boolean(rqContext.queryClient),
+			hasConvexQueryClient: Boolean(rqContext.convexQueryClient),
 		})
-	}
 
-	return router
+		console.log("[ROUTER DEBUG] 4. Creating router")
+
+		const router = createRouter({
+			routeTree,
+			defaultPreload: "intent",
+			defaultErrorComponent: DefaultCatchBoundary,
+			defaultNotFoundComponent: () => <NotFound />,
+			scrollRestoration: true,
+			context: {
+				...rqContext,
+			},
+			rewrite: {
+				input: ({ url }) => deLocalizeUrl(url),
+				output: ({ url }) => localizeUrl(url),
+			},
+		})
+
+		console.log("[ROUTER DEBUG] 5. Router created")
+
+		console.log("[ROUTER DEBUG] 6. Setting up SSR Query integration")
+
+		setupRouterSsrQueryIntegration({
+			router,
+			queryClient: rqContext.queryClient,
+		})
+
+		console.log("[ROUTER DEBUG] 7. SSR Query integration complete")
+
+		if (!router.isServer) {
+			console.log("[ROUTER DEBUG] 8. Initializing Sentry")
+
+			Sentry.init({
+				dsn: import.meta.env.VITE_SENTRY_DSN,
+				integrations: [],
+				tracesSampleRate: 1.0,
+				sendDefaultPii: true,
+			})
+		}
+
+		console.log("[ROUTER DEBUG] 9. Returning router")
+
+		return router
+	} catch (error) {
+		console.error("[ROUTER DEBUG] FAILED:", error)
+
+		if (error instanceof Error) {
+			console.error("[ROUTER DEBUG] Message:", error.message)
+			console.error("[ROUTER DEBUG] Stack:", error.stack)
+		}
+
+		throw error
+	}
 }
+
