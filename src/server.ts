@@ -1,45 +1,50 @@
 
-import {
-	createStartHandler,
-	defaultStreamHandler,
-} from '@tanstack/react-start/server'
-
-import { createServerEntry } from '@tanstack/react-start/server-entry'
+import handler from '@tanstack/react-start/server-entry'
 import { paraglideMiddleware } from './paraglide/server.js'
 
-const startHandler = createStartHandler(defaultStreamHandler)
+export default {
+	async fetch(req: Request): Promise<Response> {
+		const url = new URL(req.url)
+		const bypassParaglide = url.searchParams.has('__debug_no_i18n')
 
-export default createServerEntry({
-	async fetch(req, opts) {
-		console.log('[SERVER] Request received:', new URL(req.url).pathname)
-
-		console.log('[SERVER] Environment:', {
-			hasClerkSecret: Boolean(process.env.CLERK_SECRET_KEY),
-			hasPublishableKey: Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY),
-			hasConvexUrl: Boolean(process.env.CONVEX_URL),
-		})
+		console.log('[SERVER] Request:', url.pathname)
+		console.log('[SERVER] Bypass Paraglide:', bypassParaglide)
 
 		try {
-			const response = await paraglideMiddleware(req, () =>
-				startHandler(req, opts),
-			)
+			let response: Response
 
-			console.log('[SERVER] Response status:', response.status)
+			if (bypassParaglide) {
+				console.log('[SERVER] Calling TanStack directly')
+				response = await handler.fetch(req)
+			} else {
+				console.log('[SERVER] Calling Paraglide')
+
+				response = await paraglideMiddleware(req, async () => {
+					console.log('[SERVER] Paraglide callback entered')
+
+					const result = await handler.fetch(req)
+
+					console.log('[SERVER] TanStack returned:', result.status)
+
+					return result
+				})
+			}
+
+			console.log('[SERVER] Final status:', response.status)
+
+			if (response.status >= 500) {
+				const body = await response.clone().text()
+
+				console.error('[SERVER] Error response body:', body.slice(0, 1500))
+			}
 
 			return response
 		} catch (error) {
-			console.error('[SERVER] ORIGINAL ERROR:', error)
-
-			if (error instanceof Error) {
-				console.error('[SERVER] Error name:', error.name)
-				console.error('[SERVER] Error message:', error.message)
-				console.error('[SERVER] Error stack:', error.stack)
-				console.error('[SERVER] Error cause:', error.cause)
-			}
+			console.error('[SERVER] Thrown error:', error)
 
 			return new Response('Internal Server Error', {
 				status: 500,
 			})
 		}
 	},
-})
+}
