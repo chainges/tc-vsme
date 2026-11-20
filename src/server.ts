@@ -1,42 +1,45 @@
-// src/server.ts
-import handler from '@tanstack/react-start/server-entry'
+
+import {
+	createStartHandler,
+	defaultStreamHandler,
+} from '@tanstack/react-start/server'
+
+import { createServerEntry } from '@tanstack/react-start/server-entry'
 import { paraglideMiddleware } from './paraglide/server.js'
 
-export interface Env {
-	ENVIRONMENT?: string
-	MONGODB_URI?: string
-	OPENAI_API_KEY?: string
-	VITE_GOOGLE_MAPS_API_KEY?: string
-}
+const startHandler = createStartHandler(defaultStreamHandler)
 
-export default {
-	async fetch(req: Request, env: Env): Promise<Response> {
-		const res = await paraglideMiddleware(req, () => handler.fetch(req))
+export default createServerEntry({
+	async fetch(req, opts) {
+		console.log('[SERVER] Request received:', new URL(req.url).pathname)
 
-		const headers = new Headers(res.headers)
-
-		// Don't expose full secrets; just length / prefix for sanity
-		headers.set('x-env-environment', env.ENVIRONMENT ?? 'undefined')
-		headers.set(
-			'x-env-mongodb-uri',
-			env.MONGODB_URI ? `len:${env.MONGODB_URI.length}` : 'undefined',
-		)
-		headers.set(
-			'x-env-openai-api-key',
-			env.OPENAI_API_KEY
-				? `starts:${env.OPENAI_API_KEY.slice(0, 5)}`
-				: 'undefined',
-		)
-		headers.set(
-			'x-env-google-maps-key',
-			env.VITE_GOOGLE_MAPS_API_KEY
-				? `starts:${env.VITE_GOOGLE_MAPS_API_KEY.slice(0, 5)}`
-				: 'undefined',
-		)
-
-		return new Response(res.body, {
-			status: res.status,
-			headers,
+		console.log('[SERVER] Environment:', {
+			hasClerkSecret: Boolean(process.env.CLERK_SECRET_KEY),
+			hasPublishableKey: Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY),
+			hasConvexUrl: Boolean(process.env.CONVEX_URL),
 		})
+
+		try {
+			const response = await paraglideMiddleware(req, () =>
+				startHandler(req, opts),
+			)
+
+			console.log('[SERVER] Response status:', response.status)
+
+			return response
+		} catch (error) {
+			console.error('[SERVER] ORIGINAL ERROR:', error)
+
+			if (error instanceof Error) {
+				console.error('[SERVER] Error name:', error.name)
+				console.error('[SERVER] Error message:', error.message)
+				console.error('[SERVER] Error stack:', error.stack)
+				console.error('[SERVER] Error cause:', error.cause)
+			}
+
+			return new Response('Internal Server Error', {
+				status: 500,
+			})
+		}
 	},
-}
+})
