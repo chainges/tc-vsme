@@ -20,11 +20,13 @@ export default {
 				console.log('[SERVER] Calling Paraglide')
 
 				response = await paraglideMiddleware(req, async () => {
-					console.log('[SERVER] Paraglide callback entered')
+					console.log('[DEPLOYMENT CHECK] VSME-20261120-1530')
 
 					const result = await handler.fetch(req)
 
 					console.log('[SERVER] TanStack returned:', result.status)
+
+					response.headers.set('x-vsme-build-check', 'VSME-20261120-1530')
 
 					return result
 				})
