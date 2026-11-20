@@ -40,11 +40,22 @@ export default {
 
 			return response
 		} catch (error) {
-			console.error('[SERVER] Thrown error:', error)
+			 console.error('========== ACTUAL ERROR ==========')
 
-			return new Response('Internal Server Error', {
-				status: 500,
-			})
+				console.error('Raw error:', error)
+
+				if (error instanceof Error) {
+					console.error('Name:', error.name)
+					console.error('Message:', error.message)
+					console.error('Stack:', error.stack)
+					console.error('Cause:', error.cause)
+				}
+
+				console.error('==================================')
+
+				return new Response('Internal Server Error', {
+					status: 500,
+				})
 		}
 	},
 }
