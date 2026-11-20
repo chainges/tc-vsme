@@ -1,4 +1,3 @@
-import { env } from 'cloudflare:workers'
 import { clerkMiddleware } from '@clerk/tanstack-react-start/server'
 import { createMiddleware, createStart } from '@tanstack/react-start'
 
@@ -20,18 +19,19 @@ import { createMiddleware, createStart } from '@tanstack/react-start'
 const errorLoggingMiddleware = createMiddleware({
 	type: 'request',
 }).server(async ({ next }) => {
-	console.log('Clerk environment diagnostics:', {
-		runtimeSecretAvailable: Boolean(env.CLERK_SECRET_KEY),
-		processSecretAvailable: Boolean(process.env.CLERK_SECRET_KEY),
-		publishableKeyAvailable: Boolean(
-			import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
-		),
+	console.log('[VSME DEBUG] Request middleware started')
+
+	console.log('[VSME DEBUG] Environment:', {
+		hasClerkSecret: Boolean(process.env.CLERK_SECRET_KEY),
+		hasPublishableKey: Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY),
 	})
 
 	try {
-		return await next()
+		const result = await next()
+		console.log('[VSME DEBUG] Middleware completed')
+		return result
 	} catch (error) {
-		console.error('Request middleware error:', error)
+		console.error('[VSME DEBUG] Original error:', error)
 		throw error
 	}
 })
