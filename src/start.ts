@@ -16,6 +16,9 @@ import { createMiddleware, createStart } from '@tanstack/react-start'
 // Diagnostic middleware: logs the real error before h3 wraps it as an
 // unhandled HTTPError (which masks message/stack in the response body).
 // Must run BEFORE clerkMiddleware so it wraps the entire downstream chain.
+
+console.log('[VSME START] Module loaded')
+
 const errorLoggingMiddleware = createMiddleware({
 	type: 'request',
 }).server(async ({ next }) => {
