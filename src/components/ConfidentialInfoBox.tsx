@@ -1,27 +1,8 @@
-import { cva, type VariantProps } from "class-variance-authority"
 import { Lock } from "lucide-react"
-import { cn } from "@/lib/utils"
 import { m } from "@/paraglide/messages"
 import { Switch } from "./ui/switch"
 
-const infoBoxVariants = cva("flex justify-between items-center bg-success/[0.04] border-success/35 p-5 rounded-2xl border", {
-	variants: {
-		variant: {
-			basic: "",
-			comprehensive: "",
-		},
-		confidential: {
-			true: "",
-			false: "bg-muted/45 border-border",
-		},
-	},
-	defaultVariants: {
-		variant: "basic",
-		confidential: true,
-	},
-})
-
-interface ConfidentialInfoBoxProps extends VariantProps<typeof infoBoxVariants> {
+interface ConfidentialInfoBoxProps {
 	handleChange: (value: boolean) => void
 	value: boolean
 	className?: string
@@ -30,8 +11,6 @@ interface ConfidentialInfoBoxProps extends VariantProps<typeof infoBoxVariants> 
 export default function ConfidentialInfoBox({
 	handleChange,
 	value,
-	variant = "basic",
-	className,
 }: ConfidentialInfoBoxProps) {
 	return (
 		<div

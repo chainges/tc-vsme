@@ -3,19 +3,20 @@ import { OrganizationSwitcher } from '@clerk/react'
 import { Link } from '@tanstack/react-router'
 
 import {
-	BookOpen,
-	Bot,
-	Frame,
-	// biome-ignore lint/suspicious/noShadowRestrictedNames: <false positive>
-	Map,
-	PieChart,
-	Settings2,
-	SquareTerminal,
-} from 'lucide-react'
+	LayoutDashboard,
+	ClipboardList,
+	Leaf,
+	Users,
+	Scale,
+	Cloud,
+	Target,
+	FileCode2,
+	FileText,
+	Settings,
+} from "lucide-react"
 // import * as React from 'react'
 
 import { NavMain } from '@/components/nav-main'
-import { NavProjects } from '@/components/nav-projects'
 import { NavUser } from '@/components/nav-user'
 // import { TeamSwitcher } from '@/components/team-switcher'
 import {
@@ -46,86 +47,58 @@ const data = {
 	// 		plan: 'Free',
 	// 	},
 	// ],
-	navMain: [
+	navItems: [
 		{
-			title: 'Links',
-			url: '/app',
-			icon: SquareTerminal,
-			isActive: true,
-			items: [
-				{
-					title: 'Dashboard',
-					url: '/app',
-				},
-				{
-					title: 'General Information',
-					url: '/app/general',
-				},
-				{
-					title: 'Environmental',
-					url: '/app/environmental',
-				},
-				{
-					title: 'Social',
-					url: '/app/social',
-				},
-				{
-					title: 'Governance',
-					url: '/app/governance',
-				},
-				{
-					title: 'Demo',
-					url: '/demo',
-				},
-				{
-					title: 'Order',
-					url: '/app/order',
-				},
-				{
-					title: 'Emissions',
-					url: '/app/emissions',
-				},
-				{
-					title: 'Targets',
-					url: '/app/targets',
-				},
-				{
-					title: 'Generate XBRL',
-					url: '/app/generate',
-				},
-				{
-					title: 'Reports',
-					url: '/app/reports',
-				},
-				{
-					title: 'Settings',
-					url: '/app/settings',
-				},
-			],
+			title: "Dashboard",
+			url: "/app",
+			icon: LayoutDashboard,
 		},
 		{
-			title: 'Tillegg',
-			url: '#',
-			icon: Bot,
-			items: [
-				{
-					title: 'Analyse og tiltak',
-					url: '#',
-				},
-				{
-					title: 'Dobbel vesentlighet',
-					url: '#',
-				},
-				{
-					title: 'Korrupsjonsrisikoanalyse',
-					url: '#',
-				},
-				{
-					title: 'Rappotering',
-					url: '#',
-				},
-			],
+			title: "General Information",
+			url: "/app/general",
+			icon: ClipboardList,
 		},
+		{
+			title: "Environmental",
+			url: "/app/environmental",
+			icon: Leaf,
+		},
+		{
+			title: "Social",
+			url: "/app/social",
+			icon: Users,
+		},
+		{
+			title: "Governance",
+			url: "/app/governance",
+			icon: Scale,
+		},
+		{
+			title: "Emissions",
+			url: "/app/emissions",
+			icon: Cloud,
+		},
+		{
+			title: "Targets",
+			url: "/app/targets",
+			icon: Target,
+		},
+		{
+			title: "Generate XBRL",
+			url: "/app/generate",
+			icon: FileCode2,
+		},
+		{
+			title: "Reports",
+			url: "/app/reports",
+			icon: FileText,
+		},
+		{
+			title: "Settings",
+			url: "/app/settings",
+			icon: Settings,
+		},
+
 		// {
 		// 	title: 'Documentation',
 		// 	url: '#',
@@ -173,23 +146,6 @@ const data = {
 		// 	],
 		// },
 	],
-	projects: [
-		{
-			name: 'Design Engineering',
-			url: '#',
-			icon: Frame,
-		},
-		{
-			name: 'Sales & Marketing',
-			url: '#',
-			icon: PieChart,
-		},
-		{
-			name: 'Travel',
-			url: '#',
-			icon: Map,
-		},
-	],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -214,7 +170,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				<YearSelector />
 			</SidebarHeader>
 			<SidebarContent>
-				<NavMain items={data.navMain} />
+				<NavMain items={data.navItems} />
 				{/* <NavProjects projects={data.projects} /> */}
 			</SidebarContent>
 			<SidebarFooter>
