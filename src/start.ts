@@ -17,21 +17,12 @@ import { createMiddleware, createStart } from '@tanstack/react-start'
 // unhandled HTTPError (which masks message/stack in the response body).
 // Must run BEFORE clerkMiddleware so it wraps the entire downstream chain.
 
-console.log('[VSME START] Module loaded')
-
 const errorLoggingMiddleware = createMiddleware({
 	type: 'request',
 }).server(async ({ next }) => {
-	console.log('[VSME DEBUG] Request middleware started')
-
-	console.log('[VSME DEBUG] Environment:', {
-		hasClerkSecret: Boolean(process.env.CLERK_SECRET_KEY),
-		hasPublishableKey: Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY),
-	})
 
 	try {
 		const result = await next()
-		console.log('[VSME DEBUG] Middleware completed')
 		return result
 	} catch (error) {
 		console.error('[VSME DEBUG] Original error:', error)
