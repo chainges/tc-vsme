@@ -178,12 +178,10 @@ export function FormCard({
 							)}
 						</div>
 
-						<div className='min-h-10 wrap-break-word text-left text-sm text-muted-foreground md:text-right'>
-							<div>
-								Status: <span className='font-medium'>{STATUS_CONFIG[status].label}</span>
-							</div>
+						{/* <div className='break-words text-left text-sm text-muted-foreground md:text-right'>
+							
 							{version !== undefined && <div>Version: {version}</div>}
-						</div>
+						</div> */}
 					</div>
 
 					<motion.div

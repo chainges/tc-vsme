@@ -3,8 +3,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
 	Card,
-	CardContent,
-	CardDescription,
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card'
@@ -54,10 +52,9 @@ export function PreviousPeriodDisclosureFields({
 		<div className='space-y-6'>
 			<Card>
 				<CardHeader>
-					<div className='flex items-start justify-between gap-4'>
+					<div className='flex items-center justify-between gap-4'>
 						<div className='space-y-1'>
 							<CardTitle className='text-base'>Previous reporting period disclosures</CardTitle>
-							<CardDescription>Identify disclosures that remain unchanged from the previous report.</CardDescription>
 						</div>
 						<Switch
 							id='contains-previous-period-disclosures'
@@ -83,13 +80,13 @@ export function PreviousPeriodDisclosureFields({
 
 			{containsPreviousPeriodDisclosures && (
 				<>
-					<Card>
-						<CardHeader className='pb-3'>
+					
+						<div className='pb-3'>
 							<div className='flex items-center justify-between gap-3'>
-								<CardTitle className='flex items-center gap-2.5 text-lg font-semibold tracking-tight'>
-									<Table2 className='size-5 shrink-0 text-blue-600' />
-									Selected Sections
-								</CardTitle>
+								<div className='flex items-center gap-2.5 text-lg font-semibold tracking-tight'>
+									<Table2 className='size-5 shrink-0 text-primary' />
+									<h2 className='text-lg font-semibold tracking-tight text-primary dark:text-white'>Selected Sections</h2>
+								</div>
 								{sectionsThatHasNotChanged.length > 0 && (
 									<Button
 										variant='ghost'
@@ -103,14 +100,14 @@ export function PreviousPeriodDisclosureFields({
 									</Button>
 								)}
 							</div>
-							<CardDescription>Choose the sections whose disclosures have not changed.</CardDescription>
-						</CardHeader>
-						<CardContent>
+							<p className='text-sm leading-relaxed text-muted-foreground'>Choose the sections whose disclosures have not changed.</p>
+						</div>
+						
 							<div className='overflow-hidden rounded-xl border border-success/35! dark:border-success/35'>
 								<Table className=''>
 									<TableHeader>
 										<TableRow className='bg-muted/50'>
-											<TableHead className='w-12' />
+											<TableHead className='hidden w-12 md:table-cell' />
 											<TableHead className='w-20 text-primary'>Module</TableHead>
 											<TableHead className='text-primary'>Section</TableHead>
 											<TableHead className='hidden md:table-cell text-primary'>XBRL member value</TableHead>
@@ -121,8 +118,16 @@ export function PreviousPeriodDisclosureFields({
 											const isSelected = sectionsThatHasNotChanged.includes(section.value)
 
 											return (
-												<TableRow key={section.value}>
-													<TableCell>
+														<TableRow
+															key={section.value}
+															className={`${disabled ? '' : 'cursor-pointer md:cursor-default'} ${isSelected ? 'bg-success/[0.15] hover:bg-success/35 md:bg-transparent md:hover:bg-muted/50' : ''}`}
+															onClick={() => {
+																if (!disabled && !window.matchMedia('(min-width: 768px)').matches) {
+																	toggleSection(section.value, !isSelected)
+																}
+															}}
+														>
+															<TableCell className='hidden md:table-cell'>
 														<Checkbox
 															checked={isSelected}
 															disabled={disabled}
@@ -133,7 +138,12 @@ export function PreviousPeriodDisclosureFields({
 													<TableCell>
 														<Badge variant='outline'>{section.module}</Badge>
 													</TableCell>
-													<TableCell className='max-w-md text-sm font-medium'>{section.title}</TableCell>
+															<TableCell className='max-w-md text-sm font-medium'>
+																<button type='button' className='text-left md:hidden' disabled={disabled} aria-pressed={isSelected}>
+																	{section.title}
+																</button>
+																<span className='hidden md:inline'>{section.title}</span>
+															</TableCell>
 													<TableCell className='hidden max-w-xs md:table-cell'>
 														<code className='block truncate text-xs text-muted-foreground'>{section.value}</code>
 													</TableCell>
@@ -149,15 +159,15 @@ export function PreviousPeriodDisclosureFields({
 									No sections selected yet
 								</div>
 							)}
-						</CardContent>
-					</Card>
+						
 
-					<Card>
-						<CardHeader>
-							<CardTitle className='text-base'>Link to Previous Report</CardTitle>
-							<CardDescription>Add a link to the previous reporting period report.</CardDescription>
-						</CardHeader>
-						<CardContent>
+					
+						<div className='mb-1'>
+							<h2 className='text-lg font-semibold text-primary dark:white'>Link to Previous Report</h2>
+							<p className='text-sm leading-relaxed text-muted-foreground'>Add a link to the previous reporting period report.</p>
+						</div>
+						
+						
 							<Input
 								id='link-of-previous-report'
 								value={linkOfPreviousReport}
@@ -165,8 +175,7 @@ export function PreviousPeriodDisclosureFields({
 								onChange={(event) => onLinkChange(event.target.value)}
 								placeholder='https://...'
 							/>
-						</CardContent>
-					</Card>
+					
 				</>
 			)}
 		</div>

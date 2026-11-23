@@ -61,53 +61,55 @@ function ScopeOption({
 
 function ModuleInfoBox() {
 	return (
-		<Card>
-			<CardHeader className='pb-4'>
-				<CardTitle className='flex items-center gap-2.5 text-lg font-semibold tracking-tight text-black dark:text-white'>
-					<Info className='size-5 shrink-0' />
-					General Guidelines &amp; Compliance Rules
-				</CardTitle>
-				<CardDescription className='text-sm leading-relaxed text-slate-600! dark:text-slate-400!'>
-					Four core rules govern how EFRAG expects this report to be completed. Get these right and every downstream
-					disclosure stays compliant.
-				</CardDescription>
-			</CardHeader>
-			<CardContent className='grid gap-3.5 sm:grid-cols-2'>
-				{[
-					[
-						"Rule 1",
-						"Module Completeness",
-						"A module you select must be completed in its entirety — no picking and choosing.",
-					],
-					[
-						"Rule 2",
-						"“If Applicable” Principle",
-						"If a disclosure doesn't apply to your operations, leaving it blank signals it's not applicable to readers and XBRL parsers.",
-					],
-					[
-						"Rule 3",
-						"Voluntary Data Points",
-						"Fields marked voluntary — or bracketed for undertakings with ≤10 employees — may stay blank without affecting compliance.",
-					],
-					[
-						"Rule 4",
-						"Confidentiality",
-						"Omit a disclosure only in exceptional cases — commercial prejudice, trade secrets, classified info, or legal privacy obligations",
-					],
-				].map(([rule, title, description]) => (
-					<div
-						key={rule}
-						className='rounded-xl bg-white dark:bg-success/[0.04] p-4 shadow-xs transition-all duration-150 hover:shadow-sm border border-success/35'
-					>
-						<p className='text-xs font-extrabold tracking-wide text-primary'>{rule}</p>
-						<h3 className='mt-1 text-sm font-semibold tracking-tight text-slate-900 dark:text-white'>{title}</h3>
-						<p className='mt-2 text-xs leading-relaxed text-muted-foreground sm:text-sm'>
-							{description}
-						</p>
-					</div>
-				))}
-			</CardContent>
-		</Card>
+		<div className='mt-3'>
+		
+		
+			<div className='flex items-center gap-1.5 mb-1'>
+				<Info className='size-5 shrink-0 text-md font-bold text-primary dark:text-white' />
+				<h2 className='text-md font-bold tracking-tight text-primary dark:text-white'>General Guidelines &amp; Compliance Rules</h2>
+			</div>
+			<p className='text-sm leading-relaxed text-slate-600! dark:white!'>
+				Four core rules govern how EFRAG expects this report to be completed. Get these right and every downstream
+				disclosure stays compliant.
+			</p>
+		
+		
+			{[
+				[
+					"Rule 1",
+					"Module Completeness",
+					"A module you select must be completed in its entirety — no picking and choosing.",
+				],
+				[
+					"Rule 2",
+					"“If Applicable” Principle",
+					"If a disclosure doesn't apply to your operations, leaving it blank signals it's not applicable to readers and XBRL parsers.",
+				],
+				[
+					"Rule 3",
+					"Voluntary Data Points",
+					"Fields marked voluntary — or bracketed for undertakings with ≤10 employees — may stay blank without affecting compliance.",
+				],
+				[
+					"Rule 4",
+					"Confidentiality",
+					"Omit a disclosure only in exceptional cases — commercial prejudice, trade secrets, classified info, or legal privacy obligations",
+				],
+			].map(([rule, title, description]) => (
+				<div
+					key={rule}
+					className='rounded-xl mt-3 bg-white dark:bg-success/[0.04] p-4 shadow-xs transition-all duration-150 hover:shadow-sm border border-success/35'
+				>
+					<p className='text-xs font-extrabold tracking-wide text-primary'>{rule}</p>
+					<h3 className='mt-1 text-sm font-semibold tracking-tight text-slate-900 dark:text-white'>{title}</h3>
+					<p className='mt-2 text-xs leading-relaxed text-muted-foreground sm:text-sm'>
+						{description}
+					</p>
+				</div>
+			))}
+		</div>
+			
+		
 	)
 }
 
@@ -160,79 +162,72 @@ export function B1BasicForm() {
 					form.handleSubmit()
 				}}
 			>
-				<fieldset disabled={status === 'submitted'} className="space-y-6">
+				<fieldset disabled={status === "submitted"} className='space-y-6'>
 					<ModuleInfoBox />
-					<Card>
-						<CardHeader>
-							<CardTitle>Module Scope Selection</CardTitle>
-							<CardDescription>
-								Define your reporting ambition. Choose one path — the Basic
-								Module is a mandatory prerequisite for the Comprehensive Module.
-							</CardDescription>
-						</CardHeader>
-						<CardContent>
-							<form.AppField name="moduleScope">
+					
+						
+							<h2 className='text-md mb-0 font-bold tracking-tight text-primary dark:text-white'>Module Scope Selection</h2>
+							<p className='text-sm leading-relaxed text-slate-600! dark:white!'>
+								Define your reporting ambition. Choose one path — the Basic Module is a mandatory prerequisite for the
+								Comprehensive Module.
+							</p>
+						
+						
+							<form.AppField name='moduleScope'>
 								{(field) => (
 									<RadioGroup
 										value={field.state.value}
 										onValueChange={(value) => {
 											field.handleChange(
 												value as
-													| 'vsme:OptionABasicModuleOnlyMember'
-													| 'vsme:OptionBBasicModuleAndComprehensiveModuleMember',
+													| "vsme:OptionABasicModuleOnlyMember"
+													| "vsme:OptionBBasicModuleAndComprehensiveModuleMember",
 											)
 										}}
-										className="grid gap-4 md:grid-cols-2"
+										className='grid gap-4 md:grid-cols-2'
 									>
 										<ScopeOption
-											value="vsme:OptionABasicModuleOnlyMember"
-											label="OPTION A"
-											title="Basic Module (Only)"
-											whoFor="Micro-undertakings & small businesses seeking a minimal, streamlined disclosure."
-											covers="General info (B1), transition policies (B2), basic ESG metrics (B3–B11)."
+											value='vsme:OptionABasicModuleOnlyMember'
+											label='OPTION A'
+											title='Basic Module (Only)'
+											whoFor='Micro-undertakings & small businesses seeking a minimal, streamlined disclosure.'
+											covers='General info (B1), transition policies (B2), basic ESG metrics (B3–B11).'
 										/>
 										<ScopeOption
-											value="vsme:OptionBBasicModuleAndComprehensiveModuleMember"
-											label="OPTION B"
-											title="Basic + Comprehensive Module"
-											whoFor="SMEs facing detailed requests from banks, investors, or large supply-chain clients."
-											covers="All of B1–B11 plus climate targets (C3), climate risks (C4), workforce (C5), human rights (C6–C7), sector exclusions (C8)."
+											value='vsme:OptionBBasicModuleAndComprehensiveModuleMember'
+											label='OPTION B'
+											title='Basic + Comprehensive Module'
+											whoFor='SMEs facing detailed requests from banks, investors, or large supply-chain clients.'
+											covers='All of B1–B11 plus climate targets (C3), climate risks (C4), workforce (C5), human rights (C6–C7), sector exclusions (C8).'
 										/>
 									</RadioGroup>
 								)}
 							</form.AppField>
-							<p className="mt-4 text-xs text-muted-foreground">
-								<span className="font-semibold text-foreground">Note:</span>{' '}
-								Applying the Basic Module is a mandatory prerequisite before
-								adding Comprehensive Module disclosures.
+							<p className='mt-4 text-xs text-muted-foreground'>
+								<span className='font-semibold text-foreground'>Note:</span> Applying the Basic Module is a mandatory
+								prerequisite before adding Comprehensive Module disclosures.
 							</p>
-						</CardContent>
-					</Card>
+						
+					
 
 					<PreviousPeriodDisclosureFields
-						containsPreviousPeriodDisclosures={
-							containsPreviousPeriodDisclosures
-						}
+						containsPreviousPeriodDisclosures={containsPreviousPeriodDisclosures}
 						sectionsThatHasNotChanged={sectionsThatHasNotChanged}
 						linkOfPreviousReport={linkOfPreviousReport}
-						disabled={status === 'submitted'}
+						disabled={status === "submitted"}
 						onContainsPreviousPeriodDisclosuresChange={(value) =>
-							form.setFieldValue('containsPreviousPeriodDisclosures', value)
+							form.setFieldValue("containsPreviousPeriodDisclosures", value)
 						}
-						onSectionsChange={(values) =>
-							form.setFieldValue('sectionsThatHasNotChanged', values)
-						}
-						onLinkChange={(value) =>
-							form.setFieldValue('linkOfPreviousReport', value)
-						}
+						onSectionsChange={(values) => form.setFieldValue("sectionsThatHasNotChanged", values)}
+						onLinkChange={(value) => form.setFieldValue("linkOfPreviousReport", value)}
 					/>
 
-					<form.AppField name="reportingYear">
-						{(field) => <field.TextField label="Reporting year" hidden />}
+					<form.AppField name='reportingYear'>
+						{(field) => <field.TextField label='Reporting year' hidden />}
 					</form.AppField>
 				</fieldset>
 				<FormButtons
-					status={status as 'not_started' | 'draft' | 'submitted'}
+					status={status as "not_started" | "draft" | "submitted"}
 					isSaving={isSaving}
 					onSaveDraft={saveDraft}
 					onSubmit={submit}

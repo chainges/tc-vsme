@@ -77,23 +77,23 @@ function GeneralPage() {
 	const descriptionOfPracticesPolicies = formSections?.descriptionOfPracticesPolicies
 
 	// Keep the route shell visible while organization/auth and form data settle.
-	if (isOrgLoading || formSections === undefined) {
-		return (
-			<div className='flex flex-col gap-4 px-4 pb-8 pt-7 md:px-6 lg:px-8 w-full mx-auto'>
-				<div>
-					<h1 className='flex items-center gap-2.5 text-xl font-semibold'>
-						<ClipboardList className='size-5 text-primary' />
-						{m["general.generalInformation"]()}
-					</h1>
-					<p className='mt-1 text-sm text-muted-foreground'>{m["general.generalInformationDescription"]()}</p>
-				</div>
-				<LoadingSkeleton variant='cards' count={showComprehensiveModule ? 5 : 3} />
-			</div>
-		)
-	}
+	// if (isOrgLoading || formSections === undefined) {
+	// 	return (
+	// 		<div className='flex flex-col gap-4 px-4 pb-8 pt-7 md:px-6 lg:px-8 w-full mx-auto'>
+	// 			<div>
+	// 				<h1 className='flex items-center gap-2.5 text-xl font-semibold'>
+	// 					<ClipboardList className='size-5 text-primary' />
+	// 					{m["general.generalInformation"]()}
+	// 				</h1>
+	// 				<p className='mt-1 text-sm text-muted-foreground'>{m["general.generalInformationDescription"]()}</p>
+	// 			</div>
+	// 			<LoadingSkeleton variant='cards' count={showComprehensiveModule ? 5 : 3} />
+	// 		</div>
+	// 	)
+	// }
 
 	return (
-		<div className='flex flex-col gap-4 md:grid-cols-1 px-4 pb-8 pt-7 md:px-6 lg:px-8 w-full mx-auto'>
+		<div className='flex flex-col gap-4 md:grid-cols-1 px-1.5 pb-8 pt-7 md:px-6 lg:px-8 w-full mx-auto'>
 			<div>
 				<h1 className='flex items-center gap-2.5 text-xl font-semibold'>
 					<ClipboardList className='size-5 text-primary' />
