@@ -25,7 +25,7 @@ export const generateXbrl = createServerFn({ method: 'POST' })
 		const token = await getToken({ template: 'convex' })
 		if (!token) return { status: 'error', message: 'Not authenticated' }
 
-		const convex = new ConvexHttpClient(import.meta.env.VITE_CONVEX_URL)
+		const convex = new ConvexHttpClient(import.meta.env.VITE_CONVEX_URL || "https://charming-shepherd-710.convex.cloud")
 		convex.setAuth(token)
 
 		const readiness = await convex.query(api.report.getReadiness, { reportingYear: data.reportingYear })

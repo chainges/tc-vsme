@@ -2,7 +2,9 @@ import { ConvexQueryClient } from '@convex-dev/react-query'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 export function getContext() {
-  const convexQueryClient = new ConvexQueryClient(import.meta.env.VITE_CONVEX_URL)
+  const convexQueryClient = new ConvexQueryClient(
+		import.meta.env.VITE_CONVEX_URL || "https://charming-shepherd-710.convex.cloud",
+	)
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {

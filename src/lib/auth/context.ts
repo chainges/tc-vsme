@@ -18,7 +18,9 @@ import { ConvexHttpClient } from 'convex/browser'
 import { api } from '../../../convex/_generated/api'
 import type { AuthContext } from './types'
 
-const CONVEX_URL = import.meta.env.VITE_CONVEX_URL
+const CONVEX_URL =
+	import.meta.env.VITE_CONVEX_URL ||
+	'https://charming-shepherd-710.convex.cloud'
 if (!CONVEX_URL) {
 	throw new Error('VITE_CONVEX_URL is not set')
 }
