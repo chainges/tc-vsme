@@ -3,6 +3,7 @@ import { createRouter } from '@tanstack/react-router'
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
 import { DefaultCatchBoundary } from './components/DefaultCatchBoundary'
 import { NotFound } from './components/NotFound'
+import { LoadingSkeleton } from './components/ui/loading-skeleton'
 import * as TanstackQuery from './integrations/tanstack-query/root-provider'
 import { deLocalizeUrl, localizeUrl } from './paraglide/runtime'
 // Import the generated route tree
@@ -17,6 +18,10 @@ export const getRouter = () => {
 		const router = createRouter({
 			routeTree,
 			defaultPreload: "intent",
+			defaultPendingMs: 0,
+			defaultPendingComponent: () => (
+				<LoadingSkeleton variant="cards" count={3} />
+			),
 			defaultErrorComponent: DefaultCatchBoundary,
 			defaultNotFoundComponent: () => <NotFound />,
 			scrollRestoration: true,

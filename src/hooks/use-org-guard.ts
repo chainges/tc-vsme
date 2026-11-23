@@ -21,8 +21,9 @@ export function useOrgGuard() {
 	// Ready when authenticated, org is loaded, and org exists
 	const isReady = isAuthenticated && isOrgLoaded && !!organization
 
-	// Loading during initial auth or org loading
-	const isLoading = isAuthLoading || !isOrgLoaded
+	// Loading until every required state is settled. Clerk may report its
+	// organization as loaded while Convex auth is still attaching the new JWT.
+	const isLoading = isAuthLoading || !isOrgLoaded || !isAuthenticated || !organization
 
 	return {
 		/** True when safe to make queries requiring orgId */

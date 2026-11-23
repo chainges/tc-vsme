@@ -59,8 +59,6 @@ function GeneralPage() {
 
 	const isMicroUnderTaking = numberOfEmployees <= 10
 
-	// console.log("companyInfo=", companyInfo)
-
 	// console.log("numberOfEmployees=", numberOfEmployees)
 
 	// console.log("companyInfo=", companyInfo)
@@ -78,9 +76,20 @@ function GeneralPage() {
 
 	const descriptionOfPracticesPolicies = formSections?.descriptionOfPracticesPolicies
 
-	// Show loading state
+	// Keep the route shell visible while organization/auth and form data settle.
 	if (isOrgLoading || formSections === undefined) {
-		return <LoadingSkeleton variant='cards' count={showComprehensiveModule ? 5 : 3} />
+		return (
+			<div className='flex flex-col gap-4 px-4 pb-8 pt-7 md:px-6 lg:px-8 w-full mx-auto'>
+				<div>
+					<h1 className='flex items-center gap-2.5 text-xl font-semibold'>
+						<ClipboardList className='size-5 text-primary' />
+						{m["general.generalInformation"]()}
+					</h1>
+					<p className='mt-1 text-sm text-muted-foreground'>{m["general.generalInformationDescription"]()}</p>
+				</div>
+				<LoadingSkeleton variant='cards' count={showComprehensiveModule ? 5 : 3} />
+			</div>
+		)
 	}
 
 	return (
