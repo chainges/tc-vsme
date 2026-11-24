@@ -123,6 +123,7 @@ code {
   
   --volunteer-badge: oklch(0.5 0.11 158);
   --volunteer-soft-badge: oklch(0.95 0.05 155);
+  --comprehensive: oklch(0.920 0.560 10);
 }
 
 .dark {

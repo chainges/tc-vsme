@@ -3,7 +3,7 @@ import { useStore as useYearStore } from "@tanstack/react-store"
 import { AlertTriangleIcon, LeafIcon, Plus, RecycleIcon, RefreshCwIcon, Trash2, TrashIcon } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import EWC from "@/data/EWC"
@@ -21,7 +21,6 @@ import ConfidentialInfoBox from "../ConfidentialInfoBox"
 import SectionHeading from "../SectionHeading"
 import { Badge } from "../ui/badge"
 import { Input } from "../ui/input"
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
 
 const confidentialAreaValues={
 	descriptionOfCircularEconomy:"vsme:B7DescriptionOfCircularEconomyPrinciplesMember",
@@ -418,93 +417,171 @@ function WasteCodeSelector({ field }: { field: WasteInformationField }) {
 				</div>
 			</div>
 
-			{/* Table */}
+			<div>
+				<h2 className='text-xl md:text-md font-semibold tracking-tight text-primary'>Waste Inventory</h2>
+				<p>Hazardous and non-hazardous waste streams with recycling and disposal totals.</p>
+			</div>
 
-			{selectedCodes.length > 0 && (
-				<Card>
-					<CardHeader>
-						<CardTitle className='text-2xl font-semibold tracking-tight'>Waste Inventory</CardTitle>
-						<CardDescription>
-							Hazardous and non-hazardous waste streams with recycling and disposal totals.
-						</CardDescription>
-					</CardHeader>
-					<CardContent>
-						<Table>
-							<TableCaption>A list of registered waste streams and their current totals.</TableCaption>
-							<TableHeader>
-								<TableRow>
-									<TableHead className='w-30'>Code</TableHead>
-									<TableHead>Waste Stream</TableHead>
-									<TableHead className='w-27.5'>Hazardous</TableHead>
-									<TableHead className='w-20'>Unit</TableHead>
-									<TableHead className='text-right'>Recycled</TableHead>
-									<TableHead className='text-right'>Disposal</TableHead>
-									<TableHead className='text-right'>Total</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								{selectedCodes.map((item) => (
-									<TableRow key={item.id}>
-										<TableCell className='font-mono text-sm font-medium text-muted-foreground'>{item.id}</TableCell>
-										<TableCell className='font-medium'>{item.name}</TableCell>
-										<TableCell>
-											{item.hazardous ? (
-												<Badge variant='destructive' className='gap-1'>
-													<AlertTriangleIcon className='h-3 w-3' />
-													Yes
-												</Badge>
-											) : (
-												<Badge variant='secondary' className='gap-1'>
-													<LeafIcon className='h-3 w-3' />
-													No
-												</Badge>
-											)}
-										</TableCell>
-										<TableCell>
-											<Select
-												value={item.unit}
-												onValueChange={(value) => updateCode(item.id, { unit: value as "tonn" | "kg" | "m³" })}
-											>
-												<SelectTrigger className='h-8 text-xs uppercase'>
-													<SelectValue placeholder='Unit' />
-												</SelectTrigger>
-												<SelectContent>
-													{unitOptions.map((option) => (
-														<SelectItem key={option.value} value={option.value}>
-															{option.label}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-										</TableCell>
-										<TableCell className='text-right tabular-nums'>
+			<div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+				{selectedCodes.map((item) => {
+					const recycledRate = item.total > 0
+						? Math.min(100, (item.wasteDivertedToRecycle / item.total) * 100)
+						: 0
+					const rateColor = recycledRate >= 50
+						? 'text-emerald-700 dark:text-emerald-400'
+						: 'text-amber-700 dark:text-amber-400'
+					const progressColor = recycledRate >= 50 ? 'bg-emerald-600' : 'bg-amber-500'
+					const progressTrackColor = recycledRate >= 50 ? 'bg-emerald-100' : 'bg-amber-100'
+					const unitSymbol = item.unit === 'tonn' ? 't' : item.unit
+					const inputId = item.id.replaceAll(' ', '-')
+
+					return (
+						<Card key={item.id} className='gap-0 py-0'>
+							<CardContent className='space-y-4 p-4'>
+								<div className='flex items-start justify-between gap-3'>
+									<div className='flex min-w-0 flex-wrap items-center gap-2'>
+										<p className='font-mono text-xs font-medium text-muted-foreground'>
+											EWC {item.id}
+										</p>
+										{item.hazardous ? (
+											<Badge variant='destructive' className='gap-1'>
+												<AlertTriangleIcon className='h-3 w-3' />
+												Hazardous
+											</Badge>
+										) : (
+											<Badge variant='secondary' className='gap-1'>
+												<LeafIcon className='h-3 w-3' />
+												Non-Hazardous
+											</Badge>
+										)}
+									</div>
+									<Button
+										type='button'
+										variant='ghost'
+										size='icon'
+										className='-mt-1 -mr-2 h-8 w-8 shrink-0 text-muted-foreground'
+										aria-label={`Remove ${item.name}`}
+										onClick={() =>
+											field.handleChange(
+												selectedCodes.filter((selected) => selected.id !== item.id),
+											)
+										}
+									>
+										<Trash2 className='h-4 w-4' />
+									</Button>
+								</div>
+
+								<div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+									<h3 className='min-w-0 font-semibold'>{item.name}</h3>
+									<div className='flex items-center justify-between gap-3 sm:justify-end'>
+										<span className='text-sm text-muted-foreground sm:hidden'>Unit:</span>
+										<Select
+										value={item.unit}
+										onValueChange={(value) =>
+											updateCode(item.id, { unit: value as 'tonn' | 'kg' | 'm³' })
+										}
+									>
+										<SelectTrigger className='h-9 w-full sm:w-fit'>
+											<SelectValue placeholder='Unit' />
+										</SelectTrigger>
+										<SelectContent>
+											{unitOptions.map((option) => (
+												<SelectItem key={option.value} value={option.value}>
+													{option.value === 'tonn' ? 'Tonnes (t)' : option.label}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+									</div>
+								</div>
+
+								<div className='grid grid-cols-2 gap-3'>
+									<label htmlFor={`${inputId}-recycled`} className='min-w-0 space-y-1.5 text-sm text-muted-foreground'>
+										<span className='block'>Recycled</span>
+										<span className='relative block'>
 											<Input
+												id={`${inputId}-recycled`}
 												type='number'
 												min={0}
 												step='any'
-												className='w-full text-right tabular-nums'
+												className='pr-8 tabular-nums'
 												value={item.wasteDivertedToRecycle}
-												onChange={(e) => updateCode(item.id, { wasteDivertedToRecycle: Number(e.target.value) })}
+												onChange={(event) =>
+													updateCode(item.id, {
+														wasteDivertedToRecycle: Number(event.target.value),
+													})
+												}
 											/>
-										</TableCell>
-										<TableCell className='text-right tabular-nums'>
+											<span className='pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs'>
+												{unitSymbol}
+											</span>
+										</span>
+									</label>
+									<label htmlFor={`${inputId}-disposal`} className='min-w-0 space-y-1.5 text-sm text-muted-foreground'>
+										<span className='block'>Disposal</span>
+										<span className='relative block'>
 											<Input
+												id={`${inputId}-disposal`}
 												type='number'
 												min={0}
 												step='any'
-												className='w-full text-right tabular-nums'
+												className='pr-8 tabular-nums'
 												value={item.wasteDirectedToDisposal}
-												onChange={(e) => updateCode(item.id, { wasteDirectedToDisposal: Number(e.target.value) })}
+												onChange={(event) =>
+													updateCode(item.id, {
+														wasteDirectedToDisposal: Number(event.target.value),
+													})
+												}
 											/>
-										</TableCell>
-										<TableCell className='text-right tabular-nums font-medium'>{item.total}</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-					</CardContent>
-				</Card>
-			)}
+											<span className='pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs'>
+												{unitSymbol}
+											</span>
+										</span>
+									</label>
+								</div>
+
+								<div className='border-t pt-3'>
+									<div className='flex items-center justify-between gap-3 md:grid md:grid-cols-[auto_1fr_auto]'>
+										<p className='text-sm text-muted-foreground'>
+											Total{' '}
+											<strong className='font-semibold text-foreground'>
+												{item.total.toLocaleString('en-US', {
+													minimumFractionDigits: 1,
+													maximumFractionDigits: 1,
+												})}{' '}
+												{unitSymbol}
+											</strong>
+										</p>
+										<div
+											className={`hidden h-1.5 overflow-hidden rounded-full md:block ${progressTrackColor}`}
+											role='img'
+											aria-label={`${recycledRate.toFixed(1)}% recycled`}
+										>
+											<div
+												className={`h-full rounded-full ${progressColor}`}
+												style={{ width: `${recycledRate}%` }}
+											/>
+										</div>
+										<p className={`shrink-0 text-sm font-semibold ${rateColor}`}>
+											{recycledRate.toFixed(1)}% Recycled
+										</p>
+									</div>
+									<div
+										className={`mt-2 h-1.5 overflow-hidden rounded-full md:hidden ${progressTrackColor}`}
+										role='img'
+										aria-label={`${recycledRate.toFixed(1)}% recycled`}
+									>
+										<div
+											className={`h-full rounded-full ${progressColor}`}
+											style={{ width: `${recycledRate}%` }}
+										/>
+									</div>
+								</div>
+							</CardContent>
+						</Card>
+					)
+				})}
+			</div>
 		</div>
 	)
 }

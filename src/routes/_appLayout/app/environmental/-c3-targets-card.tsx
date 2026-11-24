@@ -1,15 +1,8 @@
 import { useNavigate } from '@tanstack/react-router'
 import { ArrowRightIcon, TargetIcon } from 'lucide-react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table'
 import { m } from '@/paraglide/messages'
 
 // ============================================================================
@@ -53,13 +46,13 @@ function findProjectionByFlag(
 	return projections.find((p) => p[flag] === true) ?? null
 }
 
-function calculateReductionPercentage(
+function calculateEmissionChange(
 	baseEmission: number,
 	targetEmission: number,
 ): string {
 	if (baseEmission === 0) return '0.0%'
-	const reduction = ((baseEmission - targetEmission) / baseEmission) * 100
-	return `${reduction.toFixed(1)}%`
+	const change = ((targetEmission - baseEmission) / baseEmission) * 100
+	return `${change.toFixed(1)}%`
 }
 
 function formatEmission(value: number | undefined): string {
@@ -67,78 +60,153 @@ function formatEmission(value: number | undefined): string {
 	return value.toLocaleString('en-US', { maximumFractionDigits: 1 })
 }
 
-// ============================================================================
-// Table Component
-// ============================================================================
-
-interface EmissionTargetTableProps {
-	title: string
-	targetYear: number
-	baseYearProjection: Projection | null
-	targetProjection: Projection | null
+function getRemainingPercentage(baseEmission: number, targetEmission: number) {
+	if (baseEmission <= 0) return 0
+	return Math.max(0, Math.min(100, (targetEmission / baseEmission) * 100))
 }
 
-function EmissionTargetTable({
-	title,
-	targetYear,
+// ============================================================================
+// Target Reduction Component
+// ============================================================================
+
+interface EmissionTargetViewProps {
+	targets: { year: number; label: string; projection: Projection }[]
+	baseYearProjection: Projection | null
+}
+
+function EmissionTargetView({
+	targets,
 	baseYearProjection,
-	targetProjection,
-}: EmissionTargetTableProps) {
-	const baseYear = baseYearProjection?.year ?? '-'
+}: EmissionTargetViewProps) {
+	const [selectedTargetLabel, setSelectedTargetLabel] = useState(targets[0].label)
+	const selectedTarget =
+		targets.find((target) => target.label === selectedTargetLabel) ?? targets[0]
+	const baseTotal = baseYearProjection?.total ?? 0
+	const targetTotal = selectedTarget.projection.total
+	const totalChange = calculateEmissionChange(baseTotal, targetTotal)
 
 	const rows = [
-		{ label: 'Scope 1', baseKey: 'scope1' as const },
-		{ label: 'Scope 2', baseKey: 'scope2' as const },
-		{ label: 'Scope 3', baseKey: 'scope3' as const },
-		{ label: 'Total', baseKey: 'total' as const },
+		{ label: 'Scope 1', baseKey: 'scope1' as const, type: 'Direct' },
+		{ label: 'Scope 2', baseKey: 'scope2' as const, type: 'Electricity' },
+		{ label: 'Scope 3', baseKey: 'scope3' as const, type: 'Value Chain' },
 	]
 
 	return (
-		<div className="space-y-2 mt-4">
-			<h4 className="text-sm font-semibold text-foreground">
-				{title} {targetYear}
-			</h4>
-			<Table>
-				<TableHeader>
-					<TableRow>
-						<TableHead className="w-25">Scope</TableHead>
-						<TableHead className="text-center">Base Year</TableHead>
-						<TableHead className="text-center">Base Emissions</TableHead>
-						<TableHead className="text-center">Reduction Target (%)</TableHead>
-						<TableHead className="text-center">
-							Absolute Emission Target
-						</TableHead>
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{rows.map((row) => {
-						const baseEmission = baseYearProjection?.[row.baseKey] ?? 0
-						const targetEmission = targetProjection?.[row.baseKey] ?? 0
-						const reductionPct = calculateReductionPercentage(
-							baseEmission,
-							targetEmission,
-						)
+		<div className="space-y-3">
+			<fieldset className="flex rounded-full border-none bg-gray-100 p-0">
+				<legend className="sr-only">Emission target year</legend>
+				{targets.map((target) => {
+					const targetChange = calculateEmissionChange(
+						baseTotal,
+						target.projection.total,
+					)
+					const isSelected = target.label === selectedTarget.label
 
-						return (
-							<TableRow key={row.baseKey}>
-								<TableCell className="font-medium">{row.label}</TableCell>
-								<TableCell className="text-center text-muted-foreground">
-									{baseYear}
-								</TableCell>
-								<TableCell className="text-center">
-									{formatEmission(baseYearProjection?.[row.baseKey])}
-								</TableCell>
-								<TableCell className="text-center font-medium text-emerald-600 dark:text-emerald-400">
-									{reductionPct}
-								</TableCell>
-								<TableCell className="text-center font-medium">
-									{formatEmission(targetProjection?.[row.baseKey])}
-								</TableCell>
-							</TableRow>
-						)
-					})}
-				</TableBody>
-			</Table>
+					return (
+						<button
+							key={target.label}
+							type="button"
+							aria-pressed={isSelected}
+							className={`min-h-10 h-full border-none flex-1 rounded-full px-3 text-sm transition-colors ${isSelected ? 'bg-primary font-semibold text-white' : 'text-muted-foreground hover:bg-primary/[0.20]'}`}
+							onClick={() => setSelectedTargetLabel(target.label)}
+						>
+							{target.year}{' '}
+							<span className={isSelected ? 'text-blue-100' : ''}>
+								({targetChange})
+							</span>
+						</button>
+					)
+				})}
+			</fieldset>
+
+			<div className="rounded-lg p-3 text-sm border border-secondary/35 bg-success/[0.04]">
+				Base Year: <strong>{baseYearProjection?.year ?? '-'}</strong>
+				<span className="mx-1.5">·</span>
+				Target: <strong>{totalChange} emissions across all scopes</strong>
+			</div>
+
+			<div className="space-y-3">
+				{rows.map((row) => {
+					const baseEmission = baseYearProjection?.[row.baseKey] ?? 0
+					const targetEmission = selectedTarget.projection[row.baseKey]
+					const change = calculateEmissionChange(baseEmission, targetEmission)
+					const remaining = getRemainingPercentage(baseEmission, targetEmission)
+
+					return (
+						<div
+							key={row.baseKey}
+							className="space-y-3 rounded-lg border border-success/35 bg-card px-4 py-4"
+						>
+							<div className="flex items-start justify-between gap-3">
+								<div className="font-semibold text-primary">
+									{row.label}{' '}
+									<span className="font-normal text-primary">
+										({row.type})
+									</span>
+								</div>
+								<span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+									{change}
+								</span>
+							</div>
+							<div className="flex flex-wrap items-baseline gap-2 text-sm text-muted-foreground">
+								<span>{formatEmission(baseEmission)}</span>
+								<span aria-hidden="true" className="text-lg">
+									→
+								</span>
+								<strong className="text-xl text-foreground">
+									{formatEmission(targetEmission)}
+								</strong>
+								<span>tCO2e</span>
+							</div>
+							<div
+								className="h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-white"
+								role="img"
+								aria-label={`${remaining.toFixed(1)}% of base emissions remain`}
+							>
+								<div
+									className="h-full rounded-full bg-primary"
+									style={{ width: `${remaining}%` }}
+								/>
+							</div>
+						</div>
+					)
+				})}
+			</div>
+
+			<div className="space-y-3 rounded-lg bg-success/[0.04] border border-success/35 px-4 py-4">
+				<div className="flex items-center justify-between gap-3">
+					<h4 className="font-semibold text-primary">Total Emissions</h4>
+					<span className="rounded-full bg-primary px-3 py-1 text-sm font-semibold text-white">
+						{totalChange}
+					</span>
+				</div>
+				<div className="flex flex-wrap items-baseline gap-2 text-sm text-black dark:text-white">
+					<span>{formatEmission(baseTotal)}</span>
+					<span aria-hidden="true" className="text-lg">
+						→
+					</span>
+					<strong className="text-3xl text-black dark:text-white">
+						{formatEmission(targetTotal)}
+					</strong>
+					<span>tCO2e</span>
+				</div>
+				<div
+					className="h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-white"
+					role="img"
+					aria-label={`${getRemainingPercentage(baseTotal, targetTotal).toFixed(1)}% of base emissions remain`}
+				>
+					<div
+						className="h-full rounded-full bg-primary"
+						style={{
+							width: `${getRemainingPercentage(baseTotal, targetTotal)}%`,
+						}}
+					/>
+				</div>
+				<div className="flex justify-between text-xs text-primary">
+					<span>Target {formatEmission(targetTotal)}</span>
+					<span>Base {formatEmission(baseTotal)}</span>
+				</div>
+			</div>
 		</div>
 	)
 }
@@ -195,24 +263,25 @@ function TargetsContent({ targets }: TargetsContentProps) {
 	// Check if we have the minimum required data
 	const hasTargetYearData = baseYearProjection && targetYearProjection
 	const hasLongTermData = baseYearProjection && longTermProjection
+	const availableTargets = [
+		targetYearProjection && {
+			year: targets.targetYear,
+			label: 'target',
+			projection: targetYearProjection,
+		},
+		longTermProjection && {
+			year: targets.longTermTargetYear ?? longTermProjection.year,
+			label: 'long-term',
+			projection: longTermProjection,
+		},
+	].filter((target) => target !== null && target !== undefined)
 
 	return (
 		<div className='space-y-6'>
-			{hasTargetYearData && (
-				<EmissionTargetTable
-					title='Target Year'
-					targetYear={targets.targetYear}
+			{availableTargets.length > 0 && (
+				<EmissionTargetView
+					targets={availableTargets}
 					baseYearProjection={baseYearProjection}
-					targetProjection={targetYearProjection}
-				/>
-			)}
-
-			{hasLongTermData && (
-				<EmissionTargetTable
-					title='Long Term Targets'
-					targetYear={targets.longTermTargetYear ?? targets.targetYear}
-					baseYearProjection={baseYearProjection}
-					targetProjection={longTermProjection}
 				/>
 			)}
 

@@ -1,41 +1,29 @@
-import { useStore } from '@tanstack/react-form'
-import { useQuery } from '@tanstack/react-query'
-import { useStore as useYearStore } from '@tanstack/react-store'
-import { useAction, useQuery as useConvexQuery } from 'convex/react'
-import {
-	Award,
-	Building2Icon,
-	History,
-	Plus,
-	RefreshCw,
-	Trash2,
-} from 'lucide-react'
-import { useMemo } from 'react'
-import { Button } from '@/components/ui/button'
-import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
-import { FormButtons } from '@/hooks/tanstack-form'
-import { useFormSubmission } from '@/hooks/use-form-submission'
-import { useOrgGuard } from '@/hooks/use-org-guard'
+import { useStore } from "@tanstack/react-form"
+import { useQuery } from "@tanstack/react-query"
+import { useStore as useYearStore } from "@tanstack/react-store"
+import { useAction, useQuery as useConvexQuery } from "convex/react"
+import { Award, Building2Icon, History, Plus, RefreshCw, Trash2 } from "lucide-react"
+import { useMemo } from "react"
+import { Button } from "@/components/ui/button"
+import { LoadingSkeleton } from "@/components/ui/loading-skeleton"
+import { FormButtons } from "@/hooks/tanstack-form"
+import { useFormSubmission } from "@/hooks/use-form-submission"
+import { useOrgGuard } from "@/hooks/use-org-guard"
 import {
 	type B1GeneralFormValues,
 	b1GeneralSchema,
 	EMPLOYEE_COUNTING_METHODOLOGIES,
 	TYPE_OF_NUMBER_OF_EMPLOYEES,
-} from '@/lib/forms/schemas/b1-general-schema'
-import { yearStore } from '@/lib/year-store'
+} from "@/lib/forms/schemas/b1-general-schema"
+import { yearStore } from "@/lib/year-store"
 import { m } from "@/paraglide/messages"
-import { api } from '../../../convex/_generated/api'
-import type { FieldChange, FormVersion } from '../../../convex/forms/_utils'
-import ConfidentialInfoBox from '../ConfidentialInfoBox'
-import SectionHeading from '../SectionHeading'
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from '../ui/accordion'
-import { Card, CardContent } from '../ui/card'
-import { FieldGroup } from '../ui/field'
+import { api } from "../../../convex/_generated/api"
+import type { FieldChange, FormVersion } from "../../../convex/forms/_utils"
+import ConfidentialInfoBox from "../ConfidentialInfoBox"
+import SectionHeading from "../SectionHeading"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion"
+import { Card, CardContent } from "../ui/card"
+import { FieldGroup } from "../ui/field"
 
 type MongoEmissionsData = {
 	Revenue?: number
@@ -43,11 +31,10 @@ type MongoEmissionsData = {
 }
 
 const confidentialAreaValues = {
-	generalInformation:
-		'vsme:B1BasisForPreparationAndOtherUndertakingSGeneralInformationMember',
-	subsidiaries: 'vsme:B1ListOfSubsidiariesMember',
-	properties: 'vsme:B1ListOfSiteSMember',
-	certifications: 'vsme:B1DisclosureOfSustainabilityRelatedCertificationSOrLabelSMember',
+	generalInformation: "vsme:B1BasisForPreparationAndOtherUndertakingSGeneralInformationMember",
+	subsidiaries: "vsme:B1ListOfSubsidiariesMember",
+	properties: "vsme:B1ListOfSiteSMember",
+	certifications: "vsme:B1DisclosureOfSustainabilityRelatedCertificationSOrLabelSMember",
 } as const
 
 /**
@@ -66,17 +53,14 @@ export function B1GeneralForm() {
 
 	// Guard against race conditions during org switching
 	const { organization, skipQuery } = useOrgGuard()
-	const orgData = useConvexQuery(
-		api.organizations.getByClerkOrgId,
-		skipQuery || { clerkOrgId: organization?.id ?? '' },
-	)
+	const orgData = useConvexQuery(api.organizations.getByClerkOrgId, skipQuery || { clerkOrgId: organization?.id ?? "" })
 
 	// get actuall nace value from NACE_DATA based on orgData?.naceCode
 	// if nace code's length is greater then 5 we will slice it to 5 and then get the value from NACE_DATA
 
 	// const naceCode = useMemo(() => {
 	// 	if (!orgData?.naceCode) return ''
-		
+
 	// 	const codeToUse = orgData.naceCode.length > 5 ? orgData.naceCode.slice(0, 5) : orgData.naceCode
 	// 	const naceDataMap = NACE_DATA as Record<string, { label?: string }>
 	// 	const naceValue = naceDataMap[codeToUse]?.label ?? ''
@@ -93,7 +77,7 @@ export function B1GeneralForm() {
 		refetch: refetchMongoData,
 		isFetching: isRefetching,
 	} = useQuery({
-		queryKey: ['emissions', organization?.id, reportingYear],
+		queryKey: ["emissions", organization?.id, reportingYear],
 		queryFn: async () => {
 			const result = await getEmissions({
 				orgIdToUse: organization!.id,
@@ -116,19 +100,19 @@ export function B1GeneralForm() {
 		const baseDefaults: B1GeneralFormValues = {
 			reportingYear: reportingYear.toString(),
 			confidentialAreas: [],
-			organizationName: orgData?.name || '',
-			organizationNumber: orgData?.orgNumber || '',
-			naceCode: orgData?.naceCode || '',
+			organizationName: orgData?.name || "",
+			organizationNumber: orgData?.orgNumber || "",
+			naceCode: orgData?.naceCode || "",
 			revenue: 0,
 			balanceSheetTotal: 0,
 			employees: 0,
-			EmployeeCountingMethodology: 'vsme:AtTheEndOfTheReportingPeriodMember',
-			TypeOfNumberOfEmployees: 'vsme:HeadcountMember',
-			country: 'NO',
+			EmployeeCountingMethodology: "vsme:AtTheEndOfTheReportingPeriodMember",
+			TypeOfNumberOfEmployees: "vsme:HeadcountMember",
+			country: "NO",
 			reportType: false,
 			subsidiaries: [],
-			contactPersonName: '',
-			contactPersonEmail: '',
+			contactPersonName: "",
+			contactPersonEmail: "",
 			isB1Confidential: false,
 			properties: [],
 			certifications: [],
@@ -140,27 +124,18 @@ export function B1GeneralForm() {
 		} as B1GeneralFormValues
 	}, [reportingYear, orgData, mongoDefaults])
 
-	const {
-		form,
-		status,
-		isSaving,
-		isLoading,
-		existingData,
-		saveDraft,
-		submit,
-		reopen,
-		rollback,
-	} = useFormSubmission<B1GeneralFormValues>({
-		table: 'formGeneral',
-		reportingYear,
-		section: 'companyInfo',
-		schema: b1GeneralSchema,
-		defaultValues,
-		transformBeforeSave: (values) => ({
-			...values,
-			confidentialAreas: values.confidentialAreas ?? [],
-		}),
-	})
+	const { form, status, isSaving, isLoading, existingData, saveDraft, submit, reopen, rollback } =
+		useFormSubmission<B1GeneralFormValues>({
+			table: "formGeneral",
+			reportingYear,
+			section: "companyInfo",
+			schema: b1GeneralSchema,
+			defaultValues,
+			transformBeforeSave: (values) => ({
+				...values,
+				confidentialAreas: values.confidentialAreas ?? [],
+			}),
+		})
 
 	// Ensure org-sourced fields are always populated from live data,
 	// overriding any stale empty values that may have been saved in a draft.
@@ -174,10 +149,7 @@ export function B1GeneralForm() {
 	// }, [orgData?.orgNumber, orgData?.name, form])
 
 	const reportType2 = useStore(form.store, (state) => state.values.reportType)
-	const confidentialAreas = useStore(
-		form.store,
-		(state) => state.values.confidentialAreas ?? [],
-	)
+	const confidentialAreas = useStore(form.store, (state) => state.values.confidentialAreas ?? [])
 
 	// const handleSectionConfidentialChange = (value:Boolean) => {
 	// 	// set the isB1Confidential field based on the section switch
@@ -324,7 +296,7 @@ export function B1GeneralForm() {
 						{/* Row 5: Contact Person */}
 						<FieldGroup>
 							<div className='pt-4 pb-4 border-t border-b border-border'>
-								<h2 className='text-lg font-medium mb-4'>{m["general.B1.contactPerson"]()}</h2>
+								<h2 className='text-lg font-medium mb-4 text-primary'>{m["general.B1.contactPerson"]()}</h2>
 								<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
 									<form.AppField name='contactPersonName'>
 										{(field) => <field.TextField label={m["general.B1.contactPersonName"]()} />}
@@ -340,8 +312,8 @@ export function B1GeneralForm() {
 						{/* Row 6: Report Type */}
 
 						<Card className='mb-8'>
-							<CardContent>
-								<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+							<CardContent className='px-3 md:px-5'>
+								<div>
 									<form.AppField
 										name='reportType'
 										listeners={{
@@ -359,9 +331,6 @@ export function B1GeneralForm() {
 											/>
 										)}
 									</form.AppField>
-									{/* Empty column to match image layout if needed, or just full width */}
-
-									<div></div>
 								</div>
 							</CardContent>
 						</Card>
@@ -385,7 +354,10 @@ export function B1GeneralForm() {
 											{(field) => (
 												<div className='space-y-4'>
 													{field.state.value?.map((item, i) => (
-														<div key={item.id} className='grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-x-6'>
+														<div
+															key={item.id}
+															className='grid grid-cols-1 dark:border-success/[0.20] border-gray-300 rounded-lg border md:border-none p-4 md:p-0 md:grid-cols-[1fr_1fr_auto] gap-x-6 gap-y-4'
+														>
 															<form.AppField name={`subsidiaries[${i}].name`}>
 																{(f) => <f.TextField label={m["general.B1.nameOfSubsidiary"]()} />}
 															</form.AppField>
@@ -396,11 +368,23 @@ export function B1GeneralForm() {
 																type='button'
 																variant='ghost'
 																size='icon'
-																className='text-destructive hover:text-destructive hover:bg-destructive/10 self-end'
+																className='text-destructive hidden md:block hover:text-destructive hover:bg-destructive/10 self-end'
 																onClick={() => field.removeValue(i)}
 																disabled={status === "submitted"}
 															>
 																<Trash2 className='h-6 w-6' />
+															</Button>
+
+															<Button
+																type='button'
+																variant='destructive'
+																size='icon'
+																className='w-full md:hidden self-end'
+																onClick={() => field.removeValue(i)}
+																disabled={status === "submitted"}
+															>
+																<Trash2 className='h-6 w-6 text-white' />
+																<p className='text-white'>Delete Subsidiary</p>
 															</Button>
 														</div>
 													))}

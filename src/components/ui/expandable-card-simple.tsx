@@ -2,7 +2,7 @@
 
 import { is } from 'date-fns/locale'
 import { motion } from 'framer-motion'
-import { BadgeQuestionMarkIcon, ChevronRightIcon, InfoIcon } from 'lucide-react'
+import { BadgeQuestionMarkIcon, Check, ChevronRightIcon, CircleDashed, InfoIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useRef } from 'react'
 import { Badge } from '@/components/ui/badge'
@@ -89,54 +89,50 @@ export function FormCard({
 				module === "Comprehensive Module" && "",
 			)}
 		>
-			<CardHeader
-				className='cursor-pointer'
-				onClick={toggleExpand}
-				role='button'
-				tabIndex={0}
-				onKeyDown={(e) => {
-					if (e.key === "Enter" || e.key === " ") {
-						e.preventDefault()
-						toggleExpand()
-					}
-				}}
-			>
-				<div className='flex w-full flex-col gap-3 md:flex-row md:items-start md:justify-between'>
-					<div className='flex min-w-0 flex-wrap items-center gap-2'>
-						<div
-							className={cn(
-								"inline-flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm",
-								module === "Comprehensive Module"
-									? "bg-secondary text-secondary-foreground"
-									: "bg-primary text-primary-foreground",
+			<CardHeader role='button' tabIndex={0}>
+				<div className='flex w-full gap-3 flex-row items-center justify-between'>
+					{/* Left section */}
+					<div className='flex min-w-0 flex-col gap-3 lg:flex-row lg:items-center'>
+						{/* Badges */}
+						<div className='flex shrink-0 flex-wrap items-center gap-2'>
+							<Badge variant={module === "Comprehensive Module" ? "secondary" : "default"}>{code}</Badge>
+
+							{module && (
+								<Badge variant={module === "Comprehensive Module" ? "comprehensive" : "basic"}>
+									{getModuleLabel(module)}
+								</Badge>
 							)}
-						>
-							{code}
 						</div>
-						<h3 className='min-w-0 wrap-break-word text-lg font-semibold text-secondary md:text-xl'>{title}</h3>
-						<ChevronRightIcon className={cn("h-6 w-6 shrink-0 transition-transform duration-200", isExpanded && "rotate-90")} />
-						<TooltipProvider>
-							<Tooltip>
-								<TooltipTrigger asChild>
-									<InfoIcon
-										className='hidden md:inline-flex h-5 w-5 shrink-0 text-muted-foreground hover:text-foreground transition-colors cursor-help'
-										onClick={(e) => {
-											e.stopPropagation()
-											toggleExpand()
-										}}
-									/>
-								</TooltipTrigger>
-								<TooltipContent>
-									<p>{toolTip}</p>
-								</TooltipContent>
-							</Tooltip>
-						</TooltipProvider>
+
+						{/* Title and Chevron */}
+						<div
+							role='button'
+							tabIndex={0}
+							onClick={toggleExpand}
+							onKeyDown={(e) => {
+								if (e.key === "Enter" || e.key === " ") {
+									e.preventDefault()
+									toggleExpand()
+								}
+							}}
+							className=' hidden lg:flex min-w-0 cursor-pointer items-center justify-between gap-2'
+						>
+							<h3 className='min-w-0 wrap-break-word text-lg font-semibold text-secondary md:text-xl'>{title}</h3>
+
+							<ChevronRightIcon
+								className={cn("size-5 shrink-0 transition-transform duration-200 md:size-6", isExpanded && "rotate-90")}
+							/>
+						</div>
 					</div>
-					<div className='hidden md:flex w-full items-center gap-2 md:w-auto md:justify-end'>
+
+					{/* Right section */}
+					<div className='flex shrink-0 flex-wrap items-center justify-end gap-2'>
+						{isVolunteer && <Badge variant='volunteer'>Volunteer</Badge>}
+
 						{hasHelpButton && (
 							<Button
 								type='button'
-								className='flex h-auto min-h-10 max-w-full flex-wrap justify-start gap-2 whitespace-normal text-left md:min-h-9'
+								className='hidden h-auto min-h-9 gap-2 whitespace-normal md:inline-flex'
 								variant='outline'
 								size='default'
 								onClick={(e) => {
@@ -145,7 +141,7 @@ export function FormCard({
 								}}
 								onPointerDown={(e) => e.stopPropagation()}
 							>
-								<BadgeQuestionMarkIcon className='h-6 w-6' />
+								<BadgeQuestionMarkIcon className='size-5 shrink-0' />
 								<span>{buttonText}</span>
 							</Button>
 						)}
@@ -155,33 +151,19 @@ export function FormCard({
 
 			<CardContent>
 				<div className='space-y-0'>
-					<div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
-						<div className='flex flex-wrap gap-2'>
-							<Badge variant='secondary' className={STATUS_CONFIG[status].className}>
-								{STATUS_CONFIG[status].label}
-							</Badge>
-							{module && (
-								<Badge
-									variant='secondary'
-									className={cn(
-										"bg-secondary text-secondary-foreground",
-										module === "Basic Module" && "bg-primary text-primary-foreground",
-									)}
-								>
-									{getModuleLabel(module)}
-								</Badge>
+					<div role='button' tabIndex={0} onClick={toggleExpand} onKeyDown={(e) => {
+								if (e.key === "Enter" || e.key === " ") {
+									e.preventDefault()
+									toggleExpand()
+								}
+							}} className='flex items-center lg:hidden justify-between'>
+						<h3 className='min-w-0 wrap-break-word cursor-pointer text-lg font-semibold text-secondary md:text-xl'>{title}</h3>
+						<ChevronRightIcon
+							className={cn(
+								"h-4 w-4 md:h-6 md:w-6 shrink-0 transition-transform duration-200",
+								isExpanded && "rotate-90",
 							)}
-							{isVolunteer && (
-								<Badge variant='volunteer'>
-									Volunteer
-								</Badge>
-							)}
-						</div>
-
-						{/* <div className='break-words text-left text-sm text-muted-foreground md:text-right'>
-							
-							{version !== undefined && <div>Version: {version}</div>}
-						</div> */}
+						/>
 					</div>
 
 					<motion.div
@@ -203,9 +185,14 @@ export function FormCard({
 				</div>
 			</CardContent>
 
-			<CardFooter>
-				<div className='w-full wrap-break-word text-sm text-muted-foreground'>
-					Last updated by {contributor.name}: {updatedDate}
+			<CardFooter className='flex items-center gap-2'>
+				<Badge variant='secondary' className={STATUS_CONFIG[status].className}>
+					{status === "draft" ? <CircleDashed /> : <Check className='font-extrabold! shrink-0 mr-1' />}
+
+					{STATUS_CONFIG[status].label}
+				</Badge>
+				<div className='ml-auto lg:ml-4 text-right wrap-break-word text-xs md:text-sm text-muted-foreground'>
+					Updated: {updatedDate}
 				</div>
 			</CardFooter>
 		</Card>

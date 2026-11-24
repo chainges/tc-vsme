@@ -11,7 +11,7 @@ export function LoadingSkeleton({ count = 1, variant = 'form' }: LoadingSkeleton
 			aria-label='Loading'
 			className={
 				variant === 'cards'
-					? 'flex w-full flex-col gap-4 px-1 pb-8 pt-3 md:px-6 lg:px-8'
+					? 'flex w-full flex-col gap-4 px-1 pb-8 pt-3 '
 					: variant === 'readiness'
 						? 'grid gap-3 px-4 pb-8 pt-7 sm:grid-cols-2 md:px-6 lg:px-8'
 						: variant === 'form'

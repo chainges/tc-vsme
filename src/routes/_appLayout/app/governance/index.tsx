@@ -79,9 +79,9 @@ function GovernancePage() {
 	const boardComposition = formSections?.boardComposition
 
 	// Show loading state
-	if (isOrgLoading || formSections === undefined) {
-		return <LoadingSkeleton variant='cards' count={showComprehensiveModule ? 3 : 1} />
-	}
+	// if (isOrgLoading || formSections === undefined) {
+	// 	return <LoadingSkeleton variant='cards' count={showComprehensiveModule ? 3 : 1} />
+	// }
 
 	return (
 		<div className='flex flex-col gap-4 px-4 pb-8 pt-7 md:px-6 lg:px-8 w-full mx-auto'>

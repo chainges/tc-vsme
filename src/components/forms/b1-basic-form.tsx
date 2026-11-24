@@ -65,10 +65,10 @@ function ModuleInfoBox() {
 		
 		
 			<div className='flex items-center gap-1.5 mb-1'>
-				<Info className='size-5 shrink-0 text-md font-bold text-primary dark:text-white' />
-				<h2 className='text-md font-bold tracking-tight text-primary dark:text-white'>General Guidelines &amp; Compliance Rules</h2>
+				<Info className='size-5 shrink-0 text-md md:text-lg font-bold text-primary' />
+				<h2 className='text-md font-bold tracking-tight text-primary md:text-lg'>General Guidelines &amp; Compliance Rules</h2>
 			</div>
-			<p className='text-sm leading-relaxed text-slate-600! dark:white!'>
+			<p className='text-sm leading-relaxed text-slate-600 dark:text-white'>
 				Four core rules govern how EFRAG expects this report to be completed. Get these right and every downstream
 				disclosure stays compliant.
 			</p>
@@ -98,7 +98,7 @@ function ModuleInfoBox() {
 			].map(([rule, title, description]) => (
 				<div
 					key={rule}
-					className='rounded-xl mt-3 bg-white dark:bg-success/[0.04] p-4 shadow-xs transition-all duration-150 hover:shadow-sm border border-success/35'
+					className='rounded-xl mt-4 bg-white dark:bg-success/[0.04] p-4 shadow-xs transition-all duration-150 hover:shadow-sm border border-success/35'
 				>
 					<p className='text-xs font-extrabold tracking-wide text-primary'>{rule}</p>
 					<h3 className='mt-1 text-sm font-semibold tracking-tight text-slate-900 dark:text-white'>{title}</h3>
@@ -166,8 +166,8 @@ export function B1BasicForm() {
 					<ModuleInfoBox />
 					
 						
-							<h2 className='text-md mb-0 font-bold tracking-tight text-primary dark:text-white'>Module Scope Selection</h2>
-							<p className='text-sm leading-relaxed text-slate-600! dark:white!'>
+							<h2 className='text-md md:text-lg mb-0 font-bold tracking-tight text-primary'>Module Scope Selection</h2>
+							<p className='text-sm leading-relaxed text-slate-600 dark:text-white'>
 								Define your reporting ambition. Choose one path — the Basic Module is a mandatory prerequisite for the
 								Comprehensive Module.
 							</p>

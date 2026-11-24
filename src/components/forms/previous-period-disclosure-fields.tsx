@@ -54,7 +54,7 @@ export function PreviousPeriodDisclosureFields({
 				<CardHeader>
 					<div className='flex items-center justify-between gap-4'>
 						<div className='space-y-1'>
-							<CardTitle className='text-base'>Previous reporting period disclosures</CardTitle>
+							<CardTitle className='text-primary text-md md:text-lg'>Previous reporting period disclosures</CardTitle>
 						</div>
 						<Switch
 							id='contains-previous-period-disclosures'
@@ -85,10 +85,11 @@ export function PreviousPeriodDisclosureFields({
 							<div className='flex items-center justify-between gap-3'>
 								<div className='flex items-center gap-2.5 text-lg font-semibold tracking-tight'>
 									<Table2 className='size-5 shrink-0 text-primary' />
-									<h2 className='text-lg font-semibold tracking-tight text-primary dark:text-white'>Selected Sections</h2>
+									<h2 className='text-md md:text-lg font-semibold tracking-tight text-primary '>Selected Sections</h2>
 								</div>
 								{sectionsThatHasNotChanged.length > 0 && (
 									<Button
+										type='button'
 										variant='ghost'
 										size='sm'
 										disabled={disabled}
@@ -127,7 +128,7 @@ export function PreviousPeriodDisclosureFields({
 																}
 															}}
 														>
-															<TableCell className='hidden md:table-cell'>
+													<TableCell className='hidden md:table-cell' onClick={(event) => event.stopPropagation()}>
 														<Checkbox
 															checked={isSelected}
 															disabled={disabled}

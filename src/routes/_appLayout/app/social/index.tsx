@@ -97,9 +97,9 @@ function SocialPage() {
 	const seriousHumanRightsIncidents = formSections?.seriousHumanRightsIncidents
 
 	// Show loading state
-	if (isOrgLoading || formSections === undefined) {
-		return <LoadingSkeleton variant='cards' count={showComprehensiveModule ? 6 : 3} />
-	}
+	// if (isOrgLoading || formSections === undefined) {
+	// 	return <LoadingSkeleton variant='cards' count={showComprehensiveModule ? 6 : 3} />
+	// }
 
 	return (
 		<div className='flex flex-col gap-4 md:grid-cols-1 px-4 pb-8 pt-7 md:px-6 lg:px-8 w-full mx-auto'>

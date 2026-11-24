@@ -40,7 +40,7 @@ const SectionHeading = ({
 	return (
 		<div
 			className={cn(
-				"mb-6 mt-8 flex flex-col justify-between gap-3 border-b border-border p-4 sm:flex-row sm:items-center"
+				"mb-6 mt-8 flex flex-col justify-between gap-3 border-b border-border py-4 sm:flex-row sm:items-center"
 			)}
 		>
 			<div className='flex items-center gap-3'>
@@ -49,14 +49,14 @@ const SectionHeading = ({
 				</div>
 
 				<div>
-					<h2 className='font-display text-xl leading-none text-foreground'>{title}</h2>
+					<h2 className='font-display text-xl leading-none text-primary'>{title}</h2>
 
 					{description && <p className='mt-1.5 text-xs leading-5 text-muted-foreground'>{description}</p>}
 				</div>
 				{isVolunteer && <Badge variant='volunteer'>Volunteer</Badge>}
 			</div>
 
-			<div className='flex items-center'>
+			<div className='flex items-center justify-between md:justify-baseline'>
 				<Label className='mr-4 text-sm text-muted-foreground'>This content is confidential?</Label>
 
 				<Switch checked={isConfidential} onCheckedChange={handleConfidentialChange} disabled={disabled} />
