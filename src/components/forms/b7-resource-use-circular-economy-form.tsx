@@ -433,7 +433,7 @@ function WasteCodeSelector({ field }: { field: WasteInformationField }) {
 				hazardous: code.type === "Hazardous",
 				name: `${code.description}`,
 				unit: "kg",
-				axis: code.axis,
+				//axis: code.axis,
 				wasteDivertedToRecycle: 0,
 				wasteDirectedToDisposal: 0,
 				total: 0,
