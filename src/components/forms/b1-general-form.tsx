@@ -366,9 +366,9 @@ export function B1GeneralForm() {
 															</form.AppField>
 															<Button
 																type='button'
-																variant='ghost'
+																variant='delete'
 																size='icon'
-																className='text-destructive hidden md:block hover:text-destructive hover:bg-destructive/10 self-end'
+																className='hidden md:flex self-end'
 																onClick={() => field.removeValue(i)}
 																disabled={status === "submitted"}
 															>
@@ -433,9 +433,9 @@ export function B1GeneralForm() {
 												</span>
 												<Button
 													type='button'
-													variant='ghost'
+													variant='delete'
 													size='icon'
-													className='h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10'
+													className='h-7 w-7'
 													onClick={() => field.removeValue(i)}
 													disabled={status === "submitted"}
 													aria-label={`Fjern sertifisering ${i + 1}`}
@@ -521,9 +521,9 @@ export function B1GeneralForm() {
 												</span>
 												<Button
 													type='button'
-													variant='ghost'
+													variant='delete'
 													size='icon'
-													className='h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10'
+													className='h-7 w-7'
 													onClick={() => field.removeValue(i)}
 													disabled={status === "submitted"}
 													aria-label={`Fjern eiendom ${i + 1}`}

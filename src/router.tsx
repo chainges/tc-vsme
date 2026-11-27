@@ -20,7 +20,7 @@ export const getRouter = () => {
 			defaultPreload: "intent",
 			defaultPendingMs: 0,
 			defaultPendingComponent: () => (
-				<LoadingSkeleton variant="cards" count={3} />
+				<LoadingSkeleton variant="cards" count={1} />
 			),
 			defaultErrorComponent: DefaultCatchBoundary,
 			defaultNotFoundComponent: () => <NotFound />,

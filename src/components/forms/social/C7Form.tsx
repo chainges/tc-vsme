@@ -1,7 +1,6 @@
 import { useStore } from "@tanstack/react-form"
 import { useStore as useYearStore } from "@tanstack/react-store"
 import ConfidentialInfoBox from "@/components/ConfidentialInfoBox"
-import { Card, CardContent } from "@/components/ui/card"
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from "@/hooks/tanstack-form"
 import { useFormSubmission } from "@/hooks/use-form-submission"
@@ -86,7 +85,7 @@ export function C7SeriousHumanRightsForm() {
 		})
 
 	// Subscribe to value chain gate for reactive display
-	const hasValueChainIncidents = useStore(form.store, (state) => state.values.hasValueChainIncidents)
+	// const hasValueChainIncidents = useStore(form.store, (state) => state.values.hasValueChainIncidents)
 
 	const confidentialAreas = useStore(form.store, (state) => state.values.confidentialAreas ?? [])
 	const isC7Confidential = confidentialAreas.includes(C7_Confidential)
@@ -110,87 +109,46 @@ export function C7SeriousHumanRightsForm() {
 					form.handleSubmit()
 				}}
 			>
-				<Card>
-					<CardContent>
-						<fieldset disabled={status === "submitted"} className='space-y-6'>
-							{/* Hidden reporting year */}
-							<form.AppField name='reportingYear'>
-								{(field) => <field.TextField label={m["social.C7.reportingYearLabel"]()} placeholder='YYYY' hidden />}
-							</form.AppField>
-							<ConfidentialInfoBox value={isC7Confidential} handleChange={handleConfidentialChange} />
+				<fieldset disabled={status === "submitted"} className='space-y-6'>
+					{/* Hidden reporting year */}
+					<form.AppField name='reportingYear'>
+						{(field) => <field.TextField label={m["social.C7.reportingYearLabel"]()} placeholder='YYYY' hidden />}
+					</form.AppField>
+					<ConfidentialInfoBox value={isC7Confidential} handleChange={handleConfidentialChange} />
 
-							{/* (a) Confirmed incidents in own workforce */}
-							<div className='flex flex-col items-start gap-3'>
-								<h3 className='text-base font-semibold'>{m["social.C7.confirmedIncidentsOwnWorkforce"]()}</h3>
-								<p className='text-sm text-muted-foreground'>
-									{m["social.C7.confirmedIncidentsOwnWorkforceDescription"]()}
-								</p>
-							</div>
+					{/* (a) Confirmed incidents in own workforce */}
+					<div className='flex flex-col items-start gap-3'>
+						<h3 className='text-primary font-bold'>{m["social.C7.confirmedIncidentsOwnWorkforce"]()}</h3>
+						<p className='text-sm text-muted-foreground'>
+							{m["social.C7.confirmedIncidentsOwnWorkforceDescription"]()}
+						</p>
+					</div>
 
-							<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-								{INCIDENT_ITEMS.map((item) => (
-									<div key={item.boolField} className='flex flex-col gap-2'>
-										<form.AppField
-											name={item.boolField}
-											listeners={{
-												onChange: ({ value, fieldApi }) => {
-													if (!value) {
-														fieldApi.form.setFieldValue(item.measuresField, "")
-													}
-												},
-											}}
-										>
-											{(field) => <field.CheckboxField label={item.label} description={item.description} />}
-										</form.AppField>
-
-										<form.Subscribe selector={(state) => state.values[item.boolField]}>
-											{(isChecked) =>
-												isChecked ? (
-													<form.AppField name={item.measuresField}>
-														{(field) => (
-															<field.TextareaField
-																label={item.measuresLabel}
-																placeholder='Describe the measures taken to address this incident...'
-																rows={3}
-															/>
-														)}
-													</form.AppField>
-												) : null
-											}
-										</form.Subscribe>
-									</div>
-								))}
-							</div>
-
-							{/* (c) Value chain / affected communities / consumers incidents */}
-							<div className='flex flex-col items-start gap-3 pt-4 border-t'>
-								<h3 className='text-base font-semibold'>{m["social.C7.incidentsInValueChain"]()}</h3>
-
+					<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+						{INCIDENT_ITEMS.map((item) => (
+							<div key={item.boolField} className='flex flex-col gap-2'>
 								<form.AppField
-									name='hasValueChainIncidents'
+									name={item.boolField}
 									listeners={{
 										onChange: ({ value, fieldApi }) => {
 											if (!value) {
-												fieldApi.form.setFieldValue("valueChainIncidentsDescription", "")
+												fieldApi.form.setFieldValue(item.measuresField, "")
 											}
 										},
 									}}
 								>
-									{(field) => (
-										<field.SwitchField label='' description={m["social.C7.incidentsInValueChainDescription"]()} />
-									)}
+									{(field) => <field.CheckboxField label={item.label} description={item.description} />}
 								</form.AppField>
-								<span className='text-sm'>{hasValueChainIncidents ? m["social.C7.yes"]() : m["social.C7.no"]()}</span>
 
-								<form.Subscribe selector={(state) => state.values.hasValueChainIncidents}>
-									{(hasIncidents) =>
-										hasIncidents ? (
-											<form.AppField name='valueChainIncidentsDescription'>
+								<form.Subscribe selector={(state) => state.values[item.boolField]}>
+									{(isChecked) =>
+										isChecked ? (
+											<form.AppField name={item.measuresField}>
 												{(field) => (
 													<field.TextareaField
-														label={m["social.C7.specifyIncidents"]()}
-														placeholder={m["social.C7.specifyIncidentsDescription"]()}
-														rows={4}
+														label={item.measuresLabel}
+														placeholder='Describe the measures taken to address this incident...'
+														rows={3}
 													/>
 												)}
 											</form.AppField>
@@ -198,9 +156,46 @@ export function C7SeriousHumanRightsForm() {
 									}
 								</form.Subscribe>
 							</div>
-						</fieldset>
-					</CardContent>
-				</Card>
+						))}
+					</div>
+
+					{/* (c) Value chain / affected communities / consumers incidents */}
+					<div className='flex flex-col items-start gap-3 pt-4 border-t'>
+						<h3 className='text-primary font-bold'>{m["social.C7.incidentsInValueChain"]()}</h3>
+
+						<form.AppField
+							name='hasValueChainIncidents'
+							listeners={{
+								onChange: ({ value, fieldApi }) => {
+									if (!value) {
+										fieldApi.form.setFieldValue("valueChainIncidentsDescription", "")
+									}
+								},
+							}}
+						>
+							{(field) => (
+								<field.SwitchField label='' description={m["social.C7.incidentsInValueChainDescription"]()} />
+							)}
+						</form.AppField>
+						
+
+						<form.Subscribe selector={(state) => state.values.hasValueChainIncidents}>
+							{(hasIncidents) =>
+								hasIncidents ? (
+									<form.AppField name='valueChainIncidentsDescription'>
+										{(field) => (
+											<field.TextareaField
+												label={m["social.C7.specifyIncidents"]()}
+												placeholder={m["social.C7.specifyIncidentsDescription"]()}
+												rows={4}
+											/>
+										)}
+									</form.AppField>
+								) : null
+							}
+						</form.Subscribe>
+					</div>
+				</fieldset>
 
 				<FormButtons
 					status={status as "not_started" | "draft" | "submitted"}

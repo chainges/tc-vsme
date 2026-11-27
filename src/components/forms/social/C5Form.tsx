@@ -2,7 +2,6 @@ import { useStore, useStore as useYearStore } from '@tanstack/react-store'
 import { Info } from 'lucide-react'
 import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Card, CardContent } from '@/components/ui/card'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
@@ -86,74 +85,60 @@ export function C5AdditionalWorkforceForm({
 					form.handleSubmit()
 				}}
 			>
-				<Card>
-					<CardContent>
-						{!isLargeUndertaking && (
-							<Alert variant="info" className="mb-6 border-l-4">
-								<Info />
-								<AlertTitle>
-									{m["social.C5.about"]()}
-								</AlertTitle>
-								<AlertDescription>
-									{m["social.C5.description"]()}
-								</AlertDescription>
-							</Alert>
-						)}
-						<fieldset disabled={status === 'submitted'} className="space-y-6">
-							{/* Hidden reporting year */}
-							<form.AppField name="reportingYear">
-								{(field) => (
-									<field.TextField
-										label={m["social.C5.reportingYearLabel"]()}
-										placeholder="YYYY"
-										hidden
-									/>
-								)}
-							</form.AppField>
-							<ConfidentialInfoBox value={isC5Confidential} handleChange={handleConfidentialChange} />
+				{!isLargeUndertaking && (
+					<Alert variant='info' className='mb-6 border-l-4'>
+						<Info />
+						<AlertTitle className="text-primary">{m["social.C5.about"]()}</AlertTitle>
+						<AlertDescription>{m["social.C5.description"]()}</AlertDescription>
+					</Alert>
+				)}
+				<fieldset disabled={status === "submitted"} className='space-y-6'>
+					{/* Hidden reporting year */}
+					<form.AppField name='reportingYear'>
+						{(field) => <field.TextField label={m["social.C5.reportingYearLabel"]()} placeholder='YYYY' hidden />}
+					</form.AppField>
+					<ConfidentialInfoBox value={isC5Confidential} handleChange={handleConfidentialChange} />
 
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<form.AppField name="maleManagers">
-									{(field) => (
-										<field.NumberField
-											label={m["social.C5.maleManagers"]()}
-											description={m["social.C5.maleManagersDescription"]()}
-										/>
-									)}
-								</form.AppField>
+					<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+						<form.AppField name='maleManagers'>
+							{(field) => (
+								<field.NumberField
+									label={m["social.C5.maleManagers"]()}
+									description={m["social.C5.maleManagersDescription"]()}
+								/>
+							)}
+						</form.AppField>
 
-								<form.AppField name="femaleManagers">
-									{(field) => (
-										<field.NumberField
-											label={m["social.C5.femaleManagers"]()}
-											description={m["social.C5.femaleManagersDescription"]()}
-										/>
-									)}
-								</form.AppField>
-								<form.AppField name="selfEmployedWorkers">
-									{(field) => (
-										<field.NumberField
-											label={m["social.C5.selfEmployedWorkers"]()}
-											description={m["social.C5.selfEmployedWorkersDescription"]()}
-										/>
-									)}
-								</form.AppField>
+						<form.AppField name='femaleManagers'>
+							{(field) => (
+								<field.NumberField
+									label={m["social.C5.femaleManagers"]()}
+									description={m["social.C5.femaleManagersDescription"]()}
+								/>
+							)}
+						</form.AppField>
+						<form.AppField name='selfEmployedWorkers'>
+							{(field) => (
+								<field.NumberField
+									label={m["social.C5.selfEmployedWorkers"]()}
+									description={m["social.C5.selfEmployedWorkersDescription"]()}
+								/>
+							)}
+						</form.AppField>
 
-								<form.AppField name="contractWorkers">
-									{(field) => (
-										<field.NumberField
-											label={m["social.C5.contractWorkers"]()}
-											description={m["social.C5.contractWorkersDescription"]()}
-										/>
-									)}
-								</form.AppField>
-							</div>
-						</fieldset>
-					</CardContent>
-				</Card>
+						<form.AppField name='contractWorkers'>
+							{(field) => (
+								<field.NumberField
+									label={m["social.C5.contractWorkers"]()}
+									description={m["social.C5.contractWorkersDescription"]()}
+								/>
+							)}
+						</form.AppField>
+					</div>
+				</fieldset>
 
 				<FormButtons
-					status={status as 'not_started' | 'draft' | 'submitted'}
+					status={status as "not_started" | "draft" | "submitted"}
 					isSaving={isSaving}
 					onSaveDraft={saveDraft}
 					onSubmit={submit}

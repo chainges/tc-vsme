@@ -10,16 +10,8 @@ import { NumberFieldReadOnly } from '@/components/form-fields/NumberFieldReadOnl
 import SectionHeading from '@/components/SectionHeading'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
 import {
@@ -283,7 +275,7 @@ export function B8WorkforceForm({
 					<form.AppField name='reportingYear'>
 						{(field) => <field.TextField label={m["social.B8.reportingYearLabel"]()} placeholder='YYYY' hidden />}
 					</form.AppField>
-					 <ConfidentialInfoBox value={isB8Confidential} handleChange={handleConfidentialChange} />
+					<ConfidentialInfoBox value={isB8Confidential} handleChange={handleConfidentialChange} />
 
 					{/* Card 1 — Country distribution */}
 
@@ -302,108 +294,149 @@ export function B8WorkforceForm({
 					<form.AppField name='employeesPerCountry'>
 						{(field) => {
 							const rows = field.state.value ?? []
+
 							const totalAllocated = rows.reduce((sum, r) => sum + (r.numberOfEmployees ?? 0), 0)
-							const remaining = totalEmployees - totalAllocated
+
+							const allocationProgress =
+								totalEmployees > 0 ? Math.min(Math.max((totalAllocated / totalEmployees) * 100, 0), 100) : 0
 
 							return (
-								<div className='space-y-3'>
-									<div className='rounded-md border border-border'>
-										<Table>
-											<TableHeader>
-												<TableRow>
-													<TableHead className='w-[50%]'>{m["social.B8.countryLabel"]()}</TableHead>
-													<TableHead className='w-[35%]'>{m["social.B8.employeeCountLabel"]()}</TableHead>
-													<TableHead className='w-[15%] text-right'>&nbsp;</TableHead>
+								<div className='overflow-hidden rounded-lg border border-border'>
+									<Table className='w-full table-fixed'>
+										<TableHeader className='bg-muted/50'>
+											<TableRow className='hover:bg-transparent'>
+												<TableHead className='h-9 whitespace-normal text-[10px] md:text-xs font-bold uppercase'>
+													{m["social.B8.countryLabel"]()}
+												</TableHead>
+
+												<TableHead className='h-9 w-[32%] whitespace-normal wrap-anywhere text-[10px] md:text-xs font-bold uppercase sm:w-[30%]'>
+													{m["social.B8.employeeCountLabel"]()}
+												</TableHead>
+
+												<TableHead className='hidden h-9 w-14 text-center text-[10px] md:text-xs font-bold uppercase sm:table-cell'>
+													{m["social.B8.shareLabel"]()}
+												</TableHead>
+
+												<TableHead className='h-9 w-12 text-right text-[10px] md:text-xs font-bold uppercase sm:w-15'>
+													<span className='sr-only sm:not-sr-only'>{m["social.B8.actionLabel"]()}</span>
+												</TableHead>
+											</TableRow>
+										</TableHeader>
+
+										<TableBody>
+											{rows.length === 0 && (
+												<TableRow className='hover:bg-transparent'>
+													<TableCell colSpan={4} className='h-20 text-center text-sm text-muted-foreground'>
+														{m["social.B8.noCountriesAdded"]()}
+													</TableCell>
 												</TableRow>
-											</TableHeader>
-											<TableBody>
-												{rows.length === 0 && (
-													<TableRow>
-														<TableCell colSpan={3} className='h-16 text-center text-muted-foreground'>
-															{m["social.B8.noCountriesAdded"]()}
+											)}
+
+											{rows.map((item, i) => {
+												const employeeCount = item.numberOfEmployees ?? 0
+
+												const share = totalEmployees > 0 ? Math.round((employeeCount / totalEmployees) * 100) : 0
+
+												return (
+													<TableRow key={item.id} className='hover:bg-transparent'>
+														<TableCell className='min-w-0 px-2 py-2 sm:px-3'>
+															<div className='min-w-0 [&_button]:min-w-0 [&_button]:max-w-full [&_button]:px-2 [&_button>span]:truncate sm:[&_button]:px-3'>
+																<form.AppField name={`employeesPerCountry[${i}].country`}>
+																	{(f) => <f.CountryField label='' placeholder={m["social.B8.countryPlaceholder"]()} />}
+																</form.AppField>
+															</div>
 														</TableCell>
-													</TableRow>
-												)}
-												{rows.map((item, i) => (
-													<TableRow key={item.id}>
-														<TableCell>
-															<form.AppField name={`employeesPerCountry[${i}].country`}>
-																{(f) => <f.CountryField label='' placeholder={m["social.B8.countryPlaceholder"]()} />}
-															</form.AppField>
-														</TableCell>
-														<TableCell>
+
+														<TableCell className='min-w-0 px-2 py-2 sm:px-3'>
 															<form.AppField name={`employeesPerCountry[${i}].numberOfEmployees`}>
-																{(f) => <f.NumberField label='' placeholder='0' />}
+																{(f) => <f.NumberField label='' placeholder='0' className='h-9 w-full' />}
 															</form.AppField>
 														</TableCell>
-														<TableCell className='text-center'>
+
+														<TableCell className='hidden text-center sm:table-cell'>
+															<span className='inline-flex rounded-full bg-muted px-2 py-1 text-xs tabular-nums text-muted-foreground'>
+																{share}%
+															</span>
+														</TableCell>
+
+														<TableCell className='px-2 py-2 text-right'>
 															<Button
 																type='button'
-																variant='ghost'
+																variant='delete'
 																size='icon'
-																className='h-8 w-8 text-destructive hover:bg-destructive/10'
+																className='size-8'
+																aria-label={m["social.B8.removeCountry"]()}
 																onClick={() => field.removeValue(i)}
 																disabled={status === "submitted"}
 															>
-																<Trash2 className='h-4 w-4' />
+																<Trash2 className='size-4' />
 															</Button>
 														</TableCell>
 													</TableRow>
-												))}
-											</TableBody>
-										</Table>
-									</div>
+												)
+											})}
+										</TableBody>
+									</Table>
 
-									{/* Summary row */}
-									{rows.length > 0 && (
-										<div className='flex items-center justify-between text-sm px-1'>
-											<span className='text-muted-foreground'>
+									{/* Footer */}
+									<div className='flex flex-col gap-3 border-t border-border bg-background p-3 lg:flex-row lg:items-center lg:justify-between'>
+										<div className='flex flex-wrap items-center gap-2'>
+											<Button
+												type='button'
+												variant='outline'
+												size='sm'
+												onClick={() =>
+													field.pushValue({
+														id: crypto.randomUUID(),
+														country: "",
+														numberOfEmployees: 0,
+													})
+												}
+												disabled={status === "submitted"}
+											>
+												<Plus className='mr-1 size-4' />
+												{m["social.B8.addCountry"]()}
+											</Button>
+
+											{totalAllocated !== totalEmployees && generalFormData && status !== "submitted" && (
+												<Button
+													type='button'
+													variant='secondary'
+													size='sm'
+													disabled={isUpdatingCompany}
+													onClick={() => handleUpdateCompanyEmployees(totalAllocated)}
+												>
+													<Save className='mr-1 size-4' />
+													{m["social.B8.updateB1"]()}
+												</Button>
+											)}
+										</div>
+
+										<div className='flex min-w-0 flex-col items-center gap-2 text-sm sm:flex-row sm:flex-wrap sm:gap-3'>
+											<span className='order-2 text-center text-muted-foreground sm:order-1 sm:text-left'>
 												{m["social.B8.countryCountSummary"]({
 													totalAllocated,
 													totalEmployees,
 												})}
 											</span>
-											{remaining !== 0 && (
-												<span className={remaining < 0 ? "text-destructive font-medium" : "text-amber-600 font-medium"}>
-													{remaining > 0
-														? m["social.B8.countryCountRemaining"]({ remaining })
-														: m["social.B8.countryCountOver"]({ remaining: Math.abs(remaining) })}
-												</span>
-											)}
-											{remaining === 0 && (
-												<span className='text-emerald-600 font-medium'>{m["social.B8.allEmployeesAllocated"]()}</span>
-											)}
-										</div>
-									)}
-									<div className='flex items-center justify-between text-sm px-1'>
-										<Button
-											type='button'
-											variant='outline'
-											size='sm'
-											onClick={() =>
-												field.pushValue({
-													id: crypto.randomUUID(),
-													country: "",
-													numberOfEmployees: 0,
-												})
-											}
-											disabled={status === "submitted"}
-										>
-											<Plus className='h-4 w-4 mr-1' />
-											{m["social.B8.addCountry"]()}
-										</Button>
-										{totalAllocated !== totalEmployees && generalFormData && status !== "submitted" && (
-											<Button
-												type='button'
-												variant='secondary'
-												size='sm'
-												disabled={isUpdatingCompany}
-												onClick={() => handleUpdateCompanyEmployees(totalAllocated)}
+
+											<div
+												className='order-1 h-1.5 w-full shrink-0 overflow-hidden rounded-full bg-muted sm:order-2 sm:w-32'
+												role='progressbar'
+												aria-label={m["social.B8.countryCountSummary"]({
+													totalAllocated,
+													totalEmployees,
+												})}
+												aria-valuemin={0}
+												aria-valuemax={100}
+												aria-valuenow={allocationProgress}
 											>
-												<Save className='h-4 w-4 mr-1' />
-												{m["social.B8.updateB1"]()}
-											</Button>
-										)}
+												<div
+													className='h-full rounded-full bg-emerald-600 transition-[width]'
+													style={{ width: `${allocationProgress}%` }}
+												/>
+											</div>
+										</div>
 									</div>
 								</div>
 							)
@@ -537,7 +570,6 @@ export function B8WorkforceForm({
 							placeholder='—'
 						/>
 					</div>
-					
 
 					{/* Eventuell utfyllende info */}
 					<form.AppField name='anyAdditionalInfo'>

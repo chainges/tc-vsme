@@ -43,7 +43,7 @@ export function Scope2Tab({
 		<motion.div variants={itemVariants} transition={{ type: 'tween' }}>
 			<Card>
 				<CardHeader>
-					<CardTitle>Scope 2 Targets</CardTitle>
+					<CardTitle className="text-primary font-bold">Scope 2 Targets</CardTitle>
 				</CardHeader>
 				<CardContent>
 					{!existingTargets?.projections ||

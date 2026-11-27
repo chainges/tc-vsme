@@ -249,7 +249,10 @@
 			"countryDistributionTitle": "Ansatte per land",
 			"countryDistributionDescription": "Totalt {totalEmployees} ansatte fra B1 - fordel per land",
 			"countryLabel": "Land",
-			"employeeCountLabel": "Antall ansatte",
+			"employeeCountLabel": "Ansatte",
+			"shareLabel": "Andel",
+			"actionLabel": "Handling",
+			"removeCountry": "Fjern land",
 			"noCountriesAdded": "Ingen land lagt til ennå. Klikk \"Legg til land\" for å begynne.",
 			"countryPlaceholder": "Velg land",
 			"countryCountSummary": "Fordelt: {totalAllocated} av {totalEmployees} ansatte",
@@ -639,7 +642,14 @@
 			"addMaterialType": "Legg til materialtype",
 			"materialType": "Material type",
 			"materialTypePlaceholder": "f.eks. stål, betong, tre...",
-			"unit": "Enhet"
+			"unit": "Enhet",
+			"massFlowShort": "Årlig massestrøm",
+			"materialCount": "Registrerte materialer: {count}",
+			"totalMass": "Total masse",
+			"totalVolume": "Totalt volum",
+			"removeMaterial": "Fjern materiale",
+			"tonnes": "Tonn (t)",
+			"kilograms": "Kilogram (kg)"
 		},
 		"helpSheet": {
 			"title": "Veiledning for sirkulærøkonomi",

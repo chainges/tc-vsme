@@ -90,11 +90,11 @@ export function PreviousPeriodDisclosureFields({
 								{sectionsThatHasNotChanged.length > 0 && (
 									<Button
 										type='button'
-										variant='ghost'
+										variant='delete'
 										size='sm'
 										disabled={disabled}
 										onClick={clearSelections}
-										className='h-8 gap-1.5 text-xs text-muted-foreground hover:text-destructive'
+										className='h-8 gap-1.5 text-xs'
 									>
 										<Trash2 className='size-3.5' />
 										Clear all

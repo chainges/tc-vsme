@@ -19,6 +19,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card'
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { yearStore } from '@/lib/year-store'
 import { api } from '../../../../convex/_generated/api'
 
@@ -84,7 +85,9 @@ function RouteComponent() {
 		{ label: 'Scope 3', key: 'Scope3' },
 	] as const
 
-	if (!isUserLoaded || !isOrgLoaded) return <div>Loading...</div>
+	if (!isUserLoaded || !isOrgLoaded) return <div>
+		<LoadingSkeleton variant='dashboard'/>
+	</div>
 
 	return (
 		<div className="flex flex-col gap-4">

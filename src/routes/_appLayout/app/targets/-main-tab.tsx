@@ -77,7 +77,7 @@ export function MainTab({
 			)}
 			<Card>
 				<CardHeader>
-					<CardTitle>Emissions Targets</CardTitle>
+					<CardTitle className="text-primary font-bold">Emissions Targets</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<AppForm>
@@ -120,7 +120,7 @@ export function MainTab({
 								</AppField>
 								<Alert variant="info">
 									<Info />
-									<AlertTitle>Base year data</AlertTitle>
+									<AlertTitle className="text-primary font-bold">Base year data</AlertTitle>
 									<AlertDescription>
 										Energy and emissions forms needs to be submitted for the
 										year to show here.

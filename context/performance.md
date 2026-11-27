@@ -50,6 +50,7 @@ Inspect every route, layout, and frequently used component for rendering ineffic
 
 Investigate:
 
+- unnecessary service calling
 - Unnecessary component re-renders.
 - Expensive calculations during rendering.
 - Excessive React context updates.
@@ -89,6 +90,7 @@ Inspect:
 12. Navigation waterfalls.
 13. Router configuration and caching.
 14. Unnecessary rerendering during navigation.
+15. Unnecessary service calling during route transitions.
 
 Identify whether users are downloading or executing code that is not needed for the current route.
 

@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import EWC from "@/data/EWC"
 import { FormButtons } from "@/hooks/tanstack-form"
 import { useFormSubmission } from "@/hooks/use-form-submission"
+import { getMaterialTotals } from "@/lib/forms/b7-material-totals"
 import {
 	type B7ResourceUseCircularEconomyFormValues,
 	b7ResourceUseCircularEconomySchema,
@@ -17,10 +18,12 @@ import {
 } from "@/lib/forms/schemas/b7-resource-use-circular-economy-schema"
 import { yearStore } from "@/lib/year-store"
 import { m } from "@/paraglide/messages"
+import { getLocale } from "@/paraglide/runtime"
 import ConfidentialInfoBox from "../ConfidentialInfoBox"
 import SectionHeading from "../SectionHeading"
 import { Badge } from "../ui/badge"
 import { Input } from "../ui/input"
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../ui/table"
 
 const confidentialAreaValues={
 	descriptionOfCircularEconomy:"vsme:B7DescriptionOfCircularEconomyPrinciplesMember",
@@ -153,73 +156,196 @@ export function B7ResourceUseCircularEconomyForm() {
 									/>
 
 									<form.AppField name='annualMassFlows'>
-										{(field) => (
-											<div className='space-y-4'>
-												<div className='flex items-center justify-between'>
-													<h3 className='text-base font-medium'>{m["environmental.B7.annualMassFlows"]()}</h3>
-													<Button
-														type='button'
-														variant='outline'
-														size='sm'
-														onClick={() =>
-															field.pushValue({
-																id: crypto.randomUUID(),
-																materialType: "",
-																volume: 0,
-																unit: "tonn",
-															})
-														}
-														disabled={status === "submitted"}
-													>
-														<Plus className='h-4 w-4 mr-2' />
-														{m["environmental.B7.addMaterialType"]()}
-													</Button>
-												</div>
+										{(field) => {
+											const entries = field.state.value ?? []
+											const totals = getMaterialTotals(entries)
+											const formatTotal = (value: number) => value.toLocaleString(getLocale(), { maximumFractionDigits: 8 })
+											const hasVolume = entries.some((entry) => entry.unit === 'm³')
 
-												{field.state.value?.map((item, i) => (
-													<Card key={item.id} className='relative'>
-														<CardContent className='space-y-4'>
-															<div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-																<form.AppField name={`annualMassFlows[${i}].materialType`}>
-																	{(f) => (
-																		<f.TextField
-																			label={m["environmental.B7.materialType"]()}
-																			placeholder={m["environmental.B7.materialTypePlaceholder"]()}
-																		/>
-																	)}
-																</form.AppField>
-																<form.AppField name={`annualMassFlows[${i}].volume`}>
-																	{(f) => <f.NumberField label={m["environmental.B7.annualMassFlows"]()} />}
-																</form.AppField>
-																<form.AppField name={`annualMassFlows[${i}].unit`}>
-																	{(f) => (
-																		<f.SelectField
-																			label={m["environmental.B7.unit"]()}
-																			options={RECYCLED_MATERIAL_UNITS.map((unit) => ({
-																				label: unit,
-																				value: unit,
-																			}))}
-																		/>
-																	)}
-																</form.AppField>
-															</div>
-															<div className='flex justify-end'>
-																<Button
-																	type='button'
-																	variant='ghost'
-																	size='sm'
-																	className='text-destructive'
-																	onClick={() => field.removeValue(i)}
-																	disabled={status === "submitted"}
-																>
-																	<Trash2 className='h-4 w-4' />
-																</Button>
-															</div>
-														</CardContent>
-													</Card>
-												))}
-											</div>
-										)}
+											return (
+												<Card className='gap-3 border-0 dark:border dark:border-success/35 py-0 shadow-none md:gap-0 md:overflow-hidden md:rounded-md md:border'>
+													{/* Mobile summary */}
+													<div className='flex justify-center md:hidden'>
+														<Badge
+															variant='secondary'
+															className='h-auto max-w-full flex-wrap justify-center gap-x-2 gap-y-1 whitespace-normal rounded-full px-3 py-1.5 font-normal text-muted-foreground'
+														>
+															<span>
+																{m["environmental.B7.materialCount"]({
+																	count: entries.length,
+																})}
+															</span>
+
+															<span>
+																{m["environmental.B7.totalMass"]()}:
+																<strong className='ml-1 text-foreground'>{formatTotal(totals.tonnes)} t</strong>
+															</span>
+
+															{hasVolume && (
+																<span>
+																	{m["environmental.B7.totalVolume"]()}:
+																	<strong className='ml-1 text-foreground'>{formatTotal(totals.cubicMetres)} m³</strong>
+																</span>
+															)}
+														</Badge>
+													</div>
+
+													<CardContent className='p-0'>
+														<Table className='block md:table dark:border-success/35'>
+															{/* Desktop header */}
+															<TableHeader className='hidden bg-gray-100 dark:bg-success/[0.04] dark:border-b dark:border-b-success/35 md:table-header-group'>
+																<TableRow className='hover:bg-transparent'>
+																	<TableHead className='w-[40%] px-4'>{m["environmental.B7.materialType"]()}</TableHead>
+
+																	<TableHead className='w-[35%] px-4'>
+																		{m["environmental.B7.annualMassFlows"]()}
+																	</TableHead>
+
+																	<TableHead className='w-[20%] px-4'>{m["environmental.B7.unit"]()}</TableHead>
+
+																	<TableHead className='w-12' />
+																</TableRow>
+															</TableHeader>
+
+															{/* Material entries */}
+															<TableBody className='block space-y-3 dark:border-y dark:border-y-success/35 md:table-row-group md:space-y-0'>
+																{entries.map((item, i) => (
+																	<TableRow
+																		key={item.id}
+																		className='relative grid grid-cols-2 gap-3 rounded-md border p-3 hover:bg-transparent md:table-row md:rounded-none md:border-0 md:border-t md:p-0'
+																	>
+																		{/* Material type */}
+																		<TableCell className='col-span-2 min-w-0 whitespace-normal p-0 pr-11 **:data-[slot=field-label]:sr-only md:w-[40%] md:px-4 md:py-3 md:pr-4'>
+																			<form.AppField name={`annualMassFlows[${i}].materialType`}>
+																				{(f) => (
+																					<f.TextField
+																						label={m["environmental.B7.materialType"]()}
+																						placeholder={m["environmental.B7.materialTypePlaceholder"]()}
+																					/>
+																				)}
+																			</form.AppField>
+																		</TableCell>
+
+																		{/* Mass flow */}
+																		<TableCell className='min-w-0 whitespace-normal p-0 md:w-[35%] md:px-4 md:py-3 md:**:data-[slot=field-label]:sr-only'>
+																			<form.AppField name={`annualMassFlows[${i}].volume`}>
+																				{(f) => (
+																					<f.NumberField
+																						label={m["environmental.B7.massFlowShort"]()}
+																						min={0}
+																						step='any'
+																					/>
+																				)}
+																			</form.AppField>
+																		</TableCell>
+
+																		{/* Unit */}
+																		<TableCell className='min-w-0 whitespace-normal p-0 md:w-[20%] md:min-w-25 md:px-4 md:py-3 md:**:data-[slot=field-label]:sr-only'>
+																			<form.AppField name={`annualMassFlows[${i}].unit`}>
+																				{(f) => (
+																					<f.SelectField
+																						label={m["environmental.B7.unit"]()}
+																						options={RECYCLED_MATERIAL_UNITS.map((unit) => ({
+																							value: unit,
+																							label:
+																								unit === "tonn"
+																									? m["environmental.B7.tonnes"]()
+																									: unit === "kg"
+																										? m["environmental.B7.kilograms"]()
+																										: unit,
+																						}))}
+																					/>
+																				)}
+																			</form.AppField>
+																		</TableCell>
+
+																		{/* Remove material */}
+																		<TableCell className='absolute right-3 top-3 p-0 md:static md:w-12 md:px-2 md:py-3'>
+																			<Button
+																				type='button'
+																				variant='delete'
+																				size='icon'
+																				className='size-9'
+																				aria-label={m["environmental.B7.removeMaterial"]()}
+																				onClick={() => field.removeValue(i)}
+																				disabled={status === "submitted"}
+																			>
+																				<Trash2 className='size-4' />
+																			</Button>
+																		</TableCell>
+																	</TableRow>
+																))}
+															</TableBody>
+
+															{/* Desktop footer */}
+															<TableFooter className='hidden bg-gray-100 dark:bg-success/[0.04] md:table-footer-group'>
+																<TableRow className='hover:bg-transparent'>
+																	<TableCell colSpan={4} className='p-4'>
+																		<div className='flex flex-wrap items-center justify-between gap-3'>
+																			<Button
+																				type='button'
+																				variant='outline'
+																				size='sm'
+																				onClick={() =>
+																					field.pushValue({
+																						id: crypto.randomUUID(),
+																						materialType: "",
+																						volume: 0,
+																						unit: "tonn",
+																					})
+																				}
+																				disabled={status === "submitted"}
+																			>
+																				<Plus className='size-4' />
+																				{m["environmental.B7.addMaterialType"]()}
+																			</Button>
+
+																			<div className='flex flex-wrap gap-x-4 gap-y-1 text-sm font-normal text-muted-foreground'>
+																				<span>
+																					{m["environmental.B7.totalMass"]()}:
+																					<strong className='ml-1 text-foreground'>
+																						{formatTotal(totals.tonnes)} t
+																					</strong>
+																				</span>
+
+																				{hasVolume && (
+																					<span>
+																						{m["environmental.B7.totalVolume"]()}:
+																						<strong className='ml-1 text-foreground'>
+																							{formatTotal(totals.cubicMetres)} m³
+																						</strong>
+																					</span>
+																				)}
+																			</div>
+																		</div>
+																	</TableCell>
+																</TableRow>
+															</TableFooter>
+														</Table>
+
+														{/* Mobile add material button */}
+														<Button
+															type='button'
+															variant='outline'
+															size='sm'
+															className='mt-3 w-full border-dashed md:hidden'
+															onClick={() =>
+																field.pushValue({
+																	id: crypto.randomUUID(),
+																	materialType: "",
+																	volume: 0,
+																	unit: "tonn",
+																})
+															}
+															disabled={status === "submitted"}
+														>
+															<Plus className='size-4' />
+															{m["environmental.B7.addMaterialType"]()}
+														</Button>
+													</CardContent>
+												</Card>
+											)
+										}}
 									</form.AppField>
 								</>
 							)
@@ -457,9 +583,9 @@ function WasteCodeSelector({ field }: { field: WasteInformationField }) {
 									</div>
 									<Button
 										type='button'
-										variant='ghost'
+										variant='delete'
 										size='icon'
-										className='-mt-1 -mr-2 h-8 w-8 shrink-0 text-muted-foreground'
+										className='-mt-1 -mr-2 h-8 w-8'
 										aria-label={`Remove ${item.name}`}
 										onClick={() =>
 											field.handleChange(

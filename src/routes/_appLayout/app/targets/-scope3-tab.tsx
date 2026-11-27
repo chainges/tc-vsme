@@ -106,7 +106,7 @@ export function Scope3Tab({
 		<motion.div variants={itemVariants} transition={{ type: 'tween' }}>
 			<Card className="mb-8">
 				<CardHeader>
-					<CardTitle>Scope 3 Targets Summary</CardTitle>
+					<CardTitle className="text-primary font-bold">Scope 3 Targets Summary</CardTitle>
 				</CardHeader>
 				<CardContent>
 					{!existingTargets?.projections ||

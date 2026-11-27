@@ -3,7 +3,6 @@ import { useStore as useYearStore } from '@tanstack/react-store'
 import { useMemo } from 'react'
 import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { NumberFieldReadOnly } from '@/components/form-fields/NumberFieldReadOnly'
-import { Card, CardContent } from '@/components/ui/card'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
@@ -99,86 +98,72 @@ export function B9HealthSafetyForm({ totalEmployees = 0 }: B9HealthSafetyFormPro
 					form.handleSubmit()
 				}}
 			>
-				<Card>
-					<CardContent>
-						<fieldset disabled={status === 'submitted'} className="space-y-6">
-							{/* Hidden reporting year */}
-							<form.AppField name="reportingYear">
-								{(field) => (
-									<field.TextField
-										label={m["social.B9.reportingYearLabel"]()}
-										placeholder="YYYY"
-										hidden
-									/>
-								)}
-							</form.AppField>
-							<ConfidentialInfoBox value={isB9Confidential} handleChange={handleConfidentialChange} />
+				<fieldset disabled={status === "submitted"} className='space-y-6'>
+					{/* Hidden reporting year */}
+					<form.AppField name='reportingYear'>
+						{(field) => <field.TextField label={m["social.B9.reportingYearLabel"]()} placeholder='YYYY' hidden />}
+					</form.AppField>
+					<ConfidentialInfoBox value={isB9Confidential} handleChange={handleConfidentialChange} />
 
-							{/* Work accidents + Fatalities */}
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<form.AppField name="workAccidents">
-									{(field) => (
-										<field.NumberField
-											label={m["social.B9.workAccidentsLabel"]()}
-											description={m["social.B9.workAccidentsDescription"]()}
-										/>
-									)}
-								</form.AppField>
-
-								<form.AppField name="deceased">
-									{(field) => (
-										<field.NumberField
-											label={m["social.B9.fatalitiesLabel"]()}
-											description={m["social.B9.fatalitiesDescription"]()}
-										/>
-									)}
-								</form.AppField>
-							</div>
-
-							{/* Toggle for exact hours worked */}
-							<div className="space-y-4 pt-2">
-								<form.AppField name="knowExactHoursWorked">
-									{(field) => (
-										<field.SwitchField
-											label={m["social.B9.knowExactHoursWorkedLabel"]()}
-										/>
-									)}
-								</form.AppField>
-
-								<form.Subscribe selector={(state) => state.values.knowExactHoursWorked}>
-									{(knowExact) =>
-										knowExact ? (
-											<div className="max-w-md">
-												<form.AppField name="totalHoursWorked">
-													{(field) => (
-														<field.NumberField
-															label={m["social.B9.totalHoursWorkedLabel"]()}
-															description={m["social.B9.totalHoursWorkedDescription"]()}
-															min="0"
-														/>
-													)}
-												</form.AppField>
-											</div>
-										) : null
-									}
-								</form.Subscribe>
-							</div>
-
-							{/* Rate of work-related accidents */}
-							<div className="max-w-md">
-								<NumberFieldReadOnly
-									label={m["social.B9.rateOfWorkAccidentsLabel"]()}
-									value={calculatedRate}
-									description={m["social.B9.rateOfWorkAccidentsDescription"]()}
-									placeholder="0"
+					{/* Work accidents + Fatalities */}
+					<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+						<form.AppField name='workAccidents'>
+							{(field) => (
+								<field.NumberField
+									label={m["social.B9.workAccidentsLabel"]()}
+									description={m["social.B9.workAccidentsDescription"]()}
 								/>
-							</div>
-						</fieldset>
-					</CardContent>
-				</Card>
+							)}
+						</form.AppField>
+
+						<form.AppField name='deceased'>
+							{(field) => (
+								<field.NumberField
+									label={m["social.B9.fatalitiesLabel"]()}
+									description={m["social.B9.fatalitiesDescription"]()}
+								/>
+							)}
+						</form.AppField>
+					</div>
+
+					{/* Toggle for exact hours worked */}
+					<div className='space-y-4 pt-2'>
+						<form.AppField name='knowExactHoursWorked'>
+							{(field) => <field.SwitchField label={m["social.B9.knowExactHoursWorkedLabel"]()} />}
+						</form.AppField>
+
+						<form.Subscribe selector={(state) => state.values.knowExactHoursWorked}>
+							{(knowExact) =>
+								knowExact ? (
+									<div className='max-w-md'>
+										<form.AppField name='totalHoursWorked'>
+											{(field) => (
+												<field.NumberField
+													label={m["social.B9.totalHoursWorkedLabel"]()}
+													description={m["social.B9.totalHoursWorkedDescription"]()}
+													min='0'
+												/>
+											)}
+										</form.AppField>
+									</div>
+								) : null
+							}
+						</form.Subscribe>
+					</div>
+
+					{/* Rate of work-related accidents */}
+					<div className='max-w-md'>
+						<NumberFieldReadOnly
+							label={m["social.B9.rateOfWorkAccidentsLabel"]()}
+							value={calculatedRate}
+							description={m["social.B9.rateOfWorkAccidentsDescription"]()}
+							placeholder='0'
+						/>
+					</div>
+				</fieldset>
 
 				<FormButtons
-					status={status as 'not_started' | 'draft' | 'submitted'}
+					status={status as "not_started" | "draft" | "submitted"}
 					isSaving={isSaving}
 					onSaveDraft={saveDraft}
 					onSubmit={submit}

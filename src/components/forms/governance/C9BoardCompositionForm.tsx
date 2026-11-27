@@ -1,6 +1,5 @@
 import { useStore as useYearStore } from '@tanstack/react-store'
 import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
-import { Card, CardContent } from '@/components/ui/card'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
@@ -54,9 +53,7 @@ export function C9BoardCompositionForm() {
 					form.handleSubmit()
 				}}
 			>
-				<Card>
-					<CardContent>
-						<fieldset disabled={status === "submitted"} className='space-y-6'>
+				<fieldset disabled={status === "submitted"} className='space-y-6'>
 							{/* Hidden reporting year */}
 							<form.AppField name='reportingYear'>
 								{(field) => (
@@ -106,8 +103,6 @@ export function C9BoardCompositionForm() {
 								</form.AppField>
 							</div>
 						</fieldset>
-					</CardContent>
-				</Card>
 
 				<FormButtons
 					status={status as "not_started" | "draft" | "submitted"}

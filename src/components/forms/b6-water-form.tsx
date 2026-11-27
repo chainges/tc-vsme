@@ -76,66 +76,58 @@ export function B6WaterManagementForm() {
 					form.handleSubmit()
 				}}
 			>
-				<fieldset disabled={status === 'submitted'} className="space-y-6">
-					<form.AppField name="reportingYear">
+				<fieldset disabled={status === "submitted"} className='space-y-6'>
+					<form.AppField name='reportingYear'>
 						{(field) => (
-							<field.TextField
-								label={m["environmental.B6.reportingYearLabel"]()}
-								placeholder="YYYY"
-								hidden
-							/>
+							<field.TextField label={m["environmental.B6.reportingYearLabel"]()} placeholder='YYYY' hidden />
 						)}
 					</form.AppField>
 					<ConfidentialInfoBox value={isB6Confidential} handleChange={handleConfidentialChange} />
 
-					<Card>
-						<CardContent className="">
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-								<form.AppField name="waterWithdrawal">
-									{(field) => (
-										<field.NumberField
-											label={m["environmental.B6.waterWithdrawal"]()}
-											unit={m["environmental.B6.unit"]()}
-											description={m["environmental.B6.waterWithdrawalDescription"]()}
-										/>
-									)}
-								</form.AppField>
-
-								<form.AppField name="waterWithdrawalStress">
-									{(field) => (
-										<field.NumberField
-											label={m["environmental.B6.waterWithdrawalStress"]()}
-											unit={m["environmental.B6.unit"]()}
-											description={m["environmental.B6.waterWithdrawalStressDescription"]()}
-										/>
-									)}
-								</form.AppField>
-							</div>
-
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<form.AppField name="waterDischarge">
-									{(field) => (
-										<field.NumberField
-											label={m["environmental.B6.waterDischarge"]()}
-											unit={m["environmental.B6.unit"]()}
-											description={m["environmental.B6.waterDischargeDescription"]()}
-										/>
-									)}
-								</form.AppField>
-
-								<NumberFieldReadOnly
-									label={m["environmental.B6.waterConsumptionLabel"]()}
+					<div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-6'>
+						<form.AppField name='waterWithdrawal'>
+							{(field) => (
+								<field.NumberField
+									label={m["environmental.B6.waterWithdrawal"]()}
 									unit={m["environmental.B6.unit"]()}
-									value={waterConsumption}
-									description={m["environmental.B6.waterConsumptionDescription"]()}
+									description={m["environmental.B6.waterWithdrawalDescription"]()}
 								/>
-							</div>
-						</CardContent>
-					</Card>
+							)}
+						</form.AppField>
+
+						<form.AppField name='waterWithdrawalStress'>
+							{(field) => (
+								<field.NumberField
+									label={m["environmental.B6.waterWithdrawalStress"]()}
+									unit={m["environmental.B6.unit"]()}
+									description={m["environmental.B6.waterWithdrawalStressDescription"]()}
+								/>
+							)}
+						</form.AppField>
+					</div>
+
+					<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+						<form.AppField name='waterDischarge'>
+							{(field) => (
+								<field.NumberField
+									label={m["environmental.B6.waterDischarge"]()}
+									unit={m["environmental.B6.unit"]()}
+									description={m["environmental.B6.waterDischargeDescription"]()}
+								/>
+							)}
+						</form.AppField>
+
+						<NumberFieldReadOnly
+							label={m["environmental.B6.waterConsumptionLabel"]()}
+							unit={m["environmental.B6.unit"]()}
+							value={waterConsumption}
+							description={m["environmental.B6.waterConsumptionDescription"]()}
+						/>
+					</div>
 				</fieldset>
 
 				<FormButtons
-					status={status as 'not_started' | 'draft' | 'submitted'}
+					status={status as "not_started" | "draft" | "submitted"}
 					isSaving={isSaving}
 					onSaveDraft={saveDraft}
 					onSubmit={submit}

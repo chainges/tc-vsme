@@ -4,7 +4,6 @@ import { Info } from 'lucide-react'
 import { useEffect } from 'react'
 import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { Alert, AlertDescription, AlertTitle,  } from '@/components/ui/alert'
-import { Card, CardContent } from '@/components/ui/card'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
@@ -78,10 +77,10 @@ export function B10CompensationForm({
 		})
 
 	// Subscribe to fields for reactive updates
-	const minimumWageLiability = useStore(
-		form.store,
-		(state) => state.values.minimumWageLiability,
-	)
+	// const minimumWageLiability = useStore(
+	// 	form.store,
+	// 	(state) => state.values.minimumWageLiability,
+	// )
 	const confidentialAreas = useStore(
 		form.store,
 		(state) => state.values.confidentialAreas ?? [],
@@ -139,103 +138,90 @@ export function B10CompensationForm({
 						{(field) => <field.TextField label={m["social.B10.reportingYearLabel"]()} placeholder='YYYY' hidden />}
 					</form.AppField>
 					<ConfidentialInfoBox value={isB10Confidential} handleChange={handleConfidentialChange} />
-					<Card className='mb-4'>
-						<CardContent>
-							<div className='flex flex-col items-start gap-3'>
-								<h3 className='text-base font-semibold'>{m["social.B10.minimumWageLiabilityLabel"]()}</h3>
-								<form.AppField name='minimumWageLiability'>
-									{(field) => (
-										<field.SwitchField label='' description={m["social.B10.minimumWageLiabilityDescription"]()} />
-									)}
-								</form.AppField>
-								
-							</div>
-						</CardContent>
-					</Card>
+					<div className='flex flex-col items-start gap-3'>
+						<h3 className='text-primary font-bold'>{m["social.B10.minimumWageLiabilityLabel"]()}</h3>
+						<form.AppField name='minimumWageLiability'>
+							{(field) => (
+								<field.SwitchField label='' description={m["social.B10.minimumWageLiabilityDescription"]()} />
+							)}
+						</form.AppField>
+					</div>
 
-					<Card>
-						<CardContent>
-							<PayGapInfoBox/>
-							<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-								<form.AppField name='hourlyPayMale'>
-									{(field) => (
-										<field.NumberField
-											label={m["social.B10.hourlyPayMaleLabel"]()}
-											// description={m["social.B10.hourlyPayMaleDescription"]()}
-											step='0.1'
-											min='0'
-											unit='EUR'
-										/>
-									)}
-								</form.AppField>
-								<form.AppField name='hourlyPayFemale'>
-									{(field) => (
-										<field.NumberField
-											label={m["social.B10.hourlyPayFemaleLabel"]()}
-											// description={m["social.B10.hourlyPayFemaleDescription"]()}
-											unit='EUR'
-											step='0.1'
-											min='0'
-										/>
-									)}
-								</form.AppField>
-							</div>
-						</CardContent>
-					</Card>
+					<PayGapInfoBox />
+					<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+						<form.AppField name='hourlyPayMale'>
+							{(field) => (
+								<field.NumberField
+									label={m["social.B10.hourlyPayMaleLabel"]()}
+									// description={m["social.B10.hourlyPayMaleDescription"]()}
+									step='0.1'
+									min='0'
+									unit='EUR'
+								/>
+							)}
+						</form.AppField>
+						<form.AppField name='hourlyPayFemale'>
+							{(field) => (
+								<field.NumberField
+									label={m["social.B10.hourlyPayFemaleLabel"]()}
+									// description={m["social.B10.hourlyPayFemaleDescription"]()}
+									unit='EUR'
+									step='0.1'
+									min='0'
+								/>
+							)}
+						</form.AppField>
+					</div>
 
-					<Card>
-						<CardContent>
-							<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-								{/* Training Hours */}
-								<form.AppField name='trainingHoursMale'>
-									{(field) => (
-										<field.NumberField
-											label={m["social.B10.trainingHoursMaleLabel"]()}
-											description={m["social.B10.trainingHoursMaleDescription"]()}
-											step='0.1'
-											min='0'
-											unit='Timer'
-										/>
-									)}
-								</form.AppField>
-								<form.AppField name='trainingHoursFemale'>
-									{(field) => (
-										<field.NumberField
-											label={m["social.B10.trainingHoursFemaleLabel"]()}
-											description={m["social.B10.trainingHoursFemaleDescription"]()}
-											unit='Timer'
-											step='0.1'
-											min='0'
-										/>
-									)}
-								</form.AppField>
-								{/* Tariffavtaledekning */}
-								<form.AppField name='collectiveBargainingAgreement'>
-									{(field) => (
-										<field.NumberField
-											label={m["social.B10.collectiveBargainingAgreementLabel"]()}
-											description={m["social.B10.collectiveBargainingAgreementDescription"]()}
-											step='1'
-											min='0'
-										/>
-									)}
-								</form.AppField>
-								<form.AppField name='collectiveBargainingShare'>
-									{(field) => (
-										<field.NumberField
-											label={m["social.B10.collectiveBargainingShareLabel"]()}
-											description={m["social.B10.collectiveBargainingShareDescription"]({ totalEmployees })}
-											unit='%'
-											step='0.1'
-											min='0'
-											max='100'
-											disabled
-										/>
-									)}
-								</form.AppField>
-							</div>
-						</CardContent>
-					</Card>
+					<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+						{/* Training Hours */}
+						<form.AppField name='trainingHoursMale'>
+							{(field) => (
+								<field.NumberField
+									label={m["social.B10.trainingHoursMaleLabel"]()}
+									description={m["social.B10.trainingHoursMaleDescription"]()}
+									step='0.1'
+									min='0'
+									unit='Timer'
+								/>
+							)}
+						</form.AppField>
+						<form.AppField name='trainingHoursFemale'>
+							{(field) => (
+								<field.NumberField
+									label={m["social.B10.trainingHoursFemaleLabel"]()}
+									description={m["social.B10.trainingHoursFemaleDescription"]()}
+									unit='Timer'
+									step='0.1'
+									min='0'
+								/>
+							)}
+						</form.AppField>
+						{/* Tariffavtaledekning */}
+						<form.AppField name='collectiveBargainingAgreement'>
+							{(field) => (
+								<field.NumberField
+									label={m["social.B10.collectiveBargainingAgreementLabel"]()}
+									description={m["social.B10.collectiveBargainingAgreementDescription"]()}
+									step='1'
+									min='0'
+								/>
+							)}
+						</form.AppField>
+						<form.AppField name='collectiveBargainingShare'>
+							{(field) => (
+								<field.NumberField
+									label={m["social.B10.collectiveBargainingShareLabel"]()}
+									description={m["social.B10.collectiveBargainingShareDescription"]({ totalEmployees })}
+									unit='%'
+									step='0.1'
+									min='0'
+									max='100'
+									disabled
+								/>
+							)}
+						</form.AppField>
+					</div>
 
 					<FormButtons
 						status={status as "not_started" | "draft" | "submitted"}

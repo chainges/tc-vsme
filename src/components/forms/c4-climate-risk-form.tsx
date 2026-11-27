@@ -64,74 +64,64 @@ export function C4ClimateRiskForm() {
 					</form.AppField>
 					<ConfidentialInfoBox value={isC4Confidential} handleChange={handleConfidentialChange} />
 
-					<Card>
-						<CardContent className='space-y-6'>
-							<form.AppField name='hasIdentifiedClimateRelatedHazardious'>
-								{(field) => (
-									<field.SwitchField label={m["environmental.C4.hasIdentifiedClimateRelatedHazardiousLabel"]()} />
-								)}
-							</form.AppField>
+					<form.AppField name='hasIdentifiedClimateRelatedHazardious'>
+						{(field) => (
+							<field.SwitchField label={m["environmental.C4.hasIdentifiedClimateRelatedHazardiousLabel"]()} />
+						)}
+					</form.AppField>
 
-							<form.Subscribe selector={(state) => state.values.hasIdentifiedClimateRelatedHazardious}>
-								{(status) =>
-									status && (
-										<>
-											<form.AppField name='climateRiskDescription'>
-												{(field) => (
-													<field.TextareaField
-														label={m["environmental.C4.climateRiskDescriptionLabel"]()}
-														placeholder={m["environmental.C4.climateRiskDescriptionPlaceholder"]()}
-														rows={8}
-														description={m["environmental.C4.climateRiskDescriptionDescription"]()}
-													/>
-												)}
-											</form.AppField>
+					<form.Subscribe selector={(state) => state.values.hasIdentifiedClimateRelatedHazardious}>
+						{(status) =>
+							status && (
+								<>
+									<form.AppField name='climateRiskDescription'>
+										{(field) => (
+											<field.TextareaField
+												label={m["environmental.C4.climateRiskDescriptionLabel"]()}
+												placeholder={m["environmental.C4.climateRiskDescriptionPlaceholder"]()}
+												rows={8}
+												description={m["environmental.C4.climateRiskDescriptionDescription"]()}
+											/>
+										)}
+									</form.AppField>
 
-											<form.AppField name='exposureAndSensitivityAssessment'>
-												{(field) => (
-													<field.TextareaField
-														label={m["environmental.C4.exposureAndSensitivityAssessmentLabel"]()}
-														placeholder={m["environmental.C4.exposureAndSensitivityAssessmentPlaceholder"]()}
-														rows={8}
-													/>
-												)}
-											</form.AppField>
+									<form.AppField name='exposureAndSensitivityAssessment'>
+										{(field) => (
+											<field.TextareaField
+												label={m["environmental.C4.exposureAndSensitivityAssessmentLabel"]()}
+												placeholder={m["environmental.C4.exposureAndSensitivityAssessmentPlaceholder"]()}
+												rows={8}
+											/>
+										)}
+									</form.AppField>
 
-											<form.AppField name='timeHorizonsIdentified'>
-												{(field) => (
-													<field.TextareaField
-														label={m["environmental.C4.timeHorizonsIdentifiedLabel"]()}
-														placeholder={m["environmental.C4.timeHorizonsIdentifiedPlaceholder"]()}
-														rows={8}
-													/>
-												)}
-											</form.AppField>
+									<form.AppField name='timeHorizonsIdentified'>
+										{(field) => (
+											<field.TextareaField
+												label={m["environmental.C4.timeHorizonsIdentifiedLabel"]()}
+												placeholder={m["environmental.C4.timeHorizonsIdentifiedPlaceholder"]()}
+												rows={8}
+											/>
+										)}
+									</form.AppField>
 
-											<form.AppField name='climateAdaptationActions'>
-												{(field) => (
-													<field.SwitchField label={m["environmental.C4.climateAdaptationActionsLabel"]()} />
-												)}
-											</form.AppField>
+									<form.AppField name='climateAdaptationActions'>
+										{(field) => <field.SwitchField label={m["environmental.C4.climateAdaptationActionsLabel"]()} />}
+									</form.AppField>
 
-											<form.AppField name='potentialAdverseEffectsAndRiskRating'>
-												{(field) => (
-													<field.TextareaField
-														label={m["environmental.C4.potentialAdverseEffectsAndRiskRatingLabel"]()}
-														placeholder={m["environmental.C4.potentialAdverseEffectsAndRiskRatingPlaceholder"]()}
-														rows={8}
-													/>
-												)}
-											</form.AppField>
-										</>
-									)
-								}
-							</form.Subscribe>
-
-							
-
-							
-						</CardContent>
-					</Card>
+									<form.AppField name='potentialAdverseEffectsAndRiskRating'>
+										{(field) => (
+											<field.TextareaField
+												label={m["environmental.C4.potentialAdverseEffectsAndRiskRatingLabel"]()}
+												placeholder={m["environmental.C4.potentialAdverseEffectsAndRiskRatingPlaceholder"]()}
+												rows={8}
+											/>
+										)}
+									</form.AppField>
+								</>
+							)
+						}
+					</form.Subscribe>
 				</fieldset>
 
 				<FormButtons

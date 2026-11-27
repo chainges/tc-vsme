@@ -139,7 +139,7 @@ export function B5BiodiversityForm({ properties }: B5BiodiversityFormProps) {
 															<form.AppField name={`sites[${index}].siteLocation`}>
 																{(field) => <field.TextField label={m["environmental.B5.siteLocation"]()} />}
 															</form.AppField>
-															<form.AppField name={`sites[${index}].areaSquareMeters`}>
+															<form.AppField  name={`sites[${index}].areaSquareMeters`}>
 																{(field) => (
 																	<field.NumberField label={m["environmental.B5.areaSquareMeters"]()} unit='m²' />
 																)}

@@ -1,7 +1,6 @@
 import { useStore } from '@tanstack/react-form'
 import { useStore as useYearStore } from '@tanstack/react-store'
 import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
-import { Card, CardContent } from '@/components/ui/card'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
@@ -32,10 +31,10 @@ export function B11FinesPenaltiesForm() {
 		})
 
 	// Subscribe to branch field for reactive updates
-	const hasCorruptionFines = useStore(
-		form.store,
-		(state) => state.values.hasCorruptionFines,
-	)
+	// const hasCorruptionFines = useStore(
+	// 	form.store,
+	// 	(state) => state.values.hasCorruptionFines,
+	// )
 
 	const confidentialAreas = useStore(form.store, (state) => state.values.confidentialAreas ?? [])
 	const isB11Confidential = confidentialAreas.includes(B11_Confidential)
@@ -59,129 +58,87 @@ export function B11FinesPenaltiesForm() {
 					form.handleSubmit()
 				}}
 			>
-				<Card>
-					<CardContent>
-						<fieldset disabled={status === 'submitted'} className="space-y-6">
-							{/* Hidden reporting year */}
-							<form.AppField name="reportingYear">
-								{(field) => (
-									<field.TextField
-										label={m["governance.B11.reportingYearLabel"]()}
-										placeholder="YYYY"
-										hidden
-									/>
-								)}
-							</form.AppField>
-							<ConfidentialInfoBox value={isB11Confidential} handleChange={handleConfidentialChange} />
+				<fieldset disabled={status === "submitted"} className='space-y-6'>
+					{/* Hidden reporting year */}
+					<form.AppField name='reportingYear'>
+						{(field) => <field.TextField label={m["governance.B11.reportingYearLabel"]()} placeholder='YYYY' hidden />}
+					</form.AppField>
+					<ConfidentialInfoBox value={isB11Confidential} handleChange={handleConfidentialChange} />
 
-							<div className="flex flex-col items-start gap-3">
-								<h3 className="text-base font-semibold">
-									{m["governance.B11.corruptionFinesTitle"]()}
-								</h3>
+					<div className='flex flex-col items-start gap-3'>
+						<h3 className='text-primary font-bold'>{m["governance.B11.corruptionFinesTitle"]()}</h3>
 
-								<form.AppField
-									name="hasCorruptionFines"
-									listeners={{
-										onChange: ({ value, fieldApi }) => {
-											if (!value) {
-												fieldApi.form.setFieldValue(
-													'corruptionFinesDescription',
-													'',
-												)
-												fieldApi.form.setFieldValue(
-													'numberOfConvictions',
-													undefined as any,
-												)
-												fieldApi.form.setFieldValue(
-													'totalFines',
-													undefined as any,
-												)
-												fieldApi.form.setFieldValue(
-													'currency',
-													undefined as any,
-												)
-											} else {
-												fieldApi.form.setFieldValue('currency', 'NOK')
-											}
-										},
-									}}
-								>
-									{(field) => (
-										<field.SwitchField
-											label=""
-											description={m["governance.B11.hasFinesDescription"]()}
-										/>
-									)}
-								</form.AppField>
-								<span className="text-sm">
-									{hasCorruptionFines
-										? m["governance.B11.yes"]()
-										: m["governance.B11.no"]()}
-								</span>
+						<form.AppField
+							name='hasCorruptionFines'
+							listeners={{
+								onChange: ({ value, fieldApi }) => {
+									if (!value) {
+										fieldApi.form.setFieldValue("corruptionFinesDescription", "")
+										fieldApi.form.setFieldValue("numberOfConvictions", undefined as any)
+										fieldApi.form.setFieldValue("totalFines", undefined as any)
+										fieldApi.form.setFieldValue("currency", undefined as any)
+									} else {
+										fieldApi.form.setFieldValue("currency", "NOK")
+									}
+								},
+							}}
+						>
+							{(field) => <field.SwitchField label='' description={m["governance.B11.hasFinesDescription"]()} />}
+						</form.AppField>
 
-								<form.Subscribe
-									selector={(state) => state.values.hasCorruptionFines}
-								>
-									{(hasFines) =>
-										hasFines ? (
-											<div className="flex flex-col gap-4 w-full">
-												<form.AppField name="numberOfConvictions">
+						<form.Subscribe selector={(state) => state.values.hasCorruptionFines}>
+							{(hasFines) =>
+								hasFines ? (
+									<div className='flex flex-col gap-4 w-full'>
+										<form.AppField name='numberOfConvictions'>
+											{(field) => (
+												<field.NumberField label={m["governance.B11.numberOfConvictionsLabel"]()} placeholder='0' />
+											)}
+										</form.AppField>
+										<div className='flex gap-4'>
+											<div className='flex-1'>
+												<form.AppField name='totalFines'>
 													{(field) => (
-														<field.NumberField
-															label={m["governance.B11.numberOfConvictionsLabel"]()}
-															placeholder="0"
-														/>
+														<field.NumberField label={m["governance.B11.totalFinesLabel"]()} placeholder='0' />
 													)}
 												</form.AppField>
-												<div className="flex gap-4">
-													<div className="flex-1">
-														<form.AppField name="totalFines">
-															{(field) => (
-																<field.NumberField
-																	label={m["governance.B11.totalFinesLabel"]()}
-																	placeholder="0"
-																/>
-															)}
-														</form.AppField>
-													</div>
-													<div className="flex-1">
-														<form.AppField name="currency">
-															{(field) => (
-																<field.SelectField
-																	label={m["governance.B11.currencyLabel"]()}
-																	options={[
-																		{ label: 'NOK', value: 'NOK' },
-																		{ label: 'SEK', value: 'SEK' },
-																		{ label: 'DKK', value: 'DKK' },
-																		{ label: 'EUR', value: 'EUR' },
-																		{ label: 'USD', value: 'USD' },
-																		{ label: 'GBP', value: 'GBP' },
-																	]}
-																/>
-															)}
-														</form.AppField>
-													</div>
-												</div>
-												<form.AppField name="corruptionFinesDescription">
+											</div>
+											<div className='flex-1'>
+												<form.AppField name='currency'>
 													{(field) => (
-														<field.TextareaField
-															label={m["governance.B11.descriptionLabel"]()}
-															placeholder={m["governance.B11.descriptionPlaceholder"]()}
-															rows={4}
+														<field.SelectField
+															label={m["governance.B11.currencyLabel"]()}
+															options={[
+																{ label: "NOK", value: "NOK" },
+																{ label: "SEK", value: "SEK" },
+																{ label: "DKK", value: "DKK" },
+																{ label: "EUR", value: "EUR" },
+																{ label: "USD", value: "USD" },
+																{ label: "GBP", value: "GBP" },
+															]}
 														/>
 													)}
 												</form.AppField>
 											</div>
-										) : null
-									}
-								</form.Subscribe>
-							</div>
-						</fieldset>
-					</CardContent>
-				</Card>
+										</div>
+										<form.AppField name='corruptionFinesDescription'>
+											{(field) => (
+												<field.TextareaField
+													label={m["governance.B11.descriptionLabel"]()}
+													placeholder={m["governance.B11.descriptionPlaceholder"]()}
+													rows={4}
+												/>
+											)}
+										</form.AppField>
+									</div>
+								) : null
+							}
+						</form.Subscribe>
+					</div>
+				</fieldset>
 
 				<FormButtons
-					status={status as 'not_started' | 'draft' | 'submitted'}
+					status={status as "not_started" | "draft" | "submitted"}
 					isSaving={isSaving}
 					onSaveDraft={saveDraft}
 					onSubmit={submit}

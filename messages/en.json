@@ -243,7 +243,10 @@
 			"countryDistributionTitle": "Employees per country",
 			"countryDistributionDescription": "Total {totalEmployees} employees from B1 - distribute by country",
 			"countryLabel": "Country",
-			"employeeCountLabel": "Number of employees",
+			"employeeCountLabel": "Employees",
+			"shareLabel": "Share",
+			"actionLabel": "Action",
+			"removeCountry": "Remove country",
 			"noCountriesAdded": "No countries added yet. Click \"Add country\" to begin.",
 			"countryPlaceholder": "Select country",
 			"countryCountSummary": "Allocated: {totalAllocated} of {totalEmployees} employees",
@@ -634,7 +637,14 @@
 			"addMaterialType": "Add material type",
 			"materialType": "Material type",
 			"materialTypePlaceholder": "e.g., steel, concrete, wood...",
-			"unit": "Unit"
+			"unit": "Unit",
+			"massFlowShort": "Annual mass flow",
+			"materialCount": "Materials tracked: {count}",
+			"totalMass": "Total mass",
+			"totalVolume": "Total volume",
+			"removeMaterial": "Remove material",
+			"tonnes": "Tonnes (t)",
+			"kilograms": "Kilograms (kg)"
 		},
 		"helpSheet":{
 			"title":"Veiledning for sirkulærøkonomi",

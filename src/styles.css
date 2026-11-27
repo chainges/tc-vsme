@@ -119,6 +119,7 @@ code {
   --volunteer-soft: oklch(0.95 0.05 155);
 
   --success: oklch(0.696 0.17 162.48);
+  --error: oklch(0.696 0.17 25);
   --success-foreground: oklch(0.984 0.003 247.858);
   
   --volunteer-badge: oklch(0.5 0.11 158);
@@ -130,6 +131,7 @@ code {
   --background: oklch(0.2500 0.0154 196.2080);
   --foreground: oklch(0.9761 0 0);
   --success: oklch(0.765 0.177 163.223);
+  --error: oklch(0.696 0.17 25);
   --success-foreground: oklch(0.129 0.042 264.695);
   --card: oklch(0.2189 0.0259 199.7517);
   --card-foreground: oklch(0.9761 0 0);
@@ -223,6 +225,7 @@ code {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-success: var(--success);
+  --color-error: var(--error);
   --color-success-foreground: var(--success-foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);

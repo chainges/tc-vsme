@@ -2,7 +2,6 @@ import { useStore, useStore as useYearStore } from '@tanstack/react-store'
 import { Info } from 'lucide-react'
 import ConfidentialInfoBox from '@/components/ConfidentialInfoBox'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Card, CardContent } from '@/components/ui/card'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { FormButtons } from '@/hooks/tanstack-form'
 import { useFormSubmission } from '@/hooks/use-form-submission'
@@ -79,86 +78,74 @@ const syncExclusion = (value: boolean, currentField: keyof C8SectorInvolvementVa
 					form.handleSubmit()
 				}}
 			>
-				<Card>
-					<CardContent>
-						<fieldset disabled={status === "submitted"} className='space-y-6'>
-							<form.AppField name='reportingYear'>
-								{(field) => (
-									<field.TextField label={m["governance.C8.reportingYearLabel"]()} placeholder='YYYY' hidden />
-								)}
-							</form.AppField>
-							<ConfidentialInfoBox value={isC8Confidential} handleChange={handleConfidentialChange} />
-							<Alert variant='info'>
-								<Info />
-								<AlertDescription>{m["governance.C8.revenueInfo"]()}</AlertDescription>
-							</Alert>
-							<div className='font-semibold'>{m["governance.C8.sectorRevenueTitle"]()}</div>
-							<div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
-								<form.AppField name='controversialWeaponsRevenue'>
-									{(field) => (
-										<field.NumberField label={m["governance.C8.controversialWeaponsRevenueLabel"]()} unit='NOK' />
-									)}
-								</form.AppField>
-								<form.AppField name='tobaccoRevenue'>
-									{(field) => <field.NumberField label={m["governance.C8.tobaccoRevenueLabel"]()} unit='NOK' />}
-								</form.AppField>
-								<form.AppField name='coalRevenue'>
-									{(field) => <field.NumberField label={m["governance.C8.coalRevenueLabel"]()} unit='NOK' />}
-								</form.AppField>
-								<form.AppField name='gasRevenue'>
-									{(field) => <field.NumberField label={m["governance.C8.gasRevenueLabel"]()} unit='NOK' />}
-								</form.AppField>
-								<form.AppField name='oilRevenue'>
-									{(field) => <field.NumberField label={m["governance.C8.oilRevenueLabel"]()} unit='NOK' />}
-								</form.AppField>
-								<form.AppField name='chemicalProductionRevenue'>
-									{(field) => (
-										<field.NumberField label={m["governance.C8.chemicalProductionRevenueLabel"]()} unit='NOK' />
-									)}
-								</form.AppField>
-							</div>
-						</fieldset>
-					</CardContent>
-				</Card>
-
-				<Card className='mt-6'>
-					<CardContent className='space-y-6'>
-						<Alert variant='info'>
-							<Info />
-							<AlertTitle>{m["governance.C8.pabTitle"]()}</AlertTitle>
-							<AlertDescription>{m["governance.C8.pabDescription"]()}</AlertDescription>
-						</Alert>
-						<div className='space-y-4'>
-							<form.AppField
-								name='pabCoalThreshold'
-								listeners={{ onChange: ({ value }) => syncExclusion(value, "pabCoalThreshold") }}
-							>
-								{(field) => <field.SwitchField label={m["governance.C8.pabCoalThresholdLabel"]()} />}
-							</form.AppField>
-							<form.AppField
-								name='pabOilThreshold'
-								listeners={{ onChange: ({ value }) => syncExclusion(value, "pabOilThreshold") }}
-							>
-								{(field) => <field.SwitchField label={m["governance.C8.pabOilThresholdLabel"]()} />}
-							</form.AppField>
-							<form.AppField
-								name='pabGasThreshold'
-								listeners={{ onChange: ({ value }) => syncExclusion(value, "pabGasThreshold") }}
-							>
-								{(field) => <field.SwitchField label={m["governance.C8.pabGasThresholdLabel"]()} />}
-							</form.AppField>
-							<form.AppField
-								name='pabElectricityThreshold'
-								listeners={{ onChange: ({ value }) => syncExclusion(value, "pabElectricityThreshold") }}
-							>
-								{(field) => <field.SwitchField label={m["governance.C8.pabElectricityThresholdLabel"]()} />}
-							</form.AppField>
-						</div>
-						<form.AppField name='euBenchmarksExclusion'>
-							{(field) => <field.CheckboxField label={m["governance.C8.euBenchmarksExclusionLabel"]()} disabled />}
+				<fieldset disabled={status === "submitted"} className='space-y-6'>
+					<form.AppField name='reportingYear'>
+						{(field) => <field.TextField label={m["governance.C8.reportingYearLabel"]()} placeholder='YYYY' hidden />}
+					</form.AppField>
+					<ConfidentialInfoBox value={isC8Confidential} handleChange={handleConfidentialChange} />
+					<Alert variant='info'>
+						<Info />
+						<AlertDescription>{m["governance.C8.revenueInfo"]()}</AlertDescription>
+					</Alert>
+					<div className='text-primary font-bold'>{m["governance.C8.sectorRevenueTitle"]()}</div>
+					<div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
+						<form.AppField name='controversialWeaponsRevenue'>
+							{(field) => (
+								<field.NumberField label={m["governance.C8.controversialWeaponsRevenueLabel"]()} unit='NOK' />
+							)}
 						</form.AppField>
-					</CardContent>
-				</Card>
+						<form.AppField name='tobaccoRevenue'>
+							{(field) => <field.NumberField label={m["governance.C8.tobaccoRevenueLabel"]()} unit='NOK' />}
+						</form.AppField>
+						<form.AppField name='coalRevenue'>
+							{(field) => <field.NumberField label={m["governance.C8.coalRevenueLabel"]()} unit='NOK' />}
+						</form.AppField>
+						<form.AppField name='gasRevenue'>
+							{(field) => <field.NumberField label={m["governance.C8.gasRevenueLabel"]()} unit='NOK' />}
+						</form.AppField>
+						<form.AppField name='oilRevenue'>
+							{(field) => <field.NumberField label={m["governance.C8.oilRevenueLabel"]()} unit='NOK' />}
+						</form.AppField>
+						<form.AppField name='chemicalProductionRevenue'>
+							{(field) => <field.NumberField label={m["governance.C8.chemicalProductionRevenueLabel"]()} unit='NOK' />}
+						</form.AppField>
+					</div>
+				</fieldset>
+
+				<Alert variant='info' className="my-6">
+					<Info />
+					<AlertTitle className="text-primary font-bold">{m["governance.C8.pabTitle"]()}</AlertTitle>
+					<AlertDescription>{m["governance.C8.pabDescription"]()}</AlertDescription>
+				</Alert>
+				<div className='space-y-4 mb-6'>
+					<form.AppField
+						name='pabCoalThreshold'
+						listeners={{ onChange: ({ value }) => syncExclusion(value, "pabCoalThreshold") }}
+					>
+						{(field) => <field.SwitchField label={m["governance.C8.pabCoalThresholdLabel"]()} />}
+					</form.AppField>
+					<form.AppField
+						name='pabOilThreshold'
+						listeners={{ onChange: ({ value }) => syncExclusion(value, "pabOilThreshold") }}
+					>
+						{(field) => <field.SwitchField label={m["governance.C8.pabOilThresholdLabel"]()} />}
+					</form.AppField>
+					<form.AppField
+						name='pabGasThreshold'
+						listeners={{ onChange: ({ value }) => syncExclusion(value, "pabGasThreshold") }}
+					>
+						{(field) => <field.SwitchField label={m["governance.C8.pabGasThresholdLabel"]()} />}
+					</form.AppField>
+					<form.AppField
+						name='pabElectricityThreshold'
+						listeners={{ onChange: ({ value }) => syncExclusion(value, "pabElectricityThreshold") }}
+					>
+						{(field) => <field.SwitchField label={m["governance.C8.pabElectricityThresholdLabel"]()} />}
+					</form.AppField>
+				</div>
+				<form.AppField name='euBenchmarksExclusion'>
+					{(field) => <field.CheckboxField label={m["governance.C8.euBenchmarksExclusionLabel"]()} disabled />}
+				</form.AppField>
 
 				<FormButtons
 					status={status as "not_started" | "draft" | "submitted"}
